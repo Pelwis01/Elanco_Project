@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!mapContainer) return;
   // Initialize the map
 
-  var map = L.map("map").setView([54.5, -3.5], 6); // Coordinates for the UK
+  let map = L.map("map").setView([54.5, -3.5], 6); // Coordinates for the UK
 
   // Add a tile layer (OpenStreetMap)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     attribution: "© OpenStreetMap contributors",
   }).addTo(map);
 
+  // On Map Click event to calculate the Rainfall and Temperature for the chosen location to work out the Parasite Risk
   map.on("click", (e) => {
     console.log(e);
     let values = {
@@ -39,14 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // 📊 Placeholder heatmap data:
-  var heatData = {
+  let heatData = {
     max: 1,
-    data: [{ lat: 53.3811, lng: -1.4701, value: 1.0 }],
+    data: [{ lat: 53.3811, lng: -1.4701, value: 3 }],
   };
 
   // ⚙️ Heatmap config
-  var cfg = {
-    radius: 0.3,
+  let cfg = {
+    radius: 0.1,
     scaleRadius: true, // 🔎 Scaling based on map zoom level
     useLocalExtrema: false,
     latField: "lat",
@@ -55,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // 🔥 Initialise heatmap overlay using config
-  var heatmapLayer = new HeatmapOverlay(cfg);
+  let heatmapLayer = new HeatmapOverlay(cfg);
 
   // 📌 Set heatmap data and add to map
   heatmapLayer.setData(heatData);
