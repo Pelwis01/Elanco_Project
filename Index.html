@@ -1,33 +1,32 @@
-
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="script.js"></script>
-    <script src="https://unpkg.com/@openmeteo/mapbox-layer@0.0.13/dist/index.js"></script>
 
-	  <script type="text/javascript" src="leaflet.js"></script>
-	  <link rel="stylesheet" type="text/css" href="leaflet-openweathermap.css" />
-	<script type="text/javascript" src="leaflet-openweathermap.js"></script>
+    <!-- 🗺️ Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 🔥 Heatmap.js -->
+    <script src="https://unpkg.com/heatmap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
+
+    <script src="https://api.windy.com/assets/map-forecast/libBoot.js"></script>
+
 
     <title>Document</title>
   </head>
   <body>
     <h1>This is Where the Code Will Start</h1>
-    <script>//CallAPI()
-
-      var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	    maxZoom: 18, attribution: '[insert correct attribution here!]' });
-
-      var clouds = L.OWM.clouds({showLegend: false, opacity: 0.5, appId: 'YOUR_OWN_APPID'});
-      var city = L.OWM.current({intervall: 15, lang: 'de'});
-
-      var map = L.map('map', { center: new L.LatLng(51.5, 10), zoom: 10, layers: [osm] });
-      var baseMaps = { "OSM Standard": osm };
-      var overlayMaps = { "Clouds": clouds, "Cities": city };
-      var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+    <script>
+      //CallAPI()
     </script>
+
+    <div id="windy"></div>
   </body>
 </html>
