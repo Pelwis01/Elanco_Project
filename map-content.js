@@ -12,13 +12,30 @@ document.addEventListener('DOMContentLoaded', function() {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Add a marker
-        L.marker([51.505, -0.09]).addTo(map)
-            .bindPopup('A pretty marker.<br> Easily customizable.')
-            .openPopup();
 
-        L.marker([51.51, -0.1]).addTo(map)
-            .bindPopup('Another marker.<br> With more info.')
-            .openPopup();
+    // 📊 Placeholder heatmap data:
+    var heatData = {
+        max: 1,
+        data: [
+            
+            { lat: 53.3811, lng: -1.4701, value: 1.0 }
+        ]        
+    };
+    
+    // ⚙️ Heatmap config
+    var cfg = {
+        radius: 0.3,
+        scaleRadius: true, // 🔎 Scaling based on map zoom level
+        useLocalExtrema: false,
+        latField: "lat",
+        lngField: "lng",
+        valueField: "value"
+    };
 
-    });
+    // 🔥 Initialise heatmap overlay using config
+    var heatmapLayer = new HeatmapOverlay(cfg);
+    
+    // 📌 Set heatmap data and add to map
+    heatmapLayer.setData(heatData);
+    heatmapLayer.addTo(map);
+});
