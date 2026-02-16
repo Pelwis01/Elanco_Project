@@ -22,18 +22,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("The Coordinates are : ", values);
     fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${values.lat}&longitude=${values.lng}&current=rain,temperature_2m,precipitation,precipitation_probability&models=ukmo_uk_deterministic_2km,ukmo_global_deterministic_10km&forecast_days=1`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${values.lat}&longitude=${values.lng}&hourly=rain,temperature_2m,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm,soil_moisture_9_to_27cm,soil_moisture_27_to_81cm&forecast_days=1`,
     )
       .then((Response) => Response.json())
       .then((object) => {
         console.log(object);
-        console.log("The Results of the Fetch Are:  ", object.current);
-        console.log("Rain:  ", object.current.rain);
-        console.log("Temperature:  ", object.current.temperature_2m);
+        console.log("The Results of the Fetch Are:  ", object.hourly);
+        console.log("Rain:  ", object.hourly.rain[0]);
+        console.log("Temperature:  ", object.hourly.temperature_2m[0]);
+        console.log(
+          "Soil Moisture 1 to 3cm: ",
+          object.hourly.soil_moisture_1_to_3cm[0],
+        );
 
         let result = getAllParasiteRisks(
-          object.current.temperature_2m,
-          object.current.rain * 100,
+          object.hourly.temperature_2m[0],
+          object.hourly.rain[0] * 100,
         );
         console.log(result);
       });
