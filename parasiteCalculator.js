@@ -103,3 +103,23 @@ function coccidiaRisk(temp, rainfall) {
 
     return Math.round(risk);
 }
+// Test Section while not got the API
+
+// test value examples
+let testTemp = 15;        // °C
+let testRainfall = 30;    // mm
+
+console.log("Testing with:");
+console.log("Temperature:", testTemp + "°C");
+console.log("Rainfall:", testRainfall + "mm\n");
+
+
+let results = getAllParasiteRisks(testTemp, testRainfall);
+
+// Display results for all
+console.log("Parasite Risk Results (%):");
+console.log("Gut Worm:", results.gutWorm + "%");
+console.log("Lungworm:", results.lungworm + "%");
+console.log("Liver Fluke:", results.liverFluke + "%");
+console.log("Hair Worm:", results.hairWorm + "%");
+console.log("Coccidia:", results.coccidia + "%");
