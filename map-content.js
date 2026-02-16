@@ -15,20 +15,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 📊 Placeholder heatmap data:
     var heatData = {
-        max: 1,
+        max: 100,
         data: [
-            
-            { lat: 53.3811, lng: -1.4701, value: 1.0 }
+            { lat: 53.3811, lon: -1.4701, value: 100 }
         ]        
     };
     
     // ⚙️ Heatmap config
     var cfg = {
-        radius: 0.3,
+        radius: 0.2,
         scaleRadius: true, // 🔎 Scaling based on map zoom level
         useLocalExtrema: false,
         latField: "lat",
-        lngField: "lng",
+        lngField: "lon",
         valueField: "value"
     };
 
