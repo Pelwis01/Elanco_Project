@@ -14,7 +14,9 @@
     <!-- 🔥 Heatmap.js -->
     <script src="https://unpkg.com/heatmap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-    
+
+
+    <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
     
     <style>
