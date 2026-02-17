@@ -1,25 +1,19 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Index </title>
+<head>
+    
+</head>
+<body>
+    
+    <!-- ↪️ Redirect to home page immediately on load -->
+    <script>
+        window.onload = function() {
+            window.location.href = "home.php";
+        };
+    </script>
 
-    <!-- 🗺️ Leaflet -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- 🔥 Heatmap.js -->
-    <script src="https://unpkg.com/heatmap.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-
-    <script src="parasiteCalculator.js"></script>
-    <script src="map-content.js"></script>
-  </head>
-  <body>
-    <div id="map" style="height: 500px; width: 500px; margin-top: 20px"></div>
-  </body>
+</body>
 </html>
