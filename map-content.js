@@ -31,13 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Rain:  ", object.hourly.rain[0]);
         console.log("Temperature:  ", object.hourly.temperature_2m[0]);
         console.log(
-          "Soil Moisture 1 to 3cm: ",
-          object.hourly.soil_moisture_1_to_3cm[0],
+          "Soil Moisture 3 to 9cm: ",
+          object.hourly.soil_moisture_3_to_9cm[0]/0.5 * 100,
         );
 
         let result = getAllParasiteRisks(
           object.hourly.temperature_2m[0],
           object.hourly.rain[0] * 100,
+          object.hourly.soil_moisture_3_to_9cm[0] /0.5 * 100,
         );
         console.log(result);
       });
