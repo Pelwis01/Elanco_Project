@@ -23,26 +23,38 @@ document.addEventListener("DOMContentLoaded", function () {
 		"lngField": 'lng',
 		"valueField": 'value'
 	};
-	let lungwormCfg = { ...heatmapCfg };
 	let gutwormCfg = { ...heatmapCfg };
+  let lungwormCfg = { ...heatmapCfg };
+	let liverflukeCfg = { ...heatmapCfg };
+  let hairwormCfg = { ...heatmapCfg };
+  let coccidiaCfg = { ...heatmapCfg };
 	let allCfg = { ...heatmapCfg };
 
 	// Unique objects for every radio button option
-	let lungwormLayer = new HeatmapOverlay(lungwormCfg);
 	let gutwormLayer = new HeatmapOverlay(gutwormCfg);
+  let lungwormLayer = new HeatmapOverlay(lungwormCfg);
+	let liverflukeLayer = new HeatmapOverlay(liverflukeCfg);
+  let hairwormLayer = new HeatmapOverlay(hairwormCfg);
+  let coccidiaLayer = new HeatmapOverlay(coccidiaCfg);
 	let allLayer = new HeatmapOverlay(allCfg);
 		
 	// Assign datasets
-	const lungwormData = [{ lat: 53.3811, lng: -1.4701, value: 1 }];
 	const gutwormData = [{ lat: 58.3811, lng: -3.4701, value: 1 }];
+  const lungwormData = [{ lat: 53.3811, lng: -1.4701, value: 1 }];
+	const liverflukeData = [{ lat: 54.3811, lng: -2.4701, value: 1 }];
+  const hairwormData = [{ lat: 56.3811, lng: -4.4701, value: 1 }];
+  const coccidiaData = [{ lat: 57.3811, lng: -5.4701, value: 1 }];
 	
+  gutwormLayer.setData({ max: 1, data: gutwormData });
 	lungwormLayer.setData({ max: 1, data: lungwormData });
-	gutwormLayer.setData({ max: 1, data: gutwormData });
+	liverflukeLayer.setData({ max: 1, data: liverflukeData });
+  hairwormLayer.setData({ max: 1, data: hairwormData });
+  coccidiaLayer.setData({ max: 1, data: coccidiaData });
 
 	// Combined layer with both data sets
 	allLayer.setData({ 
 		max: 1, 
-		data: [...lungwormData, ...gutwormData] 
+		data: [...gutwormData, ...lungwormData, ...liverflukeData, ...hairwormData, ...coccidiaData] 
 	});
 
 	// Radio buttons for parasite selection
@@ -50,6 +62,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		"None": L.layerGroup(), 
 		"Gut Worms": gutwormLayer, 
 		"Lungworm": lungwormLayer, 
+    "Liver Fluke": liverflukeLayer,
+    "Hair Worm": hairwormLayer,
+    "Coccidia": coccidiaLayer,
 		"All": allLayer
 	};
 
