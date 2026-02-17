@@ -4,13 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!mapContainer) return;
   // Initialize the map
 
-  let map = L.map("map").setView([54.5, -3.5], 6); // Coordinates for the UK
-
-  // Add a tile layer (OpenStreetMap)
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  let osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
+    attribution: '© OpenStreetMap'
+  });
+
+  let map = L.map("map", {
+    center: [54.5, -3.5],
+    zoom: 6,
+    layers: [osm]
+  });
 
   // On Map Click event to calculate the Rainfall and Temperature for the chosen location to work out the Parasite Risk
   map.on("click", (e) => {
@@ -49,6 +52,11 @@ document.addEventListener("DOMContentLoaded", function () {
     data: [{ lat: 53.3811, lng: -1.4701, value: 3 }],
   };
 
+  let gutwormheat = {
+    max: 1,
+    data: [{ lat: 58.3811, lng: -3.4701, value: 60 }],
+  };
+
   // ⚙️ Heatmap config
   let cfg = {
     radius: 0.1,
@@ -61,8 +69,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 🔥 Initialise heatmap overlay using config
   let heatmapLayer = new HeatmapOverlay(cfg);
-
+  console.log(heatmapLayer);
+  let gutwormlayer = new HeatmapOverlay(cfg);
+  console.log(gutwormlayer);
   // 📌 Set heatmap data and add to map
   heatmapLayer.setData(heatData);
-  heatmapLayer.addTo(map);
+  console.log(heatmapLayer);
+  gutwormlayer.setData(gutwormheat);
+  console.log(gutwormlayer);
+  
+
+
+let baselayers = {
+    
+    "Gut Worms": gutwormlayer,
+    "Lungworm": heatmapLayer,
+  };
+
+  let overlays = {
+    "OpenStreetMap": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors",
+    }),
+  };
+
+  L.control.layers(baselayers, overlays).addTo(map);
+
 });
