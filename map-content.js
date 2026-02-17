@@ -35,11 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Assign datasets
 	const lungwormData = [{ lat: 53.3811, lng: -1.4701, value: 1 }];
 	const gutwormData = [{ lat: 58.3811, lng: -3.4701, value: 1 }];
-
-    console.log(e);
-    let values = {
-      lat: e.latlng.lat,
-      lng: e.latlng.lng,
+	
 	lungwormLayer.setData({ max: 1, data: lungwormData });
 	gutwormLayer.setData({ max: 1, data: gutwormData });
 
