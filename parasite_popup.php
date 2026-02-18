@@ -1,7 +1,7 @@
 <?php
 // we will have to replace this with our real results
 $results = [
-    "gutWorm" => 68,
+    "gutworm" => 68,
     "lungworm" => 82,
     "liverFluke" => 91,
     "hairWorm" => 40,
@@ -16,8 +16,8 @@ function getPopupData($parasite, $risk) {
     if ($risk >= 75) {
         $class = "high";
         switch($parasite) {
-            case "gutWorm":
-                $message = "🪱 Gut worms are throwing a pasture party!";
+            case "gutworm":
+                $message = "🪱 Gutworms are throwing a pasture party!";
                 break;
             case "lungworm":
                 $message = "🐛 It's a fantastic day to be a lungworm! Bring your snorkel!";

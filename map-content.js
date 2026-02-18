@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Temperature": layers.temp,
         "Precipitation": layers.rain,
         "Lungworm Risk": layers.lungworm,
-        "Gut Worm Risk": layers.gutworm,
+        "Gutworm Risk": layers.gutworm,
         "Liver Fluke Risk": layers.liverfluke,
         "Hairworm Risk": layers.hairworm,
         "Coccidia Risk": layers.coccidia,
@@ -110,10 +110,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 
                 // Risk calculations
                 let result = getAllParasiteRisks(temp, rain * 100, 0); // Soil moisture not available in batch data, set to 0
-                let combinedRisk = Math.max(result.lungworm, result.gutWorm, result.liverFluke, result.hairWorm, result.coccidia);
+                let combinedRisk = Math.max(result.lungworm, result.gutworm, result.liverFluke, result.hairWorm, result.coccidia);
                 
                 if (result.lungworm > 0) points.lungworm.push({ lat, lng, value: result.lungworm });
-                if (result.gutWorm > 0) points.gutworm.push({ lat, lng, value: result.gutWorm });
+                if (result.gutworm > 0) points.gutworm.push({ lat, lng, value: result.gutworm });
                 if (result.liverFluke > 0) points.liverfluke.push({ lat, lng, value: result.liverFluke });
                 if (result.hairWorm > 0) points.hairworm.push({ lat, lng, value: result.hairWorm });
                 if (result.coccidia > 0) points.coccidia.push({ lat, lng, value: result.coccidia });
