@@ -5,7 +5,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/Elanco/images/favicon.png"> <!-- TBA? - Favicon -->
+    <link rel="shortcut icon" href="/Elanco_Project/images/favicon.png">
     
     <!-- 🗺️ Leaflet -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
