@@ -159,16 +159,16 @@
             <section id="info" class="sidebar-section">
                 <h2>Additional Information</h2>
                 <div class="info-box">
-                    <h3><img src="../thermometer.png" class="info-icon" alt="Thermometer icon">Temperature</h3>
+                    <h3><img src="./images/thermometer.png" class="info-icon" alt="Thermometer icon">Temperature</h3>
                 </div>
                 <div class="info-box">
-                    <h3><img src="../rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
+                    <h3><img src="./images/rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
                 </div>
                 <div class="info-box">
-                    <h3><img src="../dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
+                    <h3><img src="./images/dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
                 </div>
                 <div class="info-box">
-                    <h3><img src="../cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
+                    <h3><img src="./images/cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
                 </div>
             </section>
         </aside>
