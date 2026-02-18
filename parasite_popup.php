@@ -23,7 +23,7 @@ function getPopupData($parasite, $risk) {
                 $message = "🐛 It's a fantastic day to be a lungworm! Bring your snorkel!";
                 break;
             case "liverFluke":
-                $message = "🐌 Liver flukes are loving these swamp vibes!";
+                $message = "🐌 Liver flukes are loving these swampy conditions!";
                 break;
             case "hairWorm":
                 $message = "🧵 Hair worms are thriving underground!";
@@ -35,10 +35,10 @@ function getPopupData($parasite, $risk) {
 
     } elseif ($risk >= 50) {
         $class = "medium";
-        $message = "⚠ Moderate risk — parasites are watching closely.";
+        $message = "⚠ Moderate risk — Oh no, parasites are watching closely.";
     } else {
         $class = "low";
-        $message = "☀ Low risk — parasites are having a rough day!";
+        $message = "☀ Low risk — parasites are having a rough day today!";
     }
 
     return [$class, $message];
