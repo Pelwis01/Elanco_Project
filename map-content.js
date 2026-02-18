@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", async function () {
        🎨 Layer config
     \* =========================== */
     const baseCfg = {
-        radius: 0.8,
-        maxOpacity: 0.85,
+        radius: 1,
+        maxOpacity: 0.8,
         scaleRadius: true,
         useLocalExtrema: false,
         latField: 'lat',
@@ -62,10 +62,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     /* =========================== *\
        🌩️ Data handling
     \* =========================== */
-    const gridPoints = generateUKGrid(0.5);
-
     try {
         // Retrieve data (cached or new)
+        const gridPoints = await getLandPoints();
         const weatherData = await getCachedWeather(gridPoints);
 
         const points = {
@@ -77,23 +76,38 @@ document.addEventListener("DOMContentLoaded", async function () {
         };
 
         // Process each grid point
-        (Array.isArray(weatherData) ? weatherData : [weatherData]).forEach(w => {
-            if (!w.hourly) return;
-
-            const rain = w.hourly.precipitation ? w.hourly.precipitation[0] : 0;
-            const temp = w.hourly.temperature_2m ? w.hourly.temperature_2m[0] : 0;
-
-            points.temp.push({ lat: w.latitude, lng: w.longitude, value: temp });
-            if (rain > 0) points.rain.push({ lat: w.latitude, lng: w.longitude, value: rain });
-
-            // Risk calculations
-            const lRisk = calculateLungwormRisk(temp, rain);
-            const gRisk = calculateGutwormRisk(temp, rain);
-            const cRisk = Math.max(lRisk, gRisk);
-
-            if (lRisk > 0) points.lungworm.push({ lat: w.latitude, lng: w.longitude, value: lRisk });
-            if (gRisk > 0) points.gutworm.push({ lat: w.latitude, lng: w.longitude, value: gRisk });
-            if (cRisk > 0) points.combined.push({ lat: w.latitude, lng: w.longitude, value: cRisk });
+        weatherData.forEach(batch => {
+            if (!batch.hourly) return;
+            
+            const lats = Array.isArray(batch.latitude) ? batch.latitude : [batch.latitude];
+            const lngs = Array.isArray(batch.longitude) ? batch.longitude : [batch.longitude];
+            
+            lats.forEach((lat, i) => {
+                const lng = lngs[i];
+                
+                const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
+                    ? batch.hourly.temperature_2m[i]
+                    : batch.hourly.temperature_2m;
+                    
+                const rainArray = Array.isArray(batch.hourly.precipitation[0])
+                    ? batch.hourly.precipitation[i]
+                    : batch.hourly.precipitation;
+                    
+                const temp = tempArray[0] ?? 0;
+                const rain = rainArray[0] ?? 0;
+                
+                points.temp.push({ lat, lng, value: temp });
+                if (rain > 0) points.rain.push({ lat, lng, value: rain });
+                
+                // Calculate risks using placeholder functions
+                const lRisk = calculateLungwormRisk(temp, rain);
+                const gRisk = calculateGutwormRisk(temp, rain);
+                const cRisk = Math.max(lRisk, gRisk);
+                
+                if (lRisk > 0) points.lungworm.push({ lat, lng, value: lRisk });
+                if (gRisk > 0) points.gutworm.push({ lat, lng, value: gRisk });
+                if (cRisk > 0) points.combined.push({ lat, lng, value: cRisk });
+            });
         });
 
         // Update layers
@@ -120,19 +134,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 \* =========================== */
 
 // Create UK-based grid
-function generateUKGrid(step) {
-    const points = [];
-    for (let lat = 49; lat <= 61; lat += step) {
-        for (let lon = -11; lon <= 2; lon += step) {
-            points.push({ lat, lon });
-        }
-    }
-    return points;
+async function getLandPoints() {
+    const res = await fetch("data/uk_land_grid.json");
+    return await res.json();
 }
 
 // Retrieve data (cached or new)
 async function getCachedWeather(points) {
-    const CACHE_KEY = "uk_weather_cache_v2"; // NB: change each update to force refresh for outdated cache
+    const CACHE_KEY = "uk_weather_cache_v3"; // NB: change each update to force refresh for outdated cache
     const EXPIRY = 60 * 60 * 1000; // 1 hour
 
     // Check cache
@@ -152,7 +161,7 @@ async function getCachedWeather(points) {
     for (let i = 0; i < points.length; i += BATCH_SIZE) {
         const chunk = points.slice(i, i + BATCH_SIZE);
         const latStr = chunk.map(p => p.lat).join(",");
-        const lonStr = chunk.map(p => p.lon).join(",");
+        const lonStr = chunk.map(p => p.lng).join(",");
         
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m&forecast_days=1`;
         
@@ -191,14 +200,14 @@ function handleMapClick(e) {
         .catch(err => console.error("Reverse geocoding failed", err));
 
     // Fetch local soil data (separate to save bandwidth)
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=rain,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`)
         .then(res => res.json())
         .then(data => {
             const h = data.hourly;
             const temp = h.temperature_2m[0];
-            const rain = h.rain[0] * 100; // Scaling for risk calc
+            const rain = h.precipitation[0] * 100; // Scaling for risk calc
             const soil = (h.soil_moisture_3_to_9cm[0] || 0) / 0.5 * 100;
-
+            
             console.log(`🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`);
             
             // Call external risk function if it exists
