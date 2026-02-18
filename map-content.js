@@ -43,12 +43,14 @@
           );
           console.log(result);
             
-          let popup = L.popup();
+          
 
           function onMapClick(e) {
-          popup
+          L.popup({
+            className: "custom-popup",
+          })
               .setLatLng(e.latlng)
-              .setContent('Parasite Risk: Coccidia ' + result['coccidia'] + '%  ')
+              .setContent(result['coccidia'] + '%')
               .openOn(map);
           }
           
