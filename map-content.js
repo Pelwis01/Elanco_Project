@@ -181,6 +181,15 @@ function handleMapClick(e) {
     const { lat, lng } = e.latlng;
     console.log(`📍 Clicked: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
 
+    // Fetch place name (reverse geocoding)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+            const place = data.address ? (data.address.city || data.address.town || data.address.village || "Unknown") : "Unknown";
+            console.log(`📌 Location: ${place}`);
+        })
+        .catch(err => console.error("Reverse geocoding failed", err));
+
     // Fetch local soil data (separate to save bandwidth)
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=rain,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`)
         .then(res => res.json())
