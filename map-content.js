@@ -133,13 +133,13 @@ document.addEventListener("DOMContentLoaded", async function () {
           rain * 100,
           (soil_moisture / 0.5) * 100,
         );
-        let combinedRisk = Math.max(
-          result.lungworm,
-          result.gutworm,
-          result.liverfluke,
-          result.hairworm,
-          result.coccidia,
-        );
+        let combinedRisk =
+          (result.lungworm +
+            result.gutworm +
+            result.liverfluke +
+            result.hairworm +
+            result.coccidia) /
+          5;
 
         if (result.lungworm > 0)
           points.lungworm.push({ lat, lng, value: result.lungworm });
@@ -283,23 +283,25 @@ function handleMapClick(e, map, layers) {
         );
         let content = null;
         if (activelayer === "temp") {
-          content = temp;
+          content = temp + "C";
         } else if (activelayer === "rain") {
-          content = rain;
+          content = rain + "mm";
         } else if (activelayer === "combined") {
           content =
             Object.values(result).reduce(
               (total, current) => total + current,
               0,
-            ) / Object.values(result).length;
+            ) /
+              Object.values(result).length +
+            "%";
         } else {
-          content = result[activelayer];
+          content = result[activelayer] + "%";
         }
         L.popup({
           className: "custom-popup",
         })
           .setLatLng(e.latlng)
-          .setContent(content + "%")
+          .setContent(content)
           .openOn(map);
       }
     })

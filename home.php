@@ -17,110 +17,11 @@
     <link rel="stylesheet" href="styles.css"/>
     <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
-    
-    <style>
-        :root { --navbar-height: 56px; }
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #36383b;
-            color: #000000;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        /*space for fixed navbar */
-        main {
-            padding-top: var(--navbar-height);
-            display: flex;
-            height: calc(100vh - var(--navbar-height));
-            gap: 0;
-        }
-
-        /*map takes 2/3 width */
-        #map {
-            flex: 2;
-            background: #e6e6e6;
-            overflow: hidden;
-        }
-
-        /*sidebar takes 1/3 width */
-        .sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #f5f5f5;
-            border-left: 1px solid #ccc;
-            overflow: hidden;
-        }
-
-        .sidebar-section {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            border-bottom: 1px solid #ddd;
-            background: #fff;
-        }
-
-        .sidebar-section:last-child {
-            border-bottom: none;
-        }
-
-        .sidebar-section h2 {
-            margin-top: 0;
-            margin-bottom: 12px;
-            font-size: 18px;
-            color: #003366;
-        }
-
-        .sidebar-section p {
-            margin: 0 0 12px 0;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-        }
-        .about-box {
-            border: 1px solid #cce0ff;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            padding: 14px 16px 10px 16px;
-            background: #f8fbff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        }
-        .about-box h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #003366;
-            font-weight: bold;
-        }
-        .info-box {
-            border: 1px solid #cce0ff;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            padding: 14px 16px 10px 16px;
-            background: #f8fbff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        }
-        .info-box h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #003366;
-            font-weight: bold;
-        }
-        .info-icon {
-            width: 28px;
-            height: 28px;
-            vertical-align: middle;
-            margin-right: 8px;
-            margin-bottom: 4px;
-        }
-        
-    </style>
  
+    <title>Elanco Parasite Risk Map</title>
 </head>
 <body>
-    <?php include("navbar.php"); ?>
+    <?php include_once "navbar.php"; ?>
 
     <main>
         <!-- map area (2/3 width) -->
