@@ -24,12 +24,13 @@
 }
 
 .leaflet-popup-tip-container {
-  width: 30px;
-  height: 15px;
+    width: 35px;
+    height: 15px;
 }
 
 .leaflet-popup-tip {
     width: 22px;
     height: 16px;
+    box-shadow: none;
     background: rgba(252, 252, 252, 0.5);
 }

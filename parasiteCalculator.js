@@ -6,15 +6,15 @@
 function getAllParasiteRisks(temp, rainfall, soilMoisture) {
 
     return {
-        gutWorm: gutWormRisk(temp, rainfall, soilMoisture),
+        gutworm: gutwormRisk(temp, rainfall, soilMoisture),
         lungworm: lungwormRisk(temp, rainfall, soilMoisture),
-        liverFluke: liverFlukeRisk(temp, rainfall, soilMoisture),
-        hairWorm: hairWormRisk(temp, rainfall, soilMoisture),
+        liverfluke: liverflukeRisk(temp, rainfall, soilMoisture),
+        hairworm: hairwormRisk(temp, rainfall, soilMoisture),
         coccidia: coccidiaRisk(temp, rainfall, soilMoisture)
     };
 }
 
-function gutWormRisk(temp, rainfall, soilMoisture) {
+function gutwormRisk(temp, rainfall, soilMoisture) {
     // gut worms can survive in a wider range of conditions, but thrive in moderate temperatures and moisture, so we give temperature a slightly higher weighting than rainfall
     // Temperature effect (0–100)
     let tempScore = 0;
@@ -57,7 +57,7 @@ function lungwormRisk(temp, rainfall, soilMoisture) {
 
     return Math.round(risk);
 }
-function liverFlukeRisk(temp, rainfall, soilMoisture) {
+function liverflukeRisk(temp, rainfall, soilMoisture) {
     // liver fluke is highly dependent on wet conditions for its lifecycle, so we give rainfall a much stronger weighting than temperature
     let tempScore = 0;
     if (temp < 5) tempScore = 10;
@@ -66,7 +66,7 @@ function liverFlukeRisk(temp, rainfall, soilMoisture) {
     else tempScore = 50;
 
     // Multiplied by 3 because liver fluke is highly dependent on wet conditions for its lifecycle
-    // Liverfluke risk can skyrocket with even moderate rainfall, hence the heavy weighting
+    // liverfluke risk can skyrocket with even moderate rainfall, hence the heavy weighting
     let rainScore = Math.min(rainfall * 3, 100); // heavy weighting
 
     let soilScore = soilMoisture;
@@ -76,7 +76,7 @@ function liverFlukeRisk(temp, rainfall, soilMoisture) {
 
     return Math.round(risk);
 }
-function hairWormRisk(temp, rainfall, soilMoisture) {
+function hairwormRisk(temp, rainfall, soilMoisture) {
     // hairworms can survive in a wider range of conditions but thrive in moderate temperatures and moisture, so we give temperature a higher weighting than rainfall
     let tempScore = 0;
     if (temp < 12) tempScore = 5;

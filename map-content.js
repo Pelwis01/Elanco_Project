@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
   const map = L.map("map", {
-    center: [54.5, -4.0],
+    center: [54.5, -4],
     zoom: 6,
     layers: [osm],
   });
@@ -231,7 +231,7 @@ async function getCachedWeather(points) {
     localStorage.setItem(CACHE_KEY, JSON.stringify(allResults));
     localStorage.setItem(CACHE_KEY + "_ts", Date.now());
   } catch (e) {
-    console.warn("⚠️ Cache full.");
+    console.warn(`⚠️ Cache full: ${e.message}`);
   }
 
   return allResults;
@@ -266,7 +266,7 @@ function handleMapClick(e, map, layers) {
     .then((data) => {
       const h = data.hourly;
       const temp = h.temperature_2m[0];
-      const rain = h.precipitation[0] * 100; // Scaling for risk calc
+      const rain = h.precipitation[0];
       const soil = ((h.soil_moisture_3_to_9cm[0] || 0) / 0.5) * 100;
 
       console.log(
@@ -275,17 +275,31 @@ function handleMapClick(e, map, layers) {
 
       // Call external risk function if it exists
       if (typeof getAllParasiteRisks === "function") {
-        const result = getAllParasiteRisks(temp, rain, soil);
+        const result = getAllParasiteRisks(temp, rain * 100, soil);
         console.log("📊 Risk Result:", result);
+
+        let activelayer = Object.keys(layers).find((layer) =>
+          map.hasLayer(layers[layer]),
+        );
+        let content = null;
+        if (activelayer === "temp") {
+          content = temp;
+        } else if (activelayer === "rain") {
+          content = rain;
+        } else if (activelayer === "combined") {
+          content =
+            Object.values(result).reduce(
+              (total, current) => total + current,
+              0,
+            ) / Object.values(result).length;
+        } else {
+          content = result[activelayer];
+        }
         L.popup({
           className: "custom-popup",
         })
           .setLatLng(e.latlng)
-          .setContent(
-            result[
-              Object.keys(layers).find((layer) => map.hasLayer(layers[layer]))
-            ] + "%",
-          )
+          .setContent(content + "%")
           .openOn(map);
       }
     })
