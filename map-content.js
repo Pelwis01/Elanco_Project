@@ -43,6 +43,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         rain: createLayer(rainGrad),
         lungworm: createLayer(riskGrad),
         gutworm: createLayer(riskGrad),
+        liverfluke: createLayer(riskGrad),
+        hairworm: createLayer(riskGrad),
+        coccidia: createLayer(riskGrad),
         combined: createLayer(riskGrad) 
     };
 
@@ -53,6 +56,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Precipitation": layers.rain,
         "Lungworm Risk": layers.lungworm,
         "Gut Worm Risk": layers.gutworm,
+        "Liver Fluke Risk": layers.liverfluke,
+        "Hairworm Risk": layers.hairworm,
+        "Coccidia Risk": layers.coccidia,
         "Combined Risk (Max)": layers.combined
     };
 
@@ -72,10 +78,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             rain: [],
             lungworm: [],
             gutworm: [],
+            liverfluke: [],
+            hairworm: [],
+            coccidia: [],
             combined: []
         };
-
+        
         // Process each grid point
+        (Array.isArray(weatherData) ? weatherData : [weatherData]).forEach(w => {
+            if (!w.hourly) return;
         weatherData.forEach(batch => {
             if (!batch.hourly) return;
             
@@ -96,17 +107,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const temp = tempArray[0] ?? 0;
                 const rain = rainArray[0] ?? 0;
                 
-                points.temp.push({ lat, lng, value: temp });
-                if (rain > 0) points.rain.push({ lat, lng, value: rain });
+                points.temp.push({ lat: w.latitude, lng: w.longitude, value: temp });
+                if (rain > 0) points.rain.push({ lat: w.latitude, lng: w.longitude, value: rain });
                 
-                // Calculate risks using placeholder functions
-                const lRisk = calculateLungwormRisk(temp, rain);
-                const gRisk = calculateGutwormRisk(temp, rain);
-                const cRisk = Math.max(lRisk, gRisk);
+                // Risk calculations
+                let result = getAllParasiteRisks(temp, rain * 100, 0); // Soil moisture not available in batch data, set to 0
+                let combinedRisk = Math.max(result.lungworm, result.gutWorm, result.liverFluke, result.hairWorm, result.coccidia);
                 
-                if (lRisk > 0) points.lungworm.push({ lat, lng, value: lRisk });
-                if (gRisk > 0) points.gutworm.push({ lat, lng, value: gRisk });
-                if (cRisk > 0) points.combined.push({ lat, lng, value: cRisk });
+                if (result.lungworm > 0) points.lungworm.push({ lat: w.latitude, lng: w.longitude, value: result.lungworm });
+                if (result.gutWorm > 0) points.gutworm.push({ lat: w.latitude, lng: w.longitude, value: result.gutWorm });
+                if (result.liverFluke > 0) points.liverfluke.push({ lat: w.latitude, lng: w.longitude, value: result.liverFluke });
+                if (result.hairWorm > 0) points.hairworm.push({ lat: w.latitude, lng: w.longitude, value: result.hairWorm });
+                if (result.coccidia > 0) points.coccidia.push({ lat: w.latitude, lng: w.longitude, value: result.coccidia });
+                if (combinedRisk > 0) points.combined.push({ lat: w.latitude, lng: w.longitude, value: combinedRisk });
             });
         });
 
@@ -115,6 +128,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         layers.rain.setData({ max: 5, data: points.rain });
         layers.lungworm.setData({ max: 100, data: points.lungworm });
         layers.gutworm.setData({ max: 100, data: points.gutworm });
+        layers.liverfluke.setData({ max: 100, data: points.liverfluke });
+        layers.hairworm.setData({ max: 100, data: points.hairworm });
+        layers.coccidia.setData({ max: 100, data: points.coccidia });
         layers.combined.setData({ max: 100, data: points.combined });
 
         console.log(`✅ Map updated with ${points.temp.length} grid points.`);
@@ -232,3 +248,4 @@ function calculateGutwormRisk(temp, rain) {
     if (temp > 8) return 45;
     return 0;
 }
+
