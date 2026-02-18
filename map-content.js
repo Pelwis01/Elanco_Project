@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         combined: createLayer(riskGrad) 
     };
 
-    // Add map controls
+    // 🕹️ Map controls
     const layerControl = {
         "None": L.layerGroup(),
         "Temperature": layers.temp,
@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 // Create UK-based grid
 function generateUKGrid(step) {
     const points = [];
-    for (let lat = 48; lat <= 61; lat += step) {
+    for (let lat = 49; lat <= 61; lat += step) {
         for (let lon = -11; lon <= 2; lon += step) {
             points.push({ lat, lon });
         }
