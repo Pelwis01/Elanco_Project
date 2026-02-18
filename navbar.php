@@ -44,7 +44,6 @@
 <header class="navbar">
     <div class="navbar-left">
         <img class="navbar-logo" src="./ElancoLogo.png" alt="Elanco Logo">
-        <strong style="letter-spacing:.6px">Elanco</strong>
     </div>
 
     <div class="nav-actions">
