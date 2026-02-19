@@ -2,7 +2,6 @@
 // Returns risk score 0–100 where higher is more risk
 // All functions use similar logic but with different thresholds and weightings based on parasite biology
 // The multiplier for rainfall is adjusted based on how much the parasite depends on moisture
-
 function getAllParasiteRisks(temp, rainfall, soilMoisture) {
 
     return {
@@ -10,8 +9,34 @@ function getAllParasiteRisks(temp, rainfall, soilMoisture) {
         lungworm: lungwormRisk(temp, rainfall, soilMoisture),
         liverfluke: liverflukeRisk(temp, rainfall, soilMoisture),
         hairworm: hairwormRisk(temp, rainfall, soilMoisture),
-        coccidia: coccidiaRisk(temp, rainfall, soilMoisture)
+        coccidia: coccidiaRisk(temp, rainfall, soilMoisture),
+        tick: tickRisk(temp, rainfall, soilMoisture) 
     };
+}
+
+function tickRisk(temp, rainfall, soilMoisture) {
+    // Ixodes ricinus (sheep tick) prefers cool-mild temperatures and humid conditions.
+    // Soil moisture is more important than rainfall.
+    // Risk drops in very hot or very dry weather.
+
+    let tempScore = 0;
+
+    if (temp < 2) tempScore = 5;        // too cold for activity
+    else if (temp < 8) tempScore = 60;  // becoming active
+    else if (temp < 18) tempScore = 95; // peak activity range
+    else if (temp < 25) tempScore = 70; 
+    else tempScore = 30;                // too hot
+
+    // Rainfall less important than humidity
+    let rainScore = Math.min(rainfall * 1.5, 100);
+
+    // Soil moisture very important for survival
+    let soilScore = soilMoisture;
+
+    // Temp and soil more important
+    let risk = (tempScore * 0.4) + (rainScore * 0.2) + (soilScore * 0.4);
+
+    return Math.round(risk);
 }
 
 function gutwormRisk(temp, rainfall, soilMoisture) {
