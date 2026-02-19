@@ -71,7 +71,7 @@
                     <p>Liver Fluke: <span id="risk-liverfluke">—</span>%</p>
                     <p>Hair Worm:   <span id="risk-hairworm">—</span>%</p>
                     <p>Coccidia:    <span id="risk-coccidia">—</span>%</p>
-                    <p>Tick:        <span id="risk-tick">—</span>%</p>
+                    <p>Castor Bean Tick:        <span id="risk-tick">—</span>%</p>
                 </div>
                 
                 <h2> Additional Information </h2>
@@ -117,8 +117,8 @@
                     <p>Coccidia are protozoan parasites that multiply rapidly in warm, moist environments, especially where stocking density is high. Moisture allows eggs to survive and sporulate, making them infective. Temperature strongly affects how quickly sporulation occurs. Because both warmth and moisture are critical, temperature and soil moisture are weighted similarly, with rainfall contributing indirectly by increasing overall dampness.</p>
                 </div>
                 <div class="about-box" id = "tick">
-                    <h3>Ticks</h3>
-                    <p>Ticks are external parasites that thrive in warm, humid environments with plenty of vegetation. They require a host to complete their lifecycle, and their activity is strongly influenced by temperature and humidity. Warm temperatures increase tick metabolism and reproduction, while high humidity prevents desiccation. Therefore, temperature and soil moisture are heavily weighted in the risk calculation, with rainfall contributing to overall humidity levels.</p>
+                    <h3>Castor Bean Ticks</h3>
+                    <p>The Castor Bean tick, Ixodes Ricinus, is one of the most common tick species affecting cattle in the UK and across Europe. It is a three-host tick, meaning it feeds on different animals at each stage of its life cycle (larva, nymph, and adult). Castor bean ticks are most active in cool, humid conditions, particularly during spring and autumn, and are commonly found in rough pasture, woodland edges, and areas with dense vegetation. Unlike many internal parasites, they do not rely directly on rainfall but instead depend on environmental humidity to prevent desiccation.  </p>
             </section>
         </aside>
     </main>
