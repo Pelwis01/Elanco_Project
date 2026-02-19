@@ -13,7 +13,8 @@
     <!-- 🔥 Heatmap.js -->
     <script src="https://unpkg.com/heatmap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-    
+
+    <link rel="stylesheet" href="styles.css"/>
     <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
     
@@ -22,11 +23,12 @@
 
     <!-- 📛 Title -->
     <title> Elanco - Parasite Risk Map </title>
+  
 </head>
 
 <body>
-    <?php include("navbar.php"); ?>
-    
+    <?php include_once "navbar.php"; ?>
+
     <main>
         <!-- 🗺️ Map - left half -->
         <div id="map" role="application" aria-label="Interactive parasite risk map"></div>
