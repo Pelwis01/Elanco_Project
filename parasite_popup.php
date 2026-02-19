@@ -1,5 +1,5 @@
 <?php
-// example results can change to use our results
+// Example data unil we link the calculator
 $results = [
     "gutWorm" => 68,
     "lungworm" => 82,
@@ -8,7 +8,6 @@ $results = [
     "coccidia" => 55
 ];
 
-// Function to decide message + colour
 function getPopupData($parasite, $risk) {
 
     $message = "";
@@ -18,28 +17,28 @@ function getPopupData($parasite, $risk) {
         $class = "high";
         switch($parasite) {
             case "gutWorm":
-                $message = "🪱 Gut worms are throwing a pasture party!";
+                $message = "🪱 Pasture party time!";
                 break;
             case "lungworm":
-                $message = "🐛 It's a fantastic day to be a lungworm! Bring your snorkels!";
+                $message = "🐛 Great day to be a lungworm!";
                 break;
             case "liverFluke":
-                $message = "🐌 Liver flukes are loving these swampy conditioons!";
+                $message = "🐌 Swampy vibes activated!";
                 break;
             case "hairWorm":
-                $message = "🧵 Hair worms are thriving underground!";
+                $message = "🧵 Underground takeover!";
                 break;
             case "coccidia":
-                $message = "🦠 Coccidia are multiplying like crazy!";
+                $message = "🦠 Multiplying rapidly!";
                 break;
         }
 
     } elseif ($risk >= 50) {
         $class = "medium";
-        $message = "⚠ Moderate risk — parasites are watching closely.";
+        $message = "⚠ Oh no! Moderate risk today.";
     } else {
         $class = "low";
-        $message = "☀ Low risk — parasites are having a rough day!";
+        $message = "☀ Oh Yeah! Low risk conditions.";
     }
 
     return [$class, $message];
@@ -57,26 +56,25 @@ function getPopupData($parasite, $risk) {
             background-color: #f4f4f4;
         }
 
-        /* Notification container */
         .notification-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             z-index: 1000;
         }
 
-        /* Notification box */
         .notification {
-            width: 260px;
-            padding: 15px;
-            border-radius: 10px;
+            width: 220px;              
+            padding: 10px 12px;        
+            border-radius: 8px;
             color: white;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-            animation: slideIn 0.4s ease-out;
-            font-size: 14px;
+            box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+            font-size: 13px;           
+            line-height: 1.3;
+            animation: slideIn 0.3s ease-out;
         }
 
         .high { background-color: #d9534f; }
@@ -84,19 +82,20 @@ function getPopupData($parasite, $risk) {
         .low { background-color: #5cb85c; }
 
         .notification h4 {
-            margin: 0 0 5px 0;
-            font-size: 15px;
+            margin: 0 0 3px 0;
+            font-size: 13px;          
+            font-weight: bold;
         }
 
         .close-btn {
-            margin-top: 8px;
-            background: rgba(255,255,255,0.3);
+            margin-top: 5px;
+            background: rgba(255,255,255,0.25);
             border: none;
-            padding: 4px 8px;
-            border-radius: 5px;
+            padding: 3px 6px;
+            border-radius: 4px;
             color: white;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         @keyframes slideIn {
@@ -117,7 +116,7 @@ function getPopupData($parasite, $risk) {
     <div class="notification <?php echo $class; ?>">
         <h4><?php echo ucfirst($parasite); ?>: <?php echo $risk; ?>%</h4>
         <div><?php echo $message; ?></div>
-        <button class="close-btn" onclick="this.parentElement.style.display='none'">Close</button>
+        <button class="close-btn" onclick="this.parentElement.style.display='none'">x</button>
     </div>
 
 <?php endforeach; ?>
@@ -126,4 +125,5 @@ function getPopupData($parasite, $risk) {
 
 </body>
 </html>
+
 
