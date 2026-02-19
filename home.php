@@ -71,6 +71,7 @@
                     <p>Liver Fluke: <span id="risk-liverfluke">—</span>%</p>
                     <p>Hair Worm:   <span id="risk-hairworm">—</span>%</p>
                     <p>Coccidia:    <span id="risk-coccidia">—</span>%</p>
+                    <p>Tick:        <span id="risk-tick">—</span>%</p>
                 </div>
                 
                 <h2> Additional Information </h2>
@@ -95,26 +96,29 @@
             <!-- Parasite guide section -->
             <section id="about" class="sidebar-section">
                 <h2> Parasite Guide </h2>
-                <div class="about-box">
+                <div class="about-box" id = "gutworm">
                     <h3>Gutworm</h3>
                     <p>Gutworms prefer moderate temperatures and moist pasture conditions, because their eggs hatch and larvae develop in dung before migrating onto grass. Temperature is weighted strongly because development speeds up significantly in warm (but not hot) conditions. Rainfall and soil moisture are also important because larvae need moisture to survive and move onto herbage. However, extreme heat or very dry conditions reduce survival. Therefore, temperature has a slightly higher weighting, but moisture factors still contribute significantly to overall risk.</p>
                 </div>
-                <div class="about-box">
+                <div class="about-box" id = "lungworm">
                     <h3>Lungworm</h3>
                     <p>Lungworm larvae develop in dung and rely heavily on wet pasture conditions to spread. This parasite is strongly influenced by rainfall and soil moisture because moisture allows larvae to migrate from dung onto surrounding grass. Temperature is important but slightly less dominant than moisture. Cool, damp conditions often support outbreaks. For this reason, soil moisture and rainfall are weighted relatively high in the risk calculation.</p>
                 </div>
-                <div class="about-box">
+                <div class="about-box" id = "liverfluke">
                     <h3>Liver Fluke</h3>
                     <p>Liver fluke has a very specific environmental requirement because it depends on a mud snail intermediate host. These snails thrive in very wet, marshy, poorly drained areas. Therefore, soil moisture and rainfall are the most heavily weighted factors. Temperature is still relevant because warmer conditions speed up parasite development inside the snail, but without high moisture the lifecycle cannot continue. As a result, moisture has the strongest influence in the weighting.</p>
                 </div>
-                <div class="about-box">
+                <div class="about-box" id = "hairworm">
                     <h3>Hair Worms</h3>
                     <p>Hair worms lay eggs that are quite resistant to environmental factors. They can survive in soil for long periods but require moderate warmth and some moisture to become infective. They are less dependent on heavy rainfall compared to lungworm or liver fluke. Therefore, temperature and soil moisture are moderately weighted, while rainfall has a slightly smaller effect. Risk increases in warm, slightly damp pasture conditions.</p>
                 </div>
-                <div class="about-box">
+                <div class="about-box" id = "coccidia">
                     <h3>Coccidia</h3>
                     <p>Coccidia are protozoan parasites that multiply rapidly in warm, moist environments, especially where stocking density is high. Moisture allows eggs to survive and sporulate, making them infective. Temperature strongly affects how quickly sporulation occurs. Because both warmth and moisture are critical, temperature and soil moisture are weighted similarly, with rainfall contributing indirectly by increasing overall dampness.</p>
                 </div>
+                <div class="about-box" id = "tick">
+                    <h3>Ticks</h3>
+                    <p>Ticks are external parasites that thrive in warm, humid environments with plenty of vegetation. They require a host to complete their lifecycle, and their activity is strongly influenced by temperature and humidity. Warm temperatures increase tick metabolism and reproduction, while high humidity prevents desiccation. Therefore, temperature and soil moisture are heavily weighted in the risk calculation, with rainfall contributing to overall humidity levels.</p>
             </section>
         </aside>
     </main>

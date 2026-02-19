@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         liverfluke: createLayer(riskGrad),
         hairworm: createLayer(riskGrad),
         coccidia: createLayer(riskGrad),
+        tick: createLayer(riskGrad),
         combined: createLayer(riskGrad) 
     };
 
@@ -71,24 +72,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Liver Fluke Risk": layers.liverfluke,
         "Hairworm Risk": layers.hairworm,
         "Coccidia Risk": layers.coccidia,
+        "Tick Risk": layers.tick,
         "Combined Risk (Max)": layers.combined
     };
 
-            
-        /*Legend specific*/
-        let legend = L.control({ position: "bottomleft" });
+        
+    /*Legend specific*/
+    let legend = L.control({ position: "bottomleft" });
 
-        legend.onAdd = function(map) {
-        let div = L.DomUtil.create("div", "legend");
-        div.innerHTML += "<h4>Legend</h4>";
-        div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
-        div.innerHTML += '<i style="background: yellow"></i><span>30-70%</span><br>';
-        div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
-        return div;
-        };
-
-        legend.addTo(map);
-
+    legend.onAdd = function(map) {
+    let div = L.DomUtil.create("div", "legend");
+    div.innerHTML += "<h4>Legend</h4>";
+    div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
+    div.innerHTML += '<i style="background: yellow"></i><span>30-70%</span><br>';
+    div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
+    return div;
+    };
+    
+    legend.addTo(map);
 
     L.control.layers(layerControl, {}).addTo(map);
     layers.combined.addTo(map); // 🗺️ Default view - combined risk map
@@ -112,6 +113,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         liverfluke: [],
         hairworm: [],
         coccidia: [],
+        tick: [],
         combined: [],
         };
 
@@ -162,8 +164,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 result.gutworm +
                 result.liverfluke +
                 result.hairworm +
-                result.coccidia) /
-            5;
+                result.coccidia +
+                result.tick) /
+            6; 
 
             if (result.lungworm > 0)
             points.lungworm.push({ lat, lng, value: result.lungworm });
@@ -175,6 +178,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             points.hairworm.push({ lat, lng, value: result.hairworm });
             if (result.coccidia > 0)
             points.coccidia.push({ lat, lng, value: result.coccidia });
+            if (result.tick > 0)
+            points.tick.push({ lat, lng, value: result.tick });
             if (combinedRisk > 0)
             points.combined.push({ lat, lng, value: combinedRisk });
         });
@@ -188,6 +193,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         layers.liverfluke.setData({ max: 100, data: points.liverfluke });
         layers.hairworm.setData({ max: 100, data: points.hairworm });
         layers.coccidia.setData({ max: 100, data: points.coccidia });
+        layers.tick.setData({ max: 100, data: points.tick });
         layers.combined.setData({ max: 100, data: points.combined });
 
         console.log(`✅ Map updated with ${points.temp.length} grid points.`);
@@ -359,25 +365,31 @@ function handleMapClick(e, map, layers) {
             document.getElementById("risk-liverfluke").textContent = risks.liverfluke ?? 0;
             document.getElementById("risk-hairworm").textContent = risks.hairworm ?? 0;
             document.getElementById("risk-coccidia").textContent = risks.coccidia ?? 0;
+            document.getElementById("risk-tick").textContent = risks.tick ?? 0;
             
+
+
             let activelayer = Object.keys(layers).find((layer) =>
             map.hasLayer(layers[layer]),
             );
             let content = null;
             if (activelayer === "temp") {
-            content = temp + " C";
+            content = temp + "°C";
             } else if (activelayer === "rain") {
             content = rain + "mm";
             } else if (activelayer === "combined") {
             content =
-                Object.values(risks).reduce(
+                Math.round(Object.values(risks).reduce(
                 (total, current) => total + current,
                 0,
                 ) /
-                Object.values(risks).length +
+                Object.values(risks).length) +
                 "%";
             } else {
             content = risks[activelayer] + "%";
+            console.log("Active Layer:", activelayer, "Content:", content);
+            console.log("Layers on map:", Object.keys(layers).filter((layer) => map.hasLayer(layers[layer])));
+            document.getElementById(activelayer).style.display = "block";
             }
             L.popup({
             className: "custom-popup",
