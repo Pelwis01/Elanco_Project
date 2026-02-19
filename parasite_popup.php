@@ -5,7 +5,8 @@ $results = [
     "lungworm" => 82,
     "liverFluke" => 91,
     "hairWorm" => 40,
-    "coccidia" => 55
+    "coccidia" => 55,
+    "tick" => 84
 ];
 
 function getPopupData($parasite, $risk) {
@@ -30,6 +31,9 @@ function getPopupData($parasite, $risk) {
                 break;
             case "coccidia":
                 $message = "🦠 Multiplying rapidly!";
+                break;
+            case "tick":
+                $message = "🪳Ticks are #lovinglife!";
                 break;
         }
     } elseif ($risk >= 50) {
