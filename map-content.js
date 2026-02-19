@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const mapContainer = document.getElementById("map");
-  if (!mapContainer) return;
+    const mapContainer = document.getElementById("map");
+    if (!mapContainer) return;
 
-  /* =========================== *\
+    /* =========================== *\
        🗺️ Base map
     \* =========================== */
     // 🌍 Mapbox tile layer URL
@@ -24,22 +24,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // 🗺️ Initialise land-only Leaflet map over the British Isles
     var map = L.map("map", { zoomControl: false })
-      .setView([54.5, -4.0], 6);
+        .setView([54.5, -4.0], 6);
     
     mapBase.addTo(map);
 
-  /* =========================== *\
+    /* =========================== *\
        🎨 Layer config
     \* =========================== */
-  const baseCfg = {
-    radius: 1,
-    maxOpacity: 0.8,
-    scaleRadius: true,
-    useLocalExtrema: false,
-    latField: "lat",
-    lngField: "lng",
-    valueField: "value",
-  };
+    const baseCfg = {
+        radius: 1,
+        maxOpacity: 0.8,
+        scaleRadius: true,
+        useLocalExtrema: false,
+        latField: "lat",
+        lngField: "lng",
+        valueField: "value",
+    };
 
     // Helper to create layers quickly
     const createLayer = (gradient) => new HeatmapOverlay({ ...baseCfg, gradient });
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Define Gradients
     const tempGrad = { '.1': 'darkblue', '.4': 'blue', '.6': 'gold', '.9': '#FF8C00' };
     const rainGrad = { '.1': '#A0C8FF', '.5': '#0055FF', '.9': '#000080' };
-    const riskGrad = { '.1': 'green', '.4': 'yellow', '.7': 'orange', '.9': 'red' };
+    const riskGrad = { '.1': 'green', '.4': 'yellow', '.7': 'orange', '1': 'red' };
 
     // Instantiate Layers
     const layers = {
@@ -95,112 +95,112 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
 
-  /* =========================== *\
+    /* =========================== *\
        🌩️ Data handling
     \* =========================== */
-  try {
-    // Retrieve data (cached or new)
-    const gridPoints = await getLandPoints();
-    const weatherData = await getCachedWeather(gridPoints);
+    try {
+        // Retrieve data (cached or new)
+        const gridPoints = await getLandPoints();
+        const weatherData = await getCachedWeather(gridPoints);
 
-    const points = {
-      temp: [],
-      rain: [],
-      soil_moisture: [],
-      lungworm: [],
-      gutworm: [],
-      liverfluke: [],
-      hairworm: [],
-      coccidia: [],
-      combined: [],
-    };
+        const points = {
+        temp: [],
+        rain: [],
+        soil_moisture: [],
+        lungworm: [],
+        gutworm: [],
+        liverfluke: [],
+        hairworm: [],
+        coccidia: [],
+        combined: [],
+        };
 
-    // Process each grid point
-    weatherData.forEach((batch) => {
-      if (!batch.hourly) return;
+        // Process each grid point
+        weatherData.forEach((batch) => {
+        if (!batch.hourly) return;
 
-      const lats = Array.isArray(batch.latitude)
-        ? batch.latitude
-        : [batch.latitude];
-      const lngs = Array.isArray(batch.longitude)
-        ? batch.longitude
-        : [batch.longitude];
+        const lats = Array.isArray(batch.latitude)
+            ? batch.latitude
+            : [batch.latitude];
+        const lngs = Array.isArray(batch.longitude)
+            ? batch.longitude
+            : [batch.longitude];
 
-      lats.forEach((lat, i) => {
-        const lng = lngs[i];
+        lats.forEach((lat, i) => {
+            const lng = lngs[i];
 
-        const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
-          ? batch.hourly.temperature_2m[i]
-          : batch.hourly.temperature_2m;
+            const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
+            ? batch.hourly.temperature_2m[i]
+            : batch.hourly.temperature_2m;
 
-        const rainArray = Array.isArray(batch.hourly.precipitation[0])
-          ? batch.hourly.precipitation[i]
-          : batch.hourly.precipitation;
+            const rainArray = Array.isArray(batch.hourly.precipitation[0])
+            ? batch.hourly.precipitation[i]
+            : batch.hourly.precipitation;
 
-        const soilmoistureArray = Array.isArray(
-          batch.hourly.soil_moisture_3_to_9cm[0],
-        )
-          ? batch.hourly.soil_moisture_3_to_9cm[i]
-          : batch.hourly.soil_moisture_3_to_9cm;
+            const soilmoistureArray = Array.isArray(
+            batch.hourly.soil_moisture_3_to_9cm[0],
+            )
+            ? batch.hourly.soil_moisture_3_to_9cm[i]
+            : batch.hourly.soil_moisture_3_to_9cm;
 
-        const temp = tempArray[0] ?? 0;
-        const rain = rainArray[0] ?? 0;
-        const soil_moisture = soilmoistureArray[0] ?? 0;
+            const temp = tempArray[0] ?? 0;
+            const rain = rainArray[0] ?? 0;
+            const soil_moisture = soilmoistureArray[0] ?? 0;
 
-        points.temp.push({ lat, lng, value: temp });
-        if (rain > 0) points.rain.push({ lat, lng, value: rain });
-        points.soil_moisture.push({ lat, lng, value: soil_moisture });
+            points.temp.push({ lat, lng, value: temp });
+            if (rain > 0) points.rain.push({ lat, lng, value: rain });
+            points.soil_moisture.push({ lat, lng, value: soil_moisture });
 
-        // Risk calculations
-        let result = getAllParasiteRisks(
-          temp,
-          rain * 100,
-          (soil_moisture / 0.5) * 100,
-        );
-        let combinedRisk =
-          (result.lungworm +
-            result.gutworm +
-            result.liverfluke +
-            result.hairworm +
-            result.coccidia) /
-          5;
+            // Risk calculations
+            let result = getAllParasiteRisks(
+            temp,
+            rain * 100,
+            (soil_moisture / 0.5) * 100,
+            );
+            let combinedRisk =
+            (result.lungworm +
+                result.gutworm +
+                result.liverfluke +
+                result.hairworm +
+                result.coccidia) /
+            5;
 
-        if (result.lungworm > 0)
-          points.lungworm.push({ lat, lng, value: result.lungworm });
-        if (result.gutworm > 0)
-          points.gutworm.push({ lat, lng, value: result.gutworm });
-        if (result.liverfluke > 0)
-          points.liverfluke.push({ lat, lng, value: result.liverfluke });
-        if (result.hairworm > 0)
-          points.hairworm.push({ lat, lng, value: result.hairworm });
-        if (result.coccidia > 0)
-          points.coccidia.push({ lat, lng, value: result.coccidia });
-        if (combinedRisk > 0)
-          points.combined.push({ lat, lng, value: combinedRisk });
-      });
-    });
+            if (result.lungworm > 0)
+            points.lungworm.push({ lat, lng, value: result.lungworm });
+            if (result.gutworm > 0)
+            points.gutworm.push({ lat, lng, value: result.gutworm });
+            if (result.liverfluke > 0)
+            points.liverfluke.push({ lat, lng, value: result.liverfluke });
+            if (result.hairworm > 0)
+            points.hairworm.push({ lat, lng, value: result.hairworm });
+            if (result.coccidia > 0)
+            points.coccidia.push({ lat, lng, value: result.coccidia });
+            if (combinedRisk > 0)
+            points.combined.push({ lat, lng, value: combinedRisk });
+        });
+        });
 
-    // Update layers
-    layers.temp.setData({ max: 30, data: points.temp });
-    layers.rain.setData({ max: 5, data: points.rain });
-    layers.lungworm.setData({ max: 100, data: points.lungworm });
-    layers.gutworm.setData({ max: 100, data: points.gutworm });
-    layers.liverfluke.setData({ max: 100, data: points.liverfluke });
-    layers.hairworm.setData({ max: 100, data: points.hairworm });
-    layers.coccidia.setData({ max: 100, data: points.coccidia });
-    layers.combined.setData({ max: 100, data: points.combined });
+        // Update layers
+        layers.temp.setData({ max: 30, data: points.temp });
+        layers.rain.setData({ max: 5, data: points.rain });
+        layers.lungworm.setData({ max: 100, data: points.lungworm });
+        layers.gutworm.setData({ max: 100, data: points.gutworm });
+        layers.liverfluke.setData({ max: 100, data: points.liverfluke });
+        layers.hairworm.setData({ max: 100, data: points.hairworm });
+        layers.coccidia.setData({ max: 100, data: points.coccidia });
+        layers.combined.setData({ max: 100, data: points.combined });
 
-    console.log(`✅ Map updated with ${points.temp.length} grid points.`);
-  } catch (error) {
-    console.error("❌ Critical Error loading map data:", error);
-  }
+        console.log(`✅ Map updated with ${points.temp.length} grid points.`);
+    } catch (error) {
+        console.error("❌ Critical Error loading map data:", error);
+    }
 
-  /* =========================== *\
+    /* =========================== *\
        🖱️ Map click
     \* =========================== */
-  map.on("click", (e) => {
-    handleMapClick(e, map, layers);
-  });
+    map.on("click", (e) => {
+        handleMapClick(e, map, layers);
+    });
 });
 
 /* =========================== *\
@@ -209,61 +209,61 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // Create UK-based grid
 async function getLandPoints() {
-  const res = await fetch("data/uk_land_grid.json");
-  return await res.json();
+    const res = await fetch("data/uk_land_grid.json");
+    return await res.json();
 }
 
 // Retrieve data (cached or new)
 async function getCachedWeather(points) {
-  const CACHE_KEY = "uk_weather_cache_v3"; // NB: change each update to force refresh for outdated cache
-  const EXPIRY = 60 * 60 * 1000; // 1 hour
-
-  // Check cache
-  const cached = localStorage.getItem(CACHE_KEY);
-  const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
-  if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
-    console.log("💾 Loading from cache...");
-    return JSON.parse(cached);
-  }
-
-  console.log("🌍 Fetching new data...");
-
-  // Batch request to avoid URL length limits
-  const BATCH_SIZE = 100;
-  let allResults = [];
-
-  for (let i = 0; i < points.length; i += BATCH_SIZE) {
-    const chunk = points.slice(i, i + BATCH_SIZE);
-    const latStr = chunk.map((p) => p.lat).join(",");
-    const lonStr = chunk.map((p) => p.lng).join(",");
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
-
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Batch ${i} failed`);
-      const data = await res.json();
-      // Normalise to array format for consistency
-      allResults = allResults.concat(Array.isArray(data) ? data : [data]);
-    } catch (err) {
-      console.warn(`⚠️ Batch failed: ${err.message}`);
+    const CACHE_KEY = "uk_weather_cache_v4"; // NB: change each update to force refresh for outdated cache
+    const EXPIRY = 60 * 60 * 1000; // 1 hour
+    
+    // Check cache
+    const cached = localStorage.getItem(CACHE_KEY);
+    const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
+    if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
+        console.log("💾 Loading from cache...");
+        return JSON.parse(cached);
     }
-  }
-
-  // 💾 Cache
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(allResults));
-    localStorage.setItem(CACHE_KEY + "_ts", Date.now());
-  } catch (e) {
-    console.warn(`⚠️ Cache full: ${e.message}`);
-  }
-
-  return allResults;
+    
+    console.log("🌍 Fetching new data...");
+    
+    // Batch request to avoid URL length limits
+    const BATCH_SIZE = 100;
+    let allResults = [];
+    
+    for (let i = 0; i < points.length; i += BATCH_SIZE) {
+        const chunk = points.slice(i, i + BATCH_SIZE);
+        const latStr = chunk.map((p) => p.lat).join(",");
+        const lonStr = chunk.map((p) => p.lng).join(",");
+        
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
+        
+        try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Batch ${i} failed`);
+        const data = await res.json();
+        // Normalise to array format for consistency
+        allResults = allResults.concat(Array.isArray(data) ? data : [data]);
+        } catch (err) {
+        console.warn(`⚠️ Batch failed: ${err.message}`);
+        }
+    }
+    
+    // 💾 Cache
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(allResults));
+        localStorage.setItem(CACHE_KEY + "_ts", Date.now());
+    } catch (e) {
+        console.warn(`⚠️ Cache full: ${e.message}`);
+    }
+    
+    return allResults;
 }
 
 // Click handler
 function handleMapClick(e, map, layers) {
-  const { lat, lng } = e.latlng;
+    const { lat, lng } = e.latlng;
     console.log(`📍 Clicked: ${lat}, ${lng}`);
 
     // Update coordinates
@@ -323,84 +323,69 @@ function handleMapClick(e, map, layers) {
                 
             console.log(`📌 Location: ${place}`);
         })
-        .catch(() => {
-            document.getElementById("region-name").textContent = "Unknown";
-            document.getElementById("region-address").textContent = "—";
-        });
-
-  // Fetch local soil data (separate to save bandwidth)
-  fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`,
-  )
+    .catch(() => {
+        document.getElementById("region-name").textContent = "Unknown";
+        document.getElementById("region-address").textContent = "—";
+    });
+        
+    // Fetch local soil data (separate to save bandwidth)
+    fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`,
+    )
     .then((res) => res.json())
     .then((data) => {
-      const h = data.hourly;
-      const temp = h.temperature_2m[0];
-      const rain = h.precipitation[0];
-      const soil = ((h.soil_moisture_3_to_9cm[0] || 0) / 0.5) * 100;
-  
-      // ➡️ Update sidebar
-      document.getElementById("region-temp").textContent = temp.toFixed(1);
-      document.getElementById("region-rain").textContent = rain.toFixed(1);
-      document.getElementById("region-soil").textContent = soil.toFixed(1);
-
-      console.log(
-        `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
-      );
-
-      // Call external risk function if it exists
-      if (typeof getAllParasiteRisks === "function") {
-        const risks = getAllParasiteRisks(temp, rain * 100, soil);
-        console.log("📊 Risk Result:", risks);
-        document.getElementById("risk-overall").textContent =  (Object.values(risks).reduce((total, current) => total + current,0,) / 5) ?? 0;
-        document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
-        document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
-        document.getElementById("risk-liverfluke").textContent = risks.liverFluke ?? 0;
-        document.getElementById("risk-hairworm").textContent = risks.hairWorm ?? 0;
-        document.getElementById("risk-coccidia").textContent = risks.coccidia ?? 0;
+        const h = data.hourly;
+        const temp = h.temperature_2m[0];
+        const rain = h.precipitation[0];
+        const soil = ((h.soil_moisture_3_to_9cm[0] || 0) / 0.5) * 100;
         
-        let activelayer = Object.keys(layers).find((layer) =>
-          map.hasLayer(layers[layer]),
+        // ➡️ Update sidebar
+        document.getElementById("region-temp").textContent = temp.toFixed(1);
+        document.getElementById("region-rain").textContent = rain.toFixed(1);
+        document.getElementById("region-soil").textContent = soil.toFixed(1);
+        
+        console.log(
+            `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
         );
-        let content = null;
-        if (activelayer === "temp") {
-          content = temp + " C";
-        } else if (activelayer === "rain") {
-          content = rain + "mm";
-        } else if (activelayer === "combined") {
-          content =
-            Object.values(risks).reduce(
-              (total, current) => total + current,
-              0,
-            ) /
-              Object.values(risks).length +
-            "%";
-        } else {
-          content = risks[activelayer] + "%";
+        
+        // Call external risk function if it exists
+        if (typeof getAllParasiteRisks === "function") {
+            const risks = getAllParasiteRisks(temp, rain * 100, soil);
+            console.log("📊 Risk Result:", risks);
+        
+            document.getElementById("risk-overall").textContent =  (Object.values(risks).reduce((total, current) => total + current,0,) / 5) ?? 0;
+            document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
+            document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
+            document.getElementById("risk-liverfluke").textContent = risks.liverfluke ?? 0;
+            document.getElementById("risk-hairworm").textContent = risks.hairworm ?? 0;
+            document.getElementById("risk-coccidia").textContent = risks.coccidia ?? 0;
+            
+            let activelayer = Object.keys(layers).find((layer) =>
+            map.hasLayer(layers[layer]),
+            );
+            let content = null;
+            if (activelayer === "temp") {
+            content = temp + " C";
+            } else if (activelayer === "rain") {
+            content = rain + "mm";
+            } else if (activelayer === "combined") {
+            content =
+                Object.values(risks).reduce(
+                (total, current) => total + current,
+                0,
+                ) /
+                Object.values(risks).length +
+                "%";
+            } else {
+            content = risks[activelayer] + "%";
+            }
+            L.popup({
+            className: "custom-popup",
+            })
+            .setLatLng(e.latlng)
+            .setContent(content)
+            .openOn(map);
         }
-        L.popup({
-          className: "custom-popup",
-        })
-          .setLatLng(e.latlng)
-          .setContent(content)
-          .openOn(map);
-      }
     })
     .catch((err) => console.error("Local fetch failed", err));
 }
-
-/* =========================== *\
-   🧮 Risk formula placeholders - TBA
-\* =========================== */
-function calculateLungwormRisk(temp, rain) {
-  if (temp > 12 && rain > 0.2) return 85;
-  if (temp > 10) return 30;
-  return 0;
-}
-function calculateGutwormRisk(temp, rain) {
-  if (temp > 15) return 90;
-  if (temp > 8) return 45;
-  return 0;
-}
-
-function onMapClick(e, result) {}

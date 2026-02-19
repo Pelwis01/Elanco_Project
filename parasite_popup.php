@@ -1,5 +1,5 @@
 <?php
-// Example data — replace with your real results
+// need to merge risk calculator
 $results = [
     "gutWorm" => 68,
     "lungworm" => 82,
@@ -12,7 +12,7 @@ function getPopupData($parasite, $risk) {
 
     $message = "";
     $class = "";
-
+// all high risk messages 
     if ($risk >= 75) {
         $class = "high";
         switch($parasite) {
@@ -77,9 +77,9 @@ function getPopupData($parasite, $risk) {
             animation: slideIn 0.3s ease-out;
         }
 
-        .high { background-color: #d9534f; }
-        .medium { background-color: #f0ad4e; }
-        .low { background-color: #5cb85c; }
+        .high { background-color: #d9534f; } /* red */
+        .medium { background-color: #f0ad4e; } /* orange */
+        .low { background-color: #5cb85c; } /* green */
 
         .notification h4 {
             margin: 0 0 2px 0;
