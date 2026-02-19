@@ -336,7 +336,7 @@ function handleMapClick(e, map, layers) {
       if (typeof getAllParasiteRisks === "function") {
         const risks = getAllParasiteRisks(temp, rain * 100, soil);
         console.log("📊 Risk Result:", risks);
-
+        document.getElementById("risk-overall").textContent =  (Object.values(risks).reduce((total, current) => total + current,0,) / 5) ?? 0;
         document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
         document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
         document.getElementById("risk-liverfluke").textContent = risks.liverFluke ?? 0;
