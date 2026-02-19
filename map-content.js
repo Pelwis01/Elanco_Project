@@ -74,6 +74,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Combined Risk (Max)": layers.combined
     };
 
+            
+        /*Legend specific*/
+        let legend = L.control({ position: "bottomleft" });
+
+        legend.onAdd = function(map) {
+        let div = L.DomUtil.create("div", "legend");
+        div.innerHTML += "<h4>Legend</h4>";
+        div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
+        div.innerHTML += '<i style="background: yellow"></i><span>30-70%</span><br>';
+        div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
+        return div;
+        };
+
+        legend.addTo(map);
+
+
     L.control.layers(layerControl, {}).addTo(map);
     layers.combined.addTo(map); // 🗺️ Default view - combined risk map
 
