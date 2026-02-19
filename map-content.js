@@ -12,7 +12,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             attribution: '&copy; Mapbox'
         }
     );
-
+    
+    // 🗺️ Initialise land-only Leaflet map over the British Isles
+    var map = L.map("map", { zoomControl: false })
+        .setView([54.5, -4.0], 6);
+    
+    mapBase.addTo(map);
+    
+    const geojsonLayer = L.geoJSON(agriData, {
+        style: { color: "green", weight: 2 },
+        onEachFeature: function (feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: function(e) { geojsonLayer.resetStyle(e.target); }
+            });
+        }
+    }).addTo(map);
+    
     // 🌊 Sea + Labels overlay
     const mapTop = L.tileLayer(
         "https://api.mapbox.com/styles/v1/bryzerse/cmlsoi77b001901sag1cug1yy/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
@@ -21,13 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             pane: 'overlayPane'
         }
     );
-
-    // 🗺️ Initialise land-only Leaflet map over the British Isles
-    var map = L.map("map", { zoomControl: false })
-        .setView([54.5, -4.0], 6);
     
-    mapBase.addTo(map);
-
     /* =========================== *\
        🎨 Layer config
     \* =========================== */
@@ -47,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Define Gradients
     const tempGrad = { '.1': 'darkblue', '.4': 'blue', '.6': 'gold', '.9': '#FF8C00' };
     const rainGrad = { '.1': '#A0C8FF', '.5': '#0055FF', '.9': '#000080' };
-    const riskGrad = { '.1': 'green', '.4': 'yellow', '.7': 'orange', '1': 'red' };
+    const riskGrad = { '.1': 'darkgreen',  '.6': 'green', '.8': 'gold', '.9': 'orange', '1': 'red' };
 
     // Instantiate Layers
     const layers = {
@@ -114,72 +124,73 @@ document.addEventListener("DOMContentLoaded", async function () {
         coccidia: [],
         combined: [],
         };
-
+        
         // Process each grid point
         weatherData.forEach((batch) => {
-        if (!batch.hourly) return;
-
-        const lats = Array.isArray(batch.latitude)
-            ? batch.latitude
-            : [batch.latitude];
-        const lngs = Array.isArray(batch.longitude)
-            ? batch.longitude
-            : [batch.longitude];
-
-        lats.forEach((lat, i) => {
-            const lng = lngs[i];
-
-            const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
-            ? batch.hourly.temperature_2m[i]
-            : batch.hourly.temperature_2m;
-
-            const rainArray = Array.isArray(batch.hourly.precipitation[0])
-            ? batch.hourly.precipitation[i]
-            : batch.hourly.precipitation;
-
-            const soilmoistureArray = Array.isArray(
-            batch.hourly.soil_moisture_3_to_9cm[0],
-            )
-            ? batch.hourly.soil_moisture_3_to_9cm[i]
-            : batch.hourly.soil_moisture_3_to_9cm;
-
-            const temp = tempArray[0] ?? 0;
-            const rain = rainArray[0] ?? 0;
-            const soil_moisture = soilmoistureArray[0] ?? 0;
-
-            points.temp.push({ lat, lng, value: temp });
-            if (rain > 0) points.rain.push({ lat, lng, value: rain });
-            points.soil_moisture.push({ lat, lng, value: soil_moisture });
-
-            // Risk calculations
-            let result = getAllParasiteRisks(
-            temp,
-            rain * 100,
-            (soil_moisture / 0.5) * 100,
-            );
-            let combinedRisk =
-            (result.lungworm +
-                result.gutworm +
-                result.liverfluke +
-                result.hairworm +
-                result.coccidia) /
-            5;
-
-            if (result.lungworm > 0)
-            points.lungworm.push({ lat, lng, value: result.lungworm });
-            if (result.gutworm > 0)
-            points.gutworm.push({ lat, lng, value: result.gutworm });
-            if (result.liverfluke > 0)
-            points.liverfluke.push({ lat, lng, value: result.liverfluke });
-            if (result.hairworm > 0)
-            points.hairworm.push({ lat, lng, value: result.hairworm });
-            if (result.coccidia > 0)
-            points.coccidia.push({ lat, lng, value: result.coccidia });
-            if (combinedRisk > 0)
-            points.combined.push({ lat, lng, value: combinedRisk });
+            if (!batch.hourly) return;
+            
+            const lats = Array.isArray(batch.latitude)
+                ? batch.latitude
+                : [batch.latitude];
+            const lngs = Array.isArray(batch.longitude)
+                ? batch.longitude
+                : [batch.longitude];
+                
+            lats.forEach((lat, i) => {
+                const lng = lngs[i];
+                
+                const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
+                ? batch.hourly.temperature_2m[i]
+                : batch.hourly.temperature_2m;
+                
+                const rainArray = Array.isArray(batch.hourly.precipitation[0])
+                ? batch.hourly.precipitation[i]
+                : batch.hourly.precipitation;
+                
+                const soilmoistureArray = Array.isArray(
+                batch.hourly.soil_moisture_3_to_9cm[0],
+                )
+                ? batch.hourly.soil_moisture_3_to_9cm[i]
+                : batch.hourly.soil_moisture_3_to_9cm;
+                
+                const temp = tempArray[0] ?? 0;
+                const rain = rainArray[0] ?? 0;
+                const soil_moisture = soilmoistureArray[0] ?? 0;
+                
+                points.temp.push({ lat, lng, value: temp });
+                if (rain > 0) points.rain.push({ lat, lng, value: rain });
+                points.soil_moisture.push({ lat, lng, value: soil_moisture });
+                
+                // 🧮 Risk calculations
+                let soilPercent = clamp100(soil_moisture);
+                let result = getAllParasiteRisks(
+                temp,
+                rain,
+                soilPercent
+                );
+                let combinedRisk =
+                (result.lungworm +
+                    result.gutworm +
+                    result.liverfluke +
+                    result.hairworm +
+                    result.coccidia) /
+                5;
+                
+                if (result.lungworm > 0)
+                points.lungworm.push({ lat, lng, value: result.lungworm });
+                if (result.gutworm > 0)
+                points.gutworm.push({ lat, lng, value: result.gutworm });
+                if (result.liverfluke > 0)
+                points.liverfluke.push({ lat, lng, value: result.liverfluke });
+                if (result.hairworm > 0)
+                points.hairworm.push({ lat, lng, value: result.hairworm });
+                if (result.coccidia > 0)
+                points.coccidia.push({ lat, lng, value: result.coccidia });
+                if (combinedRisk > 0)
+                points.combined.push({ lat, lng, value: combinedRisk });
+            });
         });
-        });
-
+        
         // Update layers
         layers.temp.setData({ max: 30, data: points.temp });
         layers.rain.setData({ max: 5, data: points.rain });
@@ -189,12 +200,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         layers.hairworm.setData({ max: 100, data: points.hairworm });
         layers.coccidia.setData({ max: 100, data: points.coccidia });
         layers.combined.setData({ max: 100, data: points.combined });
-
+        
         console.log(`✅ Map updated with ${points.temp.length} grid points.`);
     } catch (error) {
         console.error("❌ Critical Error loading map data:", error);
     }
-
+    
     /* =========================== *\
        🖱️ Map click
     \* =========================== */
