@@ -17,26 +17,80 @@
     <link rel="stylesheet" href="styles.css"/>
     <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
- 
-    <title>Elanco Parasite Risk Map</title>
+    
+    <!-- 🎨 Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 📛 Title -->
+    <title> Elanco - Parasite Risk Map </title>
+  
 </head>
+
 <body>
     <?php include_once "navbar.php"; ?>
 
     <main>
-        <!-- map area (2/3 width) -->
-        <div id="map" aria-label="Main map area">
-            <!-- map-content.js should initialize the map inside #map -->
+        <!-- 🗺️ Map - left half -->
+        <div id="map" role="application" aria-label="Interactive parasite risk map"></div>
+            <!-- 🐄 map-content.js -->
         </div>
-
-        <!-- sidebar (1/3 width) -->
+        
+        <!-- ➡️ Sidebar - right half -->
         <aside class="sidebar">
-            <!-- about section -->
+            <!-- Region info section -->
+            <section id="region-info" class="sidebar-section">
+                <div class="info-box">
+                    <div style="display: flex; align-items: center;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1076/1076983.png" class="info-icon" alt="Location icon" style="height: 2.8rem; width: auto; margin-right: 10px; filter: hue-rotate(240deg);">
+                        <div>
+                            <p style="margin-bottom: -4px"><strong>
+                                <span id="region-coords" style="color: #37D; font-size: 0.8em;">53.377169, -1.4676838</span>
+                            </strong></p>
+                            <p><strong>
+                                <span id="region-name" style="font-size: 1.4em;">Sheefield, South Yorkshire</span>
+                            </strong></p>
+                            <p style="margin-top: -8px"><strong>
+                                <span id="region-address" style="color: #555; font-size: 0.8em;">Cantor Building, Arundel Lane, S1 4RB</span>
+                            </strong></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h2> Parasite Risks </h2>
+                    <p><strong>Overall:     <span id="risk-overall">—</span>%</strong></p>
+                    <p>Gutworm:     <span id="risk-gutworm">—</span>%</p>
+                    <p>Lungworm:    <span id="risk-lungworm">—</span>%</p>
+                    <p>Liver Fluke: <span id="risk-liverfluke">—</span>%</p>
+                    <p>Hair Worm:   <span id="risk-hairworm">—</span>%</p>
+                    <p>Coccidia:    <span id="risk-coccidia">—</span>%</p>
+                </div>
+                
+                <h2> Additional Information </h2>
+                <div class="info-box">
+                    <h3><img src="./images/thermometer.png" class="info-icon" alt="Thermometer icon">Temperature</h3>
+                    <p><span id="region-temp">—</span> °C</p>
+                </div>
+                <div class="info-box">
+                    <h3><img src="./images/rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
+                    <p><span id="region-soil">—</span> %</p>
+                </div>
+                <div class="info-box">
+                    <h3><img src="./images/dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
+                    <p><span id="region-rain">—</span> mm</p>
+                </div>
+                <div class="info-box">
+                    <h3><img src="./images/cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
+                    <p><span id="region-rain">—</span> mm</p>
+                </div>
+            </section>
+            
+            <!-- Parasite guide section -->
             <section id="about" class="sidebar-section">
-                <h2>About</h2>
+                <h2> Parasite Guide </h2>
                 <div class="about-box">
-                    <h3>Gut Worm</h3>
-                    <p>Gut worms prefer moderate temperatures and moist pasture conditions, because their eggs hatch and larvae develop in dung before migrating onto grass. Temperature is weighted strongly because development speeds up significantly in warm (but not hot) conditions. Rainfall and soil moisture are also important because larvae need moisture to survive and move onto herbage. However, extreme heat or very dry conditions reduce survival. Therefore, temperature has a slightly higher weighting, but moisture factors still contribute significantly to overall risk.</p>
+                    <h3>Gutworm</h3>
+                    <p>Gutworms prefer moderate temperatures and moist pasture conditions, because their eggs hatch and larvae develop in dung before migrating onto grass. Temperature is weighted strongly because development speeds up significantly in warm (but not hot) conditions. Rainfall and soil moisture are also important because larvae need moisture to survive and move onto herbage. However, extreme heat or very dry conditions reduce survival. Therefore, temperature has a slightly higher weighting, but moisture factors still contribute significantly to overall risk.</p>
                 </div>
                 <div class="about-box">
                     <h3>Lungworm</h3>
@@ -48,28 +102,11 @@
                 </div>
                 <div class="about-box">
                     <h3>Hair Worms</h3>
-                    <p>Hair worms lay eggs that are quite resistant in the environment. They can survive in soil for long periods but require moderate warmth and some moisture to become infective. They are less dependent on heavy rainfall compared to lungworm or liver fluke. Therefore, temperature and soil moisture are moderately weighted, while rainfall has a slightly smaller effect. Risk increases in warm, slightly damp pasture conditions.</p>
+                    <p>Hair worms lay eggs that are quite resistant to environmental factors. They can survive in soil for long periods but require moderate warmth and some moisture to become infective. They are less dependent on heavy rainfall compared to lungworm or liver fluke. Therefore, temperature and soil moisture are moderately weighted, while rainfall has a slightly smaller effect. Risk increases in warm, slightly damp pasture conditions.</p>
                 </div>
                 <div class="about-box">
                     <h3>Coccidia</h3>
                     <p>Coccidia are protozoan parasites that multiply rapidly in warm, moist environments, especially where stocking density is high. Moisture allows eggs to survive and sporulate, making them infective. Temperature strongly affects how quickly sporulation occurs. Because both warmth and moisture are critical, temperature and soil moisture are weighted similarly, with rainfall contributing indirectly by increasing overall dampness.</p>
-                </div>
-            </section>
-            
-            <!-- additional info section -->
-            <section id="info" class="sidebar-section">
-                <h2>Additional Information</h2>
-                <div class="info-box">
-                    <h3><img src="./images/thermometer.png" class="info-icon" alt="Thermometer icon">Temperature</h3>
-                </div>
-                <div class="info-box">
-                    <h3><img src="./images/rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
-                </div>
-                <div class="info-box">
-                    <h3><img src="./images/dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
-                </div>
-                <div class="info-box">
-                    <h3><img src="./images/cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
                 </div>
             </section>
         </aside>

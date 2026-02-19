@@ -15,7 +15,7 @@ function getAllParasiteRisks(temp, rainfall, soilMoisture) {
 }
 
 function gutwormRisk(temp, rainfall, soilMoisture) {
-    // gut worms can survive in a wider range of conditions, but thrive in moderate temperatures and moisture, so we give temperature a slightly higher weighting than rainfall
+    // Gutworms can survive in a wider range of conditions, but thrive in moderate temperatures and moisture, so we give temperature a slightly higher weighting than rainfall
     // Temperature effect (0–100)
     let tempScore = 0;
     if (temp < 5) tempScore = 5;
@@ -25,7 +25,7 @@ function gutwormRisk(temp, rainfall, soilMoisture) {
     else tempScore = 50;
 
     // Rainfall effect (0–100)
-    // Multiplied by 2 because gut worms need moisture but can survive in drier conditions too
+    // Multiplied by 2 because gutworms need moisture but can survive in drier conditions too
     // Capped at 100 to prevent unrealistic scores
     let rainScore = Math.min(rainfall * 2, 100);
 
@@ -39,7 +39,7 @@ function gutwormRisk(temp, rainfall, soilMoisture) {
 }
 
 function lungwormRisk(temp, rainfall, soilMoisture) {
-    // lungworms are more sensitive to temperature and moisture, so we give both factors equal importance but with a stronger multiplier for rainfall
+    // Lungworms are more sensitive to temperature and moisture, so we give both factors equal importance but with a stronger multiplier for rainfall
     let tempScore = 0;
     if (temp < 8) tempScore = 5;
     else if (temp < 12) tempScore = 40;
@@ -47,7 +47,7 @@ function lungwormRisk(temp, rainfall, soilMoisture) {
     else tempScore = 75;
 
     // Multiplied by 2.5 because lungworms are very dependent on moisture for their lifecycle
-    // Rainfall has a stronger effect on lungworm risk than gut worms
+    // Rainfall has a stronger effect on lungworm risk than gutworms
     let rainScore = Math.min(rainfall * 2.5, 100);
 
     let soilScore = soilMoisture;

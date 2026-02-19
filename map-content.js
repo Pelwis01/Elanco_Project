@@ -5,16 +5,28 @@ document.addEventListener("DOMContentLoaded", async function () {
   /* =========================== *\
        🗺️ Base map
     \* =========================== */
-  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap",
-  });
+    // 🌍 Mapbox tile layer URL
+    const mapBase = L.tileLayer(
+        "https://api.mapbox.com/styles/v1/bryzerse/cmlsnxjpl001c01s951lgbjdp/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
+        {
+            attribution: '&copy; Mapbox'
+        }
+    );
 
-  const map = L.map("map", {
-    center: [54.5, -4],
-    zoom: 6,
-    layers: [osm],
-  });
+    // 🌊 Sea + Labels overlay
+    const mapTop = L.tileLayer(
+        "https://api.mapbox.com/styles/v1/bryzerse/cmlsoi77b001901sag1cug1yy/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
+        {
+            attribution: '&copy; Mapbox',
+            pane: 'overlayPane'
+        }
+    );
+
+    // 🗺️ Initialise land-only Leaflet map over the British Isles
+    var map = L.map("map", { zoomControl: false })
+      .setView([54.5, -4.0], 6);
+    
+    mapBase.addTo(map);
 
   /* =========================== *\
        🎨 Layer config
@@ -29,31 +41,43 @@ document.addEventListener("DOMContentLoaded", async function () {
     valueField: "value",
   };
 
-  // Helper to create layers quickly
-  const createLayer = (gradient) =>
-    new HeatmapOverlay({ ...baseCfg, gradient });
+    // Helper to create layers quickly
+    const createLayer = (gradient) => new HeatmapOverlay({ ...baseCfg, gradient });
 
-  // Define Gradients
-  const tempGrad = { ".4": "blue", ".6": "yellow", ".8": "#FF8C00" };
-  const rainGrad = { ".1": "#A0C8FF", ".5": "#0055FF", ".9": "#000080" };
-  const riskGrad = {
-    ".1": "green",
-    ".4": "yellow",
-    ".7": "orange",
-    ".9": "red",
-  };
+    // Define Gradients
+    const tempGrad = { '.1': 'darkblue', '.4': 'blue', '.6': 'gold', '.9': '#FF8C00' };
+    const rainGrad = { '.1': '#A0C8FF', '.5': '#0055FF', '.9': '#000080' };
+    const riskGrad = { '.1': 'green', '.4': 'yellow', '.7': 'orange', '.9': 'red' };
 
-  // Instantiate Layers
-  const layers = {
-    temp: createLayer(tempGrad),
-    rain: createLayer(rainGrad),
-    lungworm: createLayer(riskGrad),
-    gutworm: createLayer(riskGrad),
-    liverfluke: createLayer(riskGrad),
-    hairworm: createLayer(riskGrad),
-    coccidia: createLayer(riskGrad),
-    combined: createLayer(riskGrad),
-  };
+    // Instantiate Layers
+    const layers = {
+        temp: createLayer(tempGrad),
+        rain: createLayer(rainGrad),
+        lungworm: createLayer(riskGrad),
+        gutworm: createLayer(riskGrad),
+        liverfluke: createLayer(riskGrad),
+        hairworm: createLayer(riskGrad),
+        coccidia: createLayer(riskGrad),
+        combined: createLayer(riskGrad) 
+    };
+
+    // 🕹️ Map controls
+    const layerControl = {
+        "None": L.layerGroup(),
+        "Temperature": layers.temp,
+        "Precipitation": layers.rain,
+        "Lungworm Risk": layers.lungworm,
+        "Gutworm Risk": layers.gutworm,
+        "Liver Fluke Risk": layers.liverfluke,
+        "Hairworm Risk": layers.hairworm,
+        "Coccidia Risk": layers.coccidia,
+        "Combined Risk (Max)": layers.combined
+    };
+
+    L.control.layers(layerControl, {}).addTo(map);
+    layers.combined.addTo(map); // 🗺️ Default view - combined risk map
+
+    mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
 
   // 🕹️ Map controls
   const layerControl = {
@@ -240,23 +264,69 @@ async function getCachedWeather(points) {
 // Click handler
 function handleMapClick(e, map, layers) {
   const { lat, lng } = e.latlng;
-  console.log(`📍 Clicked: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+    console.log(`📍 Clicked: ${lat}, ${lng}`);
 
-  // Fetch place name (reverse geocoding)
-  fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      const place = data.address
-        ? data.address.city ||
-          data.address.town ||
-          data.address.village ||
-          "Unknown"
-        : "Unknown";
-      console.log(`📌 Location: ${place}`);
-    })
-    .catch((err) => console.error("Reverse geocoding failed", err));
+    // Update coordinates
+    document.getElementById("region-coords").textContent =
+        `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+    
+    // 📍 Get place name via reverse geocoding
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=07a555ce6feb41af804f92291149e61d`;
+        fetch(url)
+        .then(r => r.json())
+        .then(data => {
+            const result = data.results?.[0];
+            if (!result) return;
+            const c = result.components;
+            
+            const place =
+                c.city ||
+                c.town ||
+                c.village ||
+                c.hamlet ||
+                c.locality ||
+                c.suburb ||
+                c.county ||
+                "Unknown";
+            document.getElementById("region-name").textContent = place;
+            
+            // Build street line (no comma between number + road)
+            const streetLine =
+                (c.house_number && c.road)
+                    ? `${c.house_number} ${c.road}`
+                    : c.road || null;
+            
+            // Business / building name if present
+            const nameLine =
+                c.shop ||
+                c.amenity ||
+                c.building ||
+                c.attraction ||
+                null;
+            
+            // Assemble full address cleanly
+            const addressParts = [
+                nameLine,
+                streetLine,
+                c.suburb,
+                c.village,
+                c.town,
+                c.city,
+                c.postcode
+            ].filter(Boolean);
+            
+            // Remove duplicates (sometimes town == city)
+            const uniqueAddress = [...new Set(addressParts)];
+            
+            document.getElementById("region-address").textContent =
+                uniqueAddress.join(", ") || "—";
+                
+            console.log(`📌 Location: ${place}`);
+        })
+        .catch(() => {
+            document.getElementById("region-name").textContent = "Unknown";
+            document.getElementById("region-address").textContent = "—";
+        });
 
   // Fetch local soil data (separate to save bandwidth)
   fetch(
@@ -268,6 +338,11 @@ function handleMapClick(e, map, layers) {
       const temp = h.temperature_2m[0];
       const rain = h.precipitation[0];
       const soil = ((h.soil_moisture_3_to_9cm[0] || 0) / 0.5) * 100;
+  
+      // ➡️ Update sidebar
+      document.getElementById("region-temp").textContent = temp.toFixed(1);
+      document.getElementById("region-rain").textContent = rain.toFixed(1);
+      document.getElementById("region-soil").textContent = soil.toFixed(1);
 
       console.log(
         `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
@@ -278,6 +353,12 @@ function handleMapClick(e, map, layers) {
         const result = getAllParasiteRisks(temp, rain * 100, soil);
         console.log("📊 Risk Result:", result);
 
+        document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
+        document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
+        document.getElementById("risk-liverfluke").textContent = risks.liverFluke ?? 0;
+        document.getElementById("risk-hairworm").textContent = risks.hairWorm ?? 0;
+        document.getElementById("risk-coccidia").textContent = risks.coccidia ?? 0;
+        
         let activelayer = Object.keys(layers).find((layer) =>
           map.hasLayer(layers[layer]),
         );
