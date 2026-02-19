@@ -18,6 +18,7 @@
     <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
     
+    <script src="parasite_popup.js"></script>
     <!-- 🎨 Styles -->
     <link rel="stylesheet" href="style.css">
 
@@ -42,6 +43,8 @@
             <!-- 🐄 map-content.js -->
         </div>
         
+
+        <div class="notification-container" aria-live="polite" aria-atomic="true"></div>
         <!-- ➡️ Sidebar - right half -->
         <aside class="sidebar">
             <!-- Region info section -->
@@ -122,6 +125,5 @@
             </section>
         </aside>
     </main>
-
 </body>
 </html>

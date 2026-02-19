@@ -213,3 +213,63 @@ main {
     box-shadow: none;
     background: rgba(252, 252, 252, 0.5);
 }
+
+/* Popup Notification styling */
+body {
+    font-family: Arial;
+    background-color: #f4f4f4;
+}
+
+.notification-container {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+}
+
+.notification {
+    position: relative;
+    width: 200px;              
+    padding: 8px 10px;           
+    border-radius: 6px;
+    color: white;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+    font-size: 12px;
+    line-height: 1.3;
+    animation: slideIn 0.3s ease-out;
+}
+
+.high { background-color: #d9534f; } /* red */
+.medium { background-color: #f0ad4e; } /* orange */
+.low { background-color: #5cb85c; } /* green */
+
+.notification h4 {
+    margin: 0 0 2px 0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.close-btn {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+}
+
+.close-btn:hover {
+    opacity: 0.7;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}

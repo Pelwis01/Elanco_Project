@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Liver Fluke Risk": layers.liverfluke,
         "Hairworm Risk": layers.hairworm,
         "Coccidia Risk": layers.coccidia,
-        "Tick Risk": layers.tick,
+        "Castor Bean Tick Risk": layers.tick,
         "Combined Risk (Max)": layers.combined
     };
 
@@ -389,6 +389,7 @@ function handleMapClick(e, map, layers) {
             content = risks[activelayer] + "%";
             console.log("Active Layer:", activelayer, "Content:", content);
             console.log("Layers on map:", Object.keys(layers).filter((layer) => map.hasLayer(layers[layer])));
+            getPopupData(activelayer, risks[activelayer]);
             document.getElementById(activelayer).style.display = "block";
             }
             L.popup({
