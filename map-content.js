@@ -79,22 +79,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
 
-  // 🕹️ Map controls
-  const layerControl = {
-    None: L.layerGroup(),
-    Temperature: layers.temp,
-    Precipitation: layers.rain,
-    "Lungworm Risk": layers.lungworm,
-    "Gut Worm Risk": layers.gutworm,
-    "Liver Fluke Risk": layers.liverfluke,
-    "Hairworm Risk": layers.hairworm,
-    "Coccidia Risk": layers.coccidia,
-    "Combined Risk (Max)": layers.combined,
-  };
-
-  L.control.layers(layerControl, {}).addTo(map);
-  layers.combined.addTo(map); // Default view
-
   /* =========================== *\
        🌩️ Data handling
     \* =========================== */
@@ -350,8 +334,8 @@ function handleMapClick(e, map, layers) {
 
       // Call external risk function if it exists
       if (typeof getAllParasiteRisks === "function") {
-        const result = getAllParasiteRisks(temp, rain * 100, soil);
-        console.log("📊 Risk Result:", result);
+        const risks = getAllParasiteRisks(temp, rain * 100, soil);
+        console.log("📊 Risk Result:", risks);
 
         document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
         document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
@@ -364,19 +348,19 @@ function handleMapClick(e, map, layers) {
         );
         let content = null;
         if (activelayer === "temp") {
-          content = temp + "C";
+          content = temp + " C";
         } else if (activelayer === "rain") {
           content = rain + "mm";
         } else if (activelayer === "combined") {
           content =
-            Object.values(result).reduce(
+            Object.values(risks).reduce(
               (total, current) => total + current,
               0,
             ) /
-              Object.values(result).length +
+              Object.values(risks).length +
             "%";
         } else {
-          content = result[activelayer] + "%";
+          content = risks[activelayer] + "%";
         }
         L.popup({
           className: "custom-popup",
