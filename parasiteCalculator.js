@@ -15,7 +15,7 @@ function getAllParasiteRisks(temp, rainfall, soilMoisture) {
 }
 
 function tickRisk(temp, rainfall, soilMoisture) {
-    // Ixodes ricinus (sheep tick) prefers cool-mild temperatures and humid conditions.
+    // Ixodes ricinus (castor bean tick) prefers cool-mild temperatures and humid conditions.
     // Soil moisture is more important than rainfall.
     // Risk drops in very hot or very dry weather.
 
