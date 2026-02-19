@@ -1,5 +1,5 @@
 <?php
-// Example data unil we link the calculator
+// Example data — replace with your real results
 $results = [
     "gutWorm" => 68,
     "lungworm" => 82,
@@ -32,13 +32,12 @@ function getPopupData($parasite, $risk) {
                 $message = "🦠 Multiplying rapidly!";
                 break;
         }
-
     } elseif ($risk >= 50) {
         $class = "medium";
-        $message = "⚠ Oh no! Moderate risk today.";
+        $message = "⚠ Oh No! Moderate risk today.";
     } else {
         $class = "low";
-        $message = "☀ Oh Yeah! Low risk conditions.";
+        $message = "☀ Hehe! Low risk conditions.";
     }
 
     return [$class, $message];
@@ -62,17 +61,18 @@ function getPopupData($parasite, $risk) {
             right: 15px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             z-index: 1000;
         }
 
         .notification {
-            width: 220px;              
-            padding: 10px 12px;        
-            border-radius: 8px;
+            position: relative;
+            width: 200px;              
+            padding: 8px 10px;           
+            border-radius: 6px;
             color: white;
-            box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
-            font-size: 13px;           
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+            font-size: 12px;
             line-height: 1.3;
             animation: slideIn 0.3s ease-out;
         }
@@ -82,20 +82,26 @@ function getPopupData($parasite, $risk) {
         .low { background-color: #5cb85c; }
 
         .notification h4 {
-            margin: 0 0 3px 0;
-            font-size: 13px;          
+            margin: 0 0 2px 0;
+            font-size: 12px;
             font-weight: bold;
         }
 
         .close-btn {
-            margin-top: 5px;
-            background: rgba(255,255,255,0.25);
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            background: none;
             border: none;
-            padding: 3px 6px;
-            border-radius: 4px;
             color: white;
+            font-size: 12px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 11px;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            opacity: 0.7;
         }
 
         @keyframes slideIn {
@@ -114,9 +120,9 @@ function getPopupData($parasite, $risk) {
     <?php list($class, $message) = getPopupData($parasite, $risk); ?>
 
     <div class="notification <?php echo $class; ?>">
+        <button class="close-btn" onclick="this.parentElement.style.display='none'">×</button>
         <h4><?php echo ucfirst($parasite); ?>: <?php echo $risk; ?>%</h4>
         <div><?php echo $message; ?></div>
-        <button class="close-btn" onclick="this.parentElement.style.display='none'">x</button>
     </div>
 
 <?php endforeach; ?>
@@ -125,5 +131,6 @@ function getPopupData($parasite, $risk) {
 
 </body>
 </html>
+
 
 
