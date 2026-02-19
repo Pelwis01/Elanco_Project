@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
     // 🗺️ Initialise land-only Leaflet map over the British Isles
-    var map = L.map("map", { zoomControl: false })
+    const map = L.map("map", { zoomControl: false })
       .setView([54.5, -4.0], 6);
     
     mapBase.addTo(map);
@@ -373,18 +373,71 @@ function handleMapClick(e, map, layers) {
     .catch((err) => console.error("Local fetch failed", err));
 }
 
-/* =========================== *\
-   🧮 Risk formula placeholders - TBA
-\* =========================== */
-function calculateLungwormRisk(temp, rain) {
-  if (temp > 12 && rain > 0.2) return 85;
-  if (temp > 10) return 30;
-  return 0;
-}
-function calculateGutwormRisk(temp, rain) {
-  if (temp > 15) return 90;
-  if (temp > 8) return 45;
-  return 0;
-}
-
-function onMapClick(e, result) {}
+const legend = L.control.Legend({
+            position: "bottomleft",
+            collapsed: false,
+            symbolWidth: 24,
+            opacity: 1,
+            column: 2,
+            legends: [{
+                label: "Marker1",
+                type: "image",
+                url: "marker/marker-red.png",
+            }, {
+                label: "Marker2",
+                type: "image",
+                url: "marker/purple.png"
+            }, {
+                label: "Circle",
+                type: "circle",
+                radius: 6,
+                color: "blue",
+                fillColor: "#FF0000",
+                fillOpacity: 0.6,
+                weight: 2,
+                layers: [marker],
+                inactive: true,
+            }, {
+                label: "Real line",
+                type: "polyline",
+                color: "#FF0000",
+                fillColor: "#FF0000",
+                weight: 2,
+                layers: polyline
+            }, {
+                label: "Dotted line",
+                type: "polyline",
+                color: "#0000FF",
+                fillColor: "#0000FF",
+                dashArray: [5, 5],
+                weight: 2
+            }, {
+                label: "Rectangle",
+                type: "rectangle",
+                color: "#FF0000",
+                fillColor: "#FF0000",
+                weight: 2
+            }, {
+                label: "Square",
+                type: "polygon",
+                sides: 4,
+                color: "#FF0000",
+                fillColor: "#FF0000",
+                weight: 2
+            }, {
+                label: "Regular triangle",
+                type: "polygon",
+                sides: 3,
+                color: "#FF0000",
+                fillColor: "#FF0000",
+                weight: 2
+            }, {
+                label: "Regular polygon",
+                type: "polygon",
+                sides: 5,
+                color: "#FF0000",
+                fillColor: "#FF0000",
+                weight: 2
+            }]
+        })
+        .addTo(map);

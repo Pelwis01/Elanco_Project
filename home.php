@@ -14,6 +14,10 @@
     <script src="https://unpkg.com/heatmap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
 
+    <!-- Leaflet Legend -->
+     <script src="https://cdn.jsdelivr.net/npm/leaflet-legend@1.0.2/leaflet-legend.min.js"></script>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-legend@1.0.2/leaflet-legend.min.css">
+
     <link rel="stylesheet" href="styles.css"/>
     <script src="parasiteCalculator.js"></script>
     <script src="map-content.js"></script>
