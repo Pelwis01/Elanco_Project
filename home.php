@@ -19,13 +19,20 @@
     
     <!-- 🎨 Styles -->
     <link rel="stylesheet" href="style.css">
-
+    
     <!-- 📛 Title -->
     <title> Elanco - Parasite Risk Map </title>
 </head>
 
 <body>
-    <?php include("navbar.php"); ?>
+    <navbar class="navbar">
+        <div class="navbar-left">
+                <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo">
+            </div>
+            
+            <div class="nav-actions">
+        </div>
+    </navbar>
     
     <main>
         <!-- 🗺️ Map - left half -->
@@ -54,14 +61,25 @@
                     </div>
                 </div>
                 
+                <div class="info-box simulation-box" style="border: 2px solid #FF8C00; background: #FFF5EB;">
+                    <h3 style="color: #E67E22; margin-top: 0;">🧪 Summer Simulation</h3>
+                    <label class="switch">
+                        <input type="checkbox" id="summer-sim">
+                        <span class="slider round"></span>
+                    </label>
+                    <span style="margin-left: 10px; font-weight: bold;">Enable Summer Simulation</span>
+                    <p style="font-size: 0.8em; color: #666; margin-top: 5px;">Adds +8°C and slightly more optimal moisture to visualise peak season potential.</p>
+                </div>
+                
                 <div class="info-box">
                     <h2> Parasite Risks </h2>
-                    <p><strong>Overall:     <span id="risk-overall">—</span>%</strong></p>
-                    <p>Gutworm:     <span id="risk-gutworm">—</span>%</p>
-                    <p>Lungworm:    <span id="risk-lungworm">—</span>%</p>
-                    <p>Liver Fluke: <span id="risk-liverfluke">—</span>%</p>
-                    <p>Hair Worm:   <span id="risk-hairworm">—</span>%</p>
-                    <p>Coccidia:    <span id="risk-coccidia">—</span>%</p>
+                    <p><strong>Overall:  <span id="risk-overall">—</span>%</strong></p>
+                    <p>Gutworm:          <span id="risk-gutworm">—</span>%</p>
+                    <p>Lungworm:         <span id="risk-lungworm">—</span>%</p>
+                    <p>Liver Fluke:      <span id="risk-liverfluke">—</span>%</p>
+                    <p>Hair Worm:        <span id="risk-hairworm">—</span>%</p>
+                    <p>Coccidia:         <span id="risk-coccidia">—</span>%</p>
+                    <p>Castor Bean Tick: <span id="risk-tick">—</span>%</p>
                 </div>
                 
                 <h2> Additional Information </h2>
@@ -71,15 +89,15 @@
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
-                    <p><span id="region-soil">—</span> %</p>
+                    <p><span id="region-rain">—</span> %</p>
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
-                    <p><span id="region-rain">—</span> mm</p>
+                    <p><span id="region-soil">—</span> mm</p>
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
-                    <p><span id="region-rain">—</span> mm</p>
+                    <p><span id="region-cow">—</span> /km^2</p>
                 </div>
             </section>
             
@@ -109,6 +127,6 @@
             </section>
         </aside>
     </main>
-
+    
 </body>
 </html>
