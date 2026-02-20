@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     mapBase.addTo(map);
     
-    // 🌾 Agricultural land overlay with hover highlight
+    // 🌾 Agricultural land overlay with hover highlight (TBA)
     const agriData = await fetch("data/FarmCensusDistrictElectoralArea2019_1860894812733494281.geojson").then(r => r.json());
     
     function highlightFeature(e) {
@@ -62,9 +62,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         maxOpacity: 0.8,
         scaleRadius: true,
         useLocalExtrema: false,
-        latField: 'lat',
-        lngField: 'lng',
-        valueField: 'value'
+        latField: "lat",
+        lngField: "lng",
+        valueField: "value",
     };
 
     // Helper to create layers quickly
@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         liverfluke: createLayer(riskGrad),
         hairworm: createLayer(riskGrad),
         coccidia: createLayer(riskGrad),
+        tick: createLayer(riskGrad),
         combined: createLayer(riskGrad) 
     };
     
@@ -102,10 +103,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Precipitation": layers.rain,
         "Soil Moisture": layers.soil,
         "Lungworm Risk": layers.lungworm,
-        "Gut Worm Risk": layers.gutworm,
+        "Gutworm Risk": layers.gutworm,
         "Liver Fluke Risk": layers.liverfluke,
         "Hairworm Risk": layers.hairworm,
         "Coccidia Risk": layers.coccidia,
+        "Tick Risk": layers.tick,
         "Combined Risk (Max)": layers.combined
     };
     
@@ -185,7 +187,7 @@ function updateMapLayers(layers) {
             points.rain.push({ lat, lng, value: rain });
             points.soil.push({ lat, lng, value: soil });
             
-            // Calculate risks with unified scaling (rain * 10)
+            // 🧮 Risk calculations with unified scaling (rain * 10)
             let result = getAllParasiteRisks(temp, rain * 10, clamp100(soil), isSimulated);
             
             let combinedRisk = Object.values(result).reduce((a, b) => a + b, 0) / Object.values(result).length;
@@ -223,41 +225,43 @@ async function getCachedWeather(points) {
     // Check cache
     const cached = localStorage.getItem(CACHE_KEY);
     const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
-    if (cached && timestamp && (Date.now() - timestamp < EXPIRY)) {
+    if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
         console.log("💾 Loading from cache...");
         return JSON.parse(cached);
     }
-
+    
     console.log("🌍 Fetching new data...");
     
     // Batch request to avoid URL length limits
     const BATCH_SIZE = 100;
     let allResults = [];
-
+    
     for (let i = 0; i < points.length; i += BATCH_SIZE) {
         const chunk = points.slice(i, i + BATCH_SIZE);
-        const latStr = chunk.map(p => p.lat).join(",");
-        const lonStr = chunk.map(p => p.lng).join(",");
+        const latStr = chunk.map((p) => p.lat).join(",");
+        const lonStr = chunk.map((p) => p.lng).join(",");
         
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m&forecast_days=1`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
         
         try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`Batch ${i} failed`);
-            const data = await res.json();
-            // Normalise to array format for consistency
-            allResults = allResults.concat(Array.isArray(data) ? data : [data]);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Batch ${i} failed`);
+        const data = await res.json();
+        // Normalise to array format for consistency
+        allResults = allResults.concat(Array.isArray(data) ? data : [data]);
         } catch (err) {
-            console.warn(`⚠️ Batch failed: ${err.message}`);
+        console.warn(`⚠️ Batch failed: ${err.message}`);
         }
     }
-
+    
     // 💾 Cache
     try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(allResults));
         localStorage.setItem(CACHE_KEY + "_ts", Date.now());
-    } catch(e) { console.warn("⚠️ Cache full."); }
-
+    } catch (e) {
+        console.warn(`⚠️ Cache full: ${e.message}`);
+    }
+    
     return allResults;
 }
 
@@ -329,7 +333,7 @@ function handleMapClick(e, map, layers) {
         document.getElementById("region-address").textContent = "—";
     });
     
-    // ⛈️ Fetch weather (Open-Meteo)
+    // ⛈️ Fetch weather and soil data (Open-Meteo)
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`)
     .then(res => res.json())
     .then(data => {
