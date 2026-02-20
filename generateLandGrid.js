@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const STEP = 0.1;
+const STEP = 0.5;
 const BATCH_SIZE = 100;
 const OUTPUT = "uk_land_grid.json";
 

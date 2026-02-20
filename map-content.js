@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     );
     
-    // 🗺️ Initialise land-only Leaflet map over the British Isles
+    // 🗺️ Initialise land-only Leaflet map over British Isles
     const map = L.map("map", { zoomControl: false })
         .setView([54.5, -4.0], 6);
     
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     function highlightFeature(e) {
         const layer = e.target;
         layer.setStyle({ weight: 5, color: '#666', fillOpacity: 0.7 });
-        layer.bringToFront(); // Ensures the highlight is visible
+        layer.bringToFront(); // Ensures highlight is visible
     }
     
     const geojsonLayer = L.geoJSON(agriData, {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }).addTo(map);
     
-    // 🌊 Sea + Labels overlay
+    // 🌊 Sea + labels overlay
     const mapTop = L.tileLayer(
         "https://api.mapbox.com/styles/v1/bryzerse/cmlsoi77b001901sag1cug1yy/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
         {
@@ -236,22 +236,44 @@ async function getCachedWeather(points) {
     const BATCH_SIZE = 100;
     let allResults = [];
     
+    const totalBatches = Math.ceil(points.length / BATCH_SIZE);
+    
     for (let i = 0; i < points.length; i += BATCH_SIZE) {
+        const batchIndex = Math.floor(i / BATCH_SIZE) + 1;
         const chunk = points.slice(i, i + BATCH_SIZE);
         const latStr = chunk.map((p) => p.lat).join(",");
         const lonStr = chunk.map((p) => p.lng).join(",");
         
+        console.log(
+            `📦 Batch ${batchIndex}/${totalBatches} | Points ${i + 1}-${i + chunk.length}`
+        );
+        
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
+        const start = performance.now();
         
         try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Batch ${i} failed`);
-        const data = await res.json();
-        // Normalise to array format for consistency
-        allResults = allResults.concat(Array.isArray(data) ? data : [data]);
+            const res = await fetch(url);
+            
+            if (res.status === 429) {
+                console.warn("⏳ Rate limited — waiting 6s...");
+                await new Promise(r => setTimeout(r, 6000));
+                i -= BATCH_SIZE; // Retry batch
+                continue;
+            }
+            
+            if (!res.ok) throw new Error(`⚠️ Batch ${i} failed`);
+            const data = await res.json();
+            
+            // Normalise to array format for consistency
+            allResults = allResults.concat(Array.isArray(data) ? data : [data]);
+            
+            const duration = ((performance.now() - start) / 1000).toFixed(2);
+            console.log(`✅ Batch ${batchIndex} complete (${duration}s)`);
         } catch (err) {
-        console.warn(`⚠️ Batch failed: ${err.message}`);
+            console.warn(`⚠️ Batch failed: ${err.message}`);
         }
+        
+        await new Promise(r => setTimeout(r, 1000)); // ⏳ Throttle requests 1 second to be safe against rate limits
     }
     
     // 💾 Cache
@@ -333,7 +355,7 @@ function handleMapClick(e, map, layers) {
         document.getElementById("region-address").textContent = "—";
     });
     
-    // ⛈️ Fetch weather and soil data (Open-Meteo)
+    // ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`)
     .then(res => res.json())
     .then(data => {
