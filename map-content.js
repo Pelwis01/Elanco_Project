@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async function () {
        🎨 Layer config
     \* =========================== */
     const baseCfg = {
-        radius: 1,
+        radius: 0.6,
         maxOpacity: 0.8,
         scaleRadius: true,
         useLocalExtrema: false,
@@ -199,6 +199,13 @@ function updateMapLayers(layers) {
         });
     });
     
+    // 🧹 Clear any existing data in layers
+    Object.keys(layers).forEach(key => {
+        if (layers[key].setData) {
+            layers[key].setData({ max: 100, data: [] });
+        }
+    });
+    
     // 🗺️ Update heatmap visuals
     layers.temp.setData({ max: 160, data: points.temp }); // 🤔 Accounts for 40°C + 20 for negative offset, plus arbitrary headroom for heatmap clustering intensity
     layers.rain.setData({ max: 10, data: points.rain });
@@ -211,7 +218,7 @@ function updateMapLayers(layers) {
    🧩 Helper functions
 \* =========================== */
 
-// 🇬🇧 Create UK-based grid
+// 🇬🇧 Fetch UK land grid (1561 points at a 0.2 degree step)
 async function getLandPoints() {
     const res = await fetch("data/uk_land_grid.json");
     return await res.json();
@@ -219,7 +226,7 @@ async function getLandPoints() {
 
 // Retrieve data (cached or new)
 async function getCachedWeather(points) {
-    const CACHE_KEY = "uk_weather_cache_v5"; // ‼️ NB: change each map update to force early refresh for outdated cache - can be made more elegant with versioning for long-term maintenance
+    const CACHE_KEY = "uk-weather-cache-v6"; // ‼️ NB: change each map update to force early refresh for outdated cache - can be made more elegant with versioning for long-term maintenance
     const EXPIRY = 60 * 60 * 1000; // 🕰️ 1 hour
     
     // Check cache
@@ -233,7 +240,9 @@ async function getCachedWeather(points) {
     console.log("🌍 Fetching new data...");
     
     // Batch request to avoid URL length limits
-    const BATCH_SIZE = 100;
+    // Open-Meteo supports bulk requests of up to 1000 locations using "multiple locations" feature, meaning all 1561 points of the 0.2 degree step map can be fetched in just 2 batches
+    // This easily fits the 10,000 daily and 5,000 hourly request limits of the free tier, but not the 600 per minute limit - hence the 1 second delay between batches and retry logic for 429 responses
+    const BATCH_SIZE = 1000;
     let allResults = [];
     
     const totalBatches = Math.ceil(points.length / BATCH_SIZE);
