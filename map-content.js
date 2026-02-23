@@ -1,4 +1,5 @@
 let weatherData = null;
+let layers = null;
 
 document.addEventListener("DOMContentLoaded", async function () {
     const mapContainer = document.getElementById("map");
@@ -14,7 +15,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     \* =========================== */
     // 🌍 Mapbox tile layer URL
     const mapBase = L.tileLayer(
-        "https://api.mapbox.com/styles/v1/bryzerse/cmlsnxjpl001c01s951lgbjdp/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
+        // Below are two style options - the first with and the second without farm highlights. One should be commented out depending on preference.
+        "https://api.mapbox.com/styles/v1/bryzerse/cmlyheaow001g01qyft8m8tos/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
+        // "https://api.mapbox.com/styles/v1/bryzerse/cmlsnxjpl001c01s951lgbjdp/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
         {
             attribution: '&copy; Mapbox'
         }
@@ -53,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             pane: 'overlayPane'
         }
     );
-
+    
     /* =========================== *\
        🎨 Layer config
     \* =========================== */
@@ -83,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const riskGrad = { '.1': 'darkgreen', '.2': 'green', '.5': 'gold', '.8': 'orange', '1': 'red' };
     
     // 🏗️ Instantiate layers
-    const layers = {
+    layers = {
         temp: createLayer(tempGrad),
         rain: createLayer(rainGrad),
         soil: createLayer(rainGrad),
@@ -139,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         weatherData = await getCachedWeather(gridPoints);
         
         // Initial map render
-        updateMapLayers(layers);
+        updateMapLayers();
         
         console.log("✅ Map initialized and ready.");
     } catch (error) {
@@ -149,7 +152,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     map.on("click", (e) => handleMapClick(e, map, layers));
 });
 
-function updateMapLayers(layers) {
+function updateMapLayers() {
     if (!weatherData) return;
     
     const isSimulated = document.getElementById("summer-sim").checked;
@@ -217,12 +220,12 @@ async function getLandPoints() {
     return await res.json();
 }
 
-// Retrieve data (cached or new)
+// 📊 Retrieve data (cached or new)
 async function getCachedWeather(points) {
     const CACHE_KEY = "uk_weather_cache_v5"; // ‼️ NB: change each map update to force early refresh for outdated cache - can be made more elegant with versioning for long-term maintenance
     const EXPIRY = 60 * 60 * 1000; // 🕰️ 1 hour
     
-    // Check cache
+    // 💾 Check cache
     const cached = localStorage.getItem(CACHE_KEY);
     const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
     if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
@@ -232,7 +235,7 @@ async function getCachedWeather(points) {
     
     console.log("🌍 Fetching new data...");
     
-    // Batch request to avoid URL length limits
+    // 🧺 Batch request to avoid limits
     const BATCH_SIZE = 100;
     let allResults = [];
     
@@ -257,14 +260,14 @@ async function getCachedWeather(points) {
             if (res.status === 429) {
                 console.warn("⏳ Rate limited — waiting 6s...");
                 await new Promise(r => setTimeout(r, 6000));
-                i -= BATCH_SIZE; // Retry batch
+                i -= BATCH_SIZE; // ↩️ Retry batch
                 continue;
             }
             
             if (!res.ok) throw new Error(`⚠️ Batch ${i} failed`);
             const data = await res.json();
             
-            // Normalise to array format for consistency
+            // 🗃️ Normalise to array format for consistency
             allResults = allResults.concat(Array.isArray(data) ? data : [data]);
             
             const duration = ((performance.now() - start) / 1000).toFixed(2);
@@ -293,7 +296,7 @@ function handleMapClick(e, map, layers) {
     const { lat, lng } = e.latlng;
     console.log(`📍 Clicked: ${lat}, ${lng}`);
     
-    // Update coordinates
+    // 🌐 Update coordinates
     document.getElementById("region-coords").textContent =
         `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
     
@@ -377,7 +380,7 @@ function handleMapClick(e, map, layers) {
         );
         
         // 📊 Parasite risk calculation with unified scaling (rain * 100 for percentage)
-        const risks = getAllParasiteRisks(temp, rain * 100, soil, isSimulated);
+        const risks = getAllParasiteRisks(temp, rain * 10, soil, isSimulated);
         console.log("📊 Risk Result:", risks);
         
         document.getElementById("risk-overall").textContent =  Math.round((Object.values(risks).reduce((total, current) => total + current,0,) / Object.values(risks).length)) ?? 0;

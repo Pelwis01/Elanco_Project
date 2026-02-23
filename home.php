@@ -90,11 +90,11 @@
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/rain-drops.png" class="info-icon" alt="Rainfall icon">Rainfall</h3>
-                    <p><span id="region-rain">—</span> %</p>
+                    <p><span id="region-rain">—</span> mm</p>
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/dirt.png" class="info-icon" alt="Soil moisture icon">Soil Moisture</h3>
-                    <p><span id="region-soil">—</span> mm</p>
+                    <p><span id="region-soil">—</span> %</p>
                 </div>
                 <div class="info-box">
                     <h3><img src="./images/cow.png" class="info-icon" alt="Cattle density icon">Cattle Density</h3>
