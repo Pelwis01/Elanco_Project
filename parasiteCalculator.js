@@ -36,6 +36,8 @@ function tickRisk(temp, rainfall, soilMoisture) {
     // Temp and soil more important
     let risk = (tempScore * 0.4) + (rainScore * 0.2) + (soilScore * 0.4);
 
+    if (risk > 100) risk = 100; // cap at 100
+
     return Math.round(risk);
 }
 
@@ -60,6 +62,8 @@ function gutwormRisk(temp, rainfall, soilMoisture) {
     // Combine (temperature is slightly more important)
     let risk = (tempScore * 0.5) + (rainScore * 0.3) + (soilScore * 0.2);
 
+    if (risk > 100) risk = 100; // cap at 100
+
     return Math.round(risk);
 }
 
@@ -80,6 +84,8 @@ function lungwormRisk(temp, rainfall, soilMoisture) {
     // Combine (temperature, rainfall and soil moisture are equally important)
     let risk = (tempScore * 0.4) + (rainScore * 0.3) + (soilScore * 0.3);
 
+    if (risk > 100) risk = 100; // cap at 100
+
     return Math.round(risk);
 }
 function liverflukeRisk(temp, rainfall, soilMoisture) {
@@ -98,6 +104,8 @@ function liverflukeRisk(temp, rainfall, soilMoisture) {
 
     // Soil and rainfall are more important due to snail intermediate host, but temperature still plays a role, so we give it a moderate weighting
     let risk = (tempScore * 0.2) + (rainScore * 0.4) + (soilScore * 0.4);
+
+    if (risk > 100) risk = 100; // cap at 100
 
     return Math.round(risk);
 }
@@ -118,6 +126,8 @@ function hairwormRisk(temp, rainfall, soilMoisture) {
     // Temperature alot more important
     let risk = (tempScore * 0.6) + (rainScore * 0.2) + (soilScore * 0.2);
 
+    if (risk > 100) risk = 100; // cap at 100
+
     return Math.round(risk);
 }
 function coccidiaRisk(temp, rainfall, soilMoisture) {
@@ -137,6 +147,8 @@ function coccidiaRisk(temp, rainfall, soilMoisture) {
     // Temperature rainfall and soil moisture are equally important
     let risk = (tempScore * 0.4) + (rainScore * 0.3) + (soilScore * 0.3);
 
+    if (risk > 100) risk = 100; // cap at 100
+    
     return Math.round(risk);
 }
 
