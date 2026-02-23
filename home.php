@@ -80,8 +80,17 @@
                     <p style="font-size: 0.8em; color: #666; margin-top: 5px;">Adds +8°C and slightly more optimal moisture to visualise peak season potential.</p>
                 </div>
                 
-                <div class="info-box">
-                    <h2> Parasite Risks </h2>
+                <div class="box">
+                    <h2>
+                        Parasite Risks
+                        <span class="info-tooltip">ⓘ
+                            <span class="tooltip-text">
+                                Risk scores (0–100) represent weighted environmental suitability
+                                based on temperature, rainfall, and soil moisture.
+                                Overall risk is the mean of all parasite scores.
+                            </span>
+                        </span>
+                    </h2>
                     <p><strong>Overall:  <span id="risk-overall">—</span>%</strong></p>
                     <p>Gutworm:          <span id="risk-gutworm">—</span>%</p>
                     <p>Lungworm:         <span id="risk-lungworm">—</span>%</p>
