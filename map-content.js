@@ -225,11 +225,15 @@ async function getCachedWeather(points) {
     const CACHE_KEY = "uk_weather_cache_v5"; // ‼️ NB: change each map update to force early refresh for outdated cache - can be made more elegant with versioning for long-term maintenance
     const EXPIRY = 60 * 60 * 1000; // 🕰️ 1 hour
     
+    // 🔄 Show loading overlay
+    document.getElementById("loading-overlay").style.display = "flex";
+    
     // 💾 Check cache
     const cached = localStorage.getItem(CACHE_KEY);
     const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
     if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
         console.log("💾 Loading from cache...");
+        document.getElementById("loading-overlay").style.display = "none";
         return JSON.parse(cached);
     }
     
@@ -287,6 +291,7 @@ async function getCachedWeather(points) {
         console.warn(`⚠️ Cache full: ${e.message}`);
     }
     
+    document.getElementById("loading-overlay").style.display = "none";
     return allResults;
 }
 
