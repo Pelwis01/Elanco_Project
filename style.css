@@ -318,20 +318,33 @@ body {
 }
 
 .leaflet-geosearch-button.active .leaflet-bar-part {
-	height: 4dvh;
-	border-bottom-right-radius: 0%;
+	height: 30px;
+	width: 30px;
+	border-bottom-right-radius: 0px !important;
+}
+
+.leaflet-control-geosearch a.leaflet-bar-part:before {
+    top: 17px;
+    left: 15px;
+}
+
+.leaflet-control-geosearch a.leaflet-bar-part:after {
+    top: 10px;
+    left: 10px;
 }
 
 .leaflet-control-geosearch.active form {
-	height: 4dvh;
+	height: 30px;
 	max-width: 1080px;
 	width: 40dvw;
 	display: flex;
+	border-bottom-left-radius: 0px;
+	left: 30px;
 }
 
 .reset {
-	background-color: #003366;
-	color: white;
+	background-color: transparent;
+	color: black;
 	border: none;
 	padding: 0 8px;
 	border-radius: 4px;
@@ -348,6 +361,8 @@ body {
 	width: 100%;
 	background-color: white;
 	border: 1px solid #ccc;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
 	border-top: none;
 	max-height: 200px;
 	overflow-y: auto;
