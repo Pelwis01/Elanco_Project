@@ -317,3 +317,39 @@ body {
 	to { transform: translateX(0); opacity: 1; }
 }
 
+.leaflet-geosearch-button.active .leaflet-bar-part {
+	height: 4dvh;
+	border-bottom-right-radius: 0%;
+}
+
+.leaflet-control-geosearch.active form {
+	height: 4dvh;
+	max-width: 1080px;
+	width: 40dvw;
+	display: flex;
+}
+
+.reset {
+	background-color: #003366;
+	color: white;
+	border: none;
+	padding: 0 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: background-color 0.3s ease;
+}
+
+.results.active {
+	display: block;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-top: none;
+	max-height: 200px;
+	overflow-y: auto;
+	z-index: 1000;
+}
