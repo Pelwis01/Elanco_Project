@@ -135,6 +135,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 	
 	mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
 	
+
+const search = new GeoSearch.GeoSearchControl({
+  provider: new GeoSearch.OpenStreetMapProvider(),
+});
+
+map.addControl(search);
 	/* =========================== *\
 	   🌩️ Data handling
 	\* =========================== */
