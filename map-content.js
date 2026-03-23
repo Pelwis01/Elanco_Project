@@ -120,11 +120,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 	
 	legend.onAdd = function() {
 	let div = L.DomUtil.create("div", "legend");
-	div.innerHTML += "<h4>Legend</h4>";
-	div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
+	div.innerHTML += "<h4>Map Key</h4>";
+	div.innerHTML += '<i style="background: green"></i><span>Low</span><br>';
 	div.innerHTML +=
-	  '<i style="background: yellow"></i><span>30-70%</span><br>';
-	div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
+	  '<i style="background: yellow"></i><span>Medium</span><br>';
+	div.innerHTML += '<i style="background: red"></i><span>High</span><br>';
 	return div;
 	};
 	
