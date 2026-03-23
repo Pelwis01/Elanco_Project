@@ -25,13 +25,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 	
 	// 🗺️ Initialise land-only Leaflet map over British Isles
 	const map = L.map("map", { zoomControl: false })
-		.setView([54.5, -4.0], 6);
+		.setView([54.5, -4], 6);
 	
 	mapBase.addTo(map);
 	
 	// 🌾 Agricultural land overlay with hover highlight (TBA)
 	const agriData = await fetch("data/FarmCensusDistrictElectoralArea2019_1860894812733494281.geojson").then(r => r.json());
 	
+	// Move highlightFeature to the outer scope
 	function highlightFeature(e) {
 		const layer = e.target;
 		layer.setStyle({ weight: 5, color: '#666', fillOpacity: 0.7 });
@@ -120,11 +121,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 	
 	legend.onAdd = function() {
 	let div = L.DomUtil.create("div", "legend");
-	div.innerHTML += "<h4>Legend</h4>";
-	div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
+	div.innerHTML += "<h4>Map Key</h4>";
+	div.innerHTML += '<i style="background: green"></i><span>Low</span><br>';
 	div.innerHTML +=
-	  '<i style="background: yellow"></i><span>30-70%</span><br>';
-	div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
+	  '<i style="background: yellow"></i><span>Medium</span><br>';
+	div.innerHTML += '<i style="background: red"></i><span>High</span><br>';
 	return div;
 	};
 	
@@ -134,6 +135,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 	layers.combined.addTo(map); // 🗺️ Default view - combined risk map
 	
 	mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
+
+  L.tileLayer('//tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+const search = new GeoSearch.GeoSearchControl({
+  provider: new GeoSearch.OpenStreetMapProvider(),
+});
+
+map.addControl(search);
 	
 	/* =========================== *\
 	   🌩️ Data handling
