@@ -26,9 +26,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 	// 🗺️ Initialise land-only Leaflet map over British Isles
 	const map = L.map("map", { zoomControl: false })
 		.setView([54.5, -4.0], 6);
-	
+
 	mapBase.addTo(map);
 	
+  map.options.minZoom = 6;
+  map.options.maxZoom = 10;
+
 	// 🌾 Agricultural land overlay with hover highlight (TBA)
 	const agriData = await fetch("data/FarmCensusDistrictElectoralArea2019_1860894812733494281.geojson").then(r => r.json());
 	
