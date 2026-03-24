@@ -100,9 +100,11 @@
 					</div>
 
 					<div style="display: none;" id="predictive-data" >
-						<input type="range" id="hour" name="hour" in="0" max="72"  onchange="updateValue(this.value, 'hour-value');"/>
-						<label for="hour">Hour : <span id="hour-value">0</span></label>
+						Date: <span id="date-value">—</span><br>
+						Time: <span id="hour-value">—</span>:00<br>
 
+						<input type="range" id="hour" name="hour" min="0" max="72" value="0" onchange="changeDate(this.value)"/>
+					
 						<p>Gutworm:          <span id="risk-gutworm">—</span></p>
 						<p>Lungworm:         <span id="risk-lungworm">—</span></p>
 						<p>Liver Fluke:      <span id="risk-liverfluke">—</span></p>

@@ -169,13 +169,31 @@ function getActiveLayerName(layers, map) {
   return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
 }
 
-function updateValue(e, element) {
-  document.getElementById(element).textContent = e;
-}
-
 function setCurrentHour() {
   const now = new Date();
   const currentHour = now.getHours();
-  document.getElementById("hour").value = currentHour;
+  const currentDay = now.getDate();
+  const currentMonth = now.getMonth() + 1; 
+  const currentYear = now.getFullYear();
+  const currentDate = `${currentDay}/0${currentMonth}/${currentYear}`;
+
   document.getElementById("hour-value").textContent = currentHour;
+  document.getElementById("date-value").textContent = currentDate;
+}
+
+function changeDate(value) {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDate();
+    
+    let Newtime = currentHour + parseInt(value) ;
+    let daysToAdd = Math.floor(Newtime / 24);
+    let NewDate = currentDay + daysToAdd;
+ 
+    const currentMonth = now.getMonth() + 1; 
+    const currentYear = now.getFullYear();
+    let currentDate = `${NewDate}/0${currentMonth}/${currentYear}`;
+
+  document.getElementById("hour-value").textContent = Newtime % 24; 
+  document.getElementById("date-value").textContent = currentDate;
 }
