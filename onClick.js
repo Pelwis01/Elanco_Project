@@ -65,6 +65,12 @@ function handleMapClick(e, map, layers) {
       document.getElementById("region-address").textContent = "—";
     });
 
+    fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`)
+    .then((r) => r.json())
+    .then((data) => {
+        const elevation = data.elevation;
+        console.log(`🏔️ Elevation: ${elevation} m`);
+    })
   // ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
   fetch(
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=3`,
@@ -80,7 +86,7 @@ function handleMapClick(e, map, layers) {
         coccidia: "risk-coccidia",
         tick: "risk-tick",
       };
-
+      console.log("📊 Weather & Soil Data:", data);
       const riskEvaluation = () => {
         let value = document.getElementById("hour").value ?? 0;
         let style = "";

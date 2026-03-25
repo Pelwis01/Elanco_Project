@@ -152,7 +152,10 @@ map.addControl(search);
 		// Retrieve data (cached or new)
 		const gridPoints = await getLandPoints();
 		weatherData = await getCachedWeather(gridPoints);
-		
+		elevationData= await getElevation(gridPoints);
+		weatherData[0].elevation = elevationData;
+
+		console.log(weatherData)
 		// Initial map render
 		updateMapLayers();
 		
@@ -196,11 +199,12 @@ function updateMapLayers() {
 			const rain = (Array.isArray(batch.hourly.precipitation[0]) ? batch.hourly.precipitation[i][0] : batch.hourly.precipitation[0]) ?? 0;
 			const rawSoil = (Array.isArray(batch.hourly.soil_moisture_3_to_9cm[0]) ? batch.hourly.soil_moisture_3_to_9cm[i][0] : batch.hourly.soil_moisture_3_to_9cm[0]) ?? 0;
 			const soil = clamp100((rawSoil / 0.5) * 100); // Normalise to 0-100% (assuming UK saturation is ~0.5)
-			
+			const elevation = batch.elevation ? (Array.isArray(batch.elevation) ? batch.elevation[i] : batch.elevation) : 0;
 			const simTemp = isSimulated ? temp + 8 : temp;
 			points.temp.push({ lat, lng, value: simTemp + 20 }); // Offset to push negative temps into positive range for heatmap
 			points.rain.push({ lat, lng, value: rain });
 			points.soil.push({ lat, lng, value: soil });
+			points.elevation.push({ lat, lng, value: elevation });
 			
 			// 🧮 Risk calculations with unified scaling (rain * 10)
 			let result = getAllParasiteRisks(temp, rain * 10, clamp100(soil), isSimulated);
@@ -269,7 +273,7 @@ async function getCachedWeather(points) {
 		
 		const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
 		const start = performance.now();
-		
+
 		try {
 			const res = await fetch(url);
 			
@@ -306,3 +310,28 @@ async function getCachedWeather(points) {
 	document.getElementById("loading-overlay").style.display = "none";
 	return allResults;
 }
+
+
+function getElevation(points) {
+
+	let allResults = [];
+	
+		elevationData = fetch(`data/elevation_data.json?lat=${points.lat}&lon=${points.lon}`)
+			.then((res) => res.json())
+			.then((data) => {
+				
+				for (let i = 0; i < data.length; i++) {
+					allResults.push({
+						evelation: data[i].elevation[0],
+					});
+				}
+				console.log(allResults);
+				console.log("✅ Elevation data retrieved");
+			})
+			.catch((err) => {
+				console.warn(`⚠️ Elevation batch failed: ${err.message}`);
+			});
+	
+	
+	return allResults;
+}	
