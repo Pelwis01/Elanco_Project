@@ -314,6 +314,20 @@ async function getCachedWeather(points) {
 }
 
 
+function getActiveLayerName(layers, map) {
+	return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
+}
+
+// Expose map globally for sidebar toggle
+window._elancoMap = map;
+
+// Expose updateMapLayers globally for sidebar toggle
+window.updateMapLayers = updateMapLayers;
+
+// Expose layers globally for sidebar toggle
+window.layers = layers;
+
+
 function getElevation(points) {
 
 	let allResults = [];
