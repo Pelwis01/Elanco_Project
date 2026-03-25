@@ -1,95 +1,90 @@
-const fs = require("fs");
+const fs = require("node:fs");
 
 const STEP = 0.5;
 const BATCH_SIZE = 100;
 const OUTPUT = "uk_land_grid.json";
 
 function sleep(ms) {
-	return new Promise(r => setTimeout(r, ms));
+  return new Promise((r) => setTimeout(r, ms));
 }
 
 function key(lat, lon) {
-	return `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  return `${lat.toFixed(2)},${lon.toFixed(2)}`;
 }
 
 async function generateGrid() {
+  const rawPoints = [];
 
-	const rawPoints = [];
+  for (let lat = 49; lat <= 61; lat += STEP) {
+    for (let lon = -11; lon <= 2; lon += STEP) {
+      rawPoints.push({ lat, lon });
+    }
+  }
 
-	for (let lat = 49; lat <= 61; lat += STEP) {
-		for (let lon = -11; lon <= 2; lon += STEP) {
-			rawPoints.push({ lat, lon });
-		}
-	}
+  console.log(`Total raw points: ${rawPoints.length}`);
 
-	console.log(`Total raw points: ${rawPoints.length}`);
+  const landSet = new Set();
+  const allPoints = new Map();
 
-	const landSet = new Set();
-	const allPoints = new Map();
+  for (let i = 0; i < rawPoints.length; i += BATCH_SIZE) {
+    const chunk = rawPoints.slice(i, i + BATCH_SIZE);
 
-	for (let i = 0; i < rawPoints.length; i += BATCH_SIZE) {
+    const latList = chunk.map((p) => p.lat).join(",");
+    const lonList = chunk.map((p) => p.lon).join(",");
 
-		const chunk = rawPoints.slice(i, i + BATCH_SIZE);
+    const url = `https://api.open-meteo.com/v1/elevation?latitude=${latList}&longitude=${lonList}`;
 
-		const latList = chunk.map(p => p.lat).join(",");
-		const lonList = chunk.map(p => p.lon).join(",");
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(res.status);
 
-		const url = `https://api.open-meteo.com/v1/elevation?latitude=${latList}&longitude=${lonList}`;
+      const data = await res.json();
 
-		try {
+      chunk.forEach((p, idx) => {
+        const k = key(p.lat, p.lon);
+        allPoints.set(k, { lat: p.lat, lng: p.lon });
 
-			const res = await fetch(url);
-			if (!res.ok) throw new Error(res.status);
+        if (data.elevation[idx] > 0) {
+          landSet.add(k);
+        }
+      });
 
-			const data = await res.json();
+      console.log(`Processed ${i + chunk.length} / ${rawPoints.length}`);
+    } catch (e) {
+      console.log("Retrying batch...", e);
+      i -= BATCH_SIZE;
+      await sleep(1000);
+      continue;
+    }
 
-			chunk.forEach((p, idx) => {
-				const k = key(p.lat, p.lon);
-				allPoints.set(k, { lat: p.lat, lng: p.lon });
+    await sleep(300);
+  }
 
-				if (data.elevation[idx] > 0) {
-					landSet.add(k);
-				}
-			});
+  // Add coastal neighbours
+  const finalSet = new Set(landSet);
 
-			console.log(`Processed ${i + chunk.length} / ${rawPoints.length}`);
+  for (const k of landSet) {
+    const [lat, lon] = k.split(",").map(Number);
 
-		} catch (err) {
-			console.log("Retrying batch...");
-			i -= BATCH_SIZE;
-			await sleep(1000);
-			continue;
-		}
+    for (let dLat = -STEP; dLat <= STEP; dLat += STEP) {
+      for (let dLon = -STEP; dLon <= STEP; dLon += STEP) {
+        const neighbourKey = key(lat + dLat, lon + dLon);
 
-		await sleep(300);
-	}
+        if (allPoints.has(neighbourKey)) {
+          finalSet.add(neighbourKey);
+        }
+      }
+    }
+  }
 
-	// Add coastal neighbours
-	const finalSet = new Set(landSet);
+  const finalPoints = Array.from(finalSet).map((k) => {
+    const [lat, lon] = k.split(",").map(Number);
+    return { lat, lng: lon };
+  });
 
-	for (const k of landSet) {
-		const [lat, lon] = k.split(",").map(Number);
+  fs.writeFileSync(OUTPUT, JSON.stringify(finalPoints, null, 2));
 
-		for (let dLat = -STEP; dLat <= STEP; dLat += STEP) {
-			for (let dLon = -STEP; dLon <= STEP; dLon += STEP) {
-
-				const neighbourKey = key(lat + dLat, lon + dLon);
-
-				if (allPoints.has(neighbourKey)) {
-					finalSet.add(neighbourKey);
-				}
-			}
-		}
-	}
-
-	const finalPoints = Array.from(finalSet).map(k => {
-		const [lat, lon] = k.split(",").map(Number);
-		return { lat, lng: lon };
-	});
-
-	fs.writeFileSync(OUTPUT, JSON.stringify(finalPoints, null, 2));
-
-	console.log(`Saved ${finalPoints.length} buffered land points → ${OUTPUT}`);
+  console.log(`Saved ${finalPoints.length} buffered land points → ${OUTPUT}`);
 }
 
-generateGrid();
+await generateGrid();
