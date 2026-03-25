@@ -70,10 +70,26 @@ main {
 	background: #fff;
 	box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-.sidebar-section:last-child { border-bottom: none; }
-.sidebar-section h2 { margin-top: 0; margin-bottom: 12px; font-size: 18px; color: #003366; }
-.sidebar-section p  { margin: 0; font-size: 14px; line-height: 1.5; color: #333; }
-#region-info.sidebar-section { position: relative; }
+.sidebar-section:last-child {
+	border-bottom: none;
+}
+.sidebar-section h2 {
+	margin-top: 0;
+	margin-bottom: 12px;
+	font-size: 18px;
+	color: #003366;
+}
+.sidebar-section p {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.5;
+	color: #333;
+}
+
+/* Ensure region-info section is relative for toggle button */
+#region-info.sidebar-section {
+    position: relative;
+}
 
 /* Boxes */
 .box {
@@ -148,175 +164,116 @@ main {
 
 /* Toggle button base */
 #sidebar-toggle-btn {
-	background: #fff; color: #003366; border: 1px solid #003366;
-	font-weight: bold; cursor: pointer;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.12); outline: none;
+    background: #fff;
+    color: #003366;
+    border: 1px solid #003366;
+    border-radius: 4px 0 0 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    position: relative;
+    outline: none;
 }
 
-/* Leaflet z-index */
-.leaflet-control-container { z-index: 1001 !important; }
-.leaflet-control            { z-index: 1001 !important; }
-.leaflet-control-layers     { z-index: 1001 !important; }
+/* Ensure heatmap overlays expand with map */
 
-/* Summer sim switch */
-.switch { position: relative; display: inline-block; width: 44px; height: 24px; vertical-align: middle; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .3s; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; }
-input:checked + .slider { background-color: #E67E22; }
-input:checked + .slider:before { transform: translateX(20px); }
-.slider.round { border-radius: 24px; }
-.slider.round:before { border-radius: 50%; }
-
-/* Mobile-only elements — hidden by default, shown inside the mobile media query */
-.mobile-sheet,
-.mobile-bottom-nav,
-.mobile-layer-fab,
-.mobile-layer-picker,
-.map-tap-hint {
-	display: none;
+/* Overlay sidebar for fullscreen map */
+.sidebar {
+    position: absolute;
+    top: var(--navbar-height);
+    right: 0;
+    width: 33.333vw;
+    max-width: 600px;
+    height: calc(100vh - var(--navbar-height));
+    background: #f5f5f5;
+    border-left: 1px solid #ccc;
+    overflow: hidden;
+    z-index: 10;
+    transition: transform 0.3s;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+.sidebar.collapsed {
+    transform: translateX(100%);
+    pointer-events: none;
+}
+main.sidebar-collapsed .sidebar {
+    transform: translateX(100%);
+    pointer-events: none;
 }
 
-/* DESKTOP (>= 769px) */
-@media (min-width: 769px) {
-	.sidebar {
-		position: absolute;
-		top: var(--navbar-height);
-		right: 0;
-		width: 33.333vw;
-		max-width: 600px;
-		height: calc(100vh - var(--navbar-height));
-		border-left: 1px solid #ccc;
-		box-shadow: -2px 0 8px rgba(0,0,0,0.08);
-		transition: transform 0.3s;
-		z-index: 10;
-	}
-	.sidebar.collapsed,
-	main.sidebar-collapsed .sidebar {
-		transform: translateX(100%);
-		pointer-events: none;
-	}
-	#sidebar-toggle-wrapper {
-		position: fixed;
-		top: 50%;
-		right: 33.333vw;
-		transform: translateY(-50%);
-		z-index: 100;
-		transition: right 0.3s;
-	}
-	#sidebar-toggle-wrapper.sidebar-collapsed { right: 0; }
-	#sidebar-toggle-btn { border-radius: 4px 0 0 4px; padding: 6px 12px; }
-	.leaflet-top.leaflet-right {
-		right: 33.333vw;
-		top: var(--navbar-height);
-		left: auto !important;
-		z-index: 1002 !important;
-		transition: right 0.3s;
-	}
-	main.sidebar-collapsed .leaflet-top.leaflet-right { right: 16px; }
+/* Ensure Leaflet layer control is visible above sidebar */
+.leaflet-control-container {
+    z-index: 1001 !important;
+}
+.leaflet-control {
+    z-index: 1001 !important;
+}
+.leaflet-control-layers {
+    z-index: 1001 !important;
 }
 
-/* MOBILE (<= 768px)*/
-@media (max-width: 768px) {
-	:root { --navbar-height: 48px; }
-	.navbar-logo { height: 32px; }
+/* Move Leaflet layers control to always be visible at the top right, just left of the sidebar (or at the edge when sidebar is hidden) */
+.leaflet-top.leaflet-right {
+    right: 33.333vw;
+    top: var(--navbar-height);
+    left: auto !important;
+    z-index: 1002 !important;
+    transition: right 0.3s;
+}
+main.sidebar-collapsed .leaflet-top.leaflet-right {
+    right: 16px;
+}
+.leaflet-geosearch-button.active .leaflet-bar-part {
+	height: 30px;
+	width: 30px;
+	border-bottom-right-radius: 0px !important;
+}
 
-	/* Hide desktop-only elements */
-	.sidebar { display: none; }
-	#sidebar-toggle-wrapper { display: none; }
+.leaflet-control-geosearch a.leaflet-bar-part:before {
+    top: 17px;
+    left: 15px;
+}
 
-	/* Show mobile-only elements */
-	.mobile-sheet     { display: flex; }
-	.mobile-bottom-nav { display: flex; }
-	.mobile-layer-fab { display: flex; }
+.leaflet-control-geosearch a.leaflet-bar-part:after {
+    top: 10px;
+    left: 10px;
+}
 
-	/* Bottom nav bar */
-	.mobile-bottom-nav {
-		position: fixed;
-		bottom: 0; left: 0; right: 0;
-		height: 56px;
-		background: #003366;
-		z-index: 600;
-		box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
-	}
-	.mobile-bottom-nav button {
-		flex: 1; background: none; border: none;
-		color: rgba(255,255,255,0.6);
-		font-size: 11px; font-weight: 600;
-		display: flex; flex-direction: column;
-		align-items: center; justify-content: center;
-		gap: 3px; cursor: pointer; padding: 6px 0;
-	}
-	.mobile-bottom-nav button.active { color: #fff; border-top: 3px solid #4da3ff; }
-	.mobile-bottom-nav button svg { width: 22px; height: 22px; }
+.leaflet-control-geosearch.active form {
+	height: 30px;
+	max-width: 1080px;
+	width: 40dvw;
+	display: flex;
+	border-bottom-left-radius: 0px;
+	left: 30px;
+}
 
-	/* Bottom sheet — sits above the nav bar, hidden off-screen by default */
-	.mobile-sheet {
-		flex-direction: column;
-		position: fixed;
-		left: 0; right: 0;
-		bottom: 56px;          /* above the nav bar */
-		height: 60vh;
-		background: #f5f5f5;
-		border-radius: 16px 16px 0 0;
-		box-shadow: 0 -4px 20px rgba(0,0,0,0.18);
-		transform: translateY(100%);   /* hidden */
-		transition: transform 0.3s ease;
-		z-index: 500;
-	}
-	.mobile-sheet.open {
-		transform: translateY(0);      /* shown */
-	}
+.reset {
+	background-color: transparent;
+	color: black;
+	border: none;
+	padding: 0 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: background-color 0.3s ease;
+}
 
-	/* Drag handle */
-	.sheet-handle {
-		flex-shrink: 0;
-		padding: 10px 0 6px;
-		text-align: center;
-		cursor: pointer;
-		background: #fff;
-		border-radius: 16px 16px 0 0;
-	}
-	.sheet-handle-bar { width: 40px; height: 4px; background: #ccc; border-radius: 2px; margin: 0 auto 6px; }
-	.sheet-handle-label { font-size: 12px; color: #888; }
-
-	/* Tabs */
-	.sheet-tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
-	.sheet-tab {
-		flex: 1; padding: 10px 0;
-		background: none; border: none; border-bottom: 3px solid transparent;
-		font-size: 13px; font-weight: 600; color: #666; cursor: pointer;
-	}
-	.sheet-tab.active { color: #003366; border-bottom-color: #003366; }
-
-	/* Scrollable content area */
-	.sheet-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 14px 16px; }
-	.sheet-panel { display: none; }
-	.sheet-panel.active { display: block; }
-
-	/* Layer FAB */
-	.mobile-layer-fab {
-		position: fixed;
-		bottom: 72px; right: 14px;
-		z-index: 450;
-		background: #003366; color: #fff;
-		border: none; border-radius: 50%;
-		width: 46px; height: 46px; font-size: 20px;
-		align-items: center; justify-content: center;
-		box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-		cursor: pointer;
-	}
-	.mobile-location-header img {
-    	width: 20px;
-    	height: 20px;
-	}
-
-	.mobile-env-item img {
-    	width: 18px;
-    	height: 18px;
-    	margin-bottom: 4px;
-	}
-	/* Leaflet controls above nav */
-	.leaflet-top.leaflet-right { right: 8px !important; top: calc(var(--navbar-height) + 8px) !important; left: auto !important; }
-	.leaflet-bottom { bottom: 64px !important; }
+.results.active {
+	display: block;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	border-top: none;
+	max-height: 200px;
+	overflow-y: auto;
+	z-index: 1000;
 }
