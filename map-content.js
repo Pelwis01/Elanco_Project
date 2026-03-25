@@ -228,7 +228,7 @@ function updateMapLayers() {
       let result = getAllParasiteRisks(
         temp,
         rain * 10,
-        clamp100(soil),
+        soil,
         elevation,
         isSimulated,
       );

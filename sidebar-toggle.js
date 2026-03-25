@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const collapsed = sidebar.classList.toggle("collapsed");
       mainEl.classList.toggle("sidebar-collapsed", collapsed);
       toggleWrapper.classList.toggle("sidebar-collapsed", collapsed);
-      toggleBtn.innerText = collapsed ? "→" : "☰";
+      toggleBtn.innerText = collapsed ? "☰" : "→";
 
       setTimeout(() => {
         if (globalThis._elancoMap) globalThis._elancoMap.invalidateSize();
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const navMap = document.getElementById("nav-map");
   const navInfo = document.getElementById("nav-info");
   const navGuide = document.getElementById("nav-guide");
-  const navBtns = document.querySelectorAll(".mobile-bottom-nav button");
+  const navBtns = document.querySelectorAll(".mobile-bottom-nav > button");
 
   function setNavActive(btn) {
     navBtns.forEach((b) => b.classList.remove("active"));
