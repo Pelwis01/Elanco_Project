@@ -296,7 +296,10 @@ async function getCachedWeather(points) {
 	document.getElementById("loading-overlay").style.display = "none";
 	return allResults;
 }
-
+function setText(id, value) {
+	const el = document.getElementById(id);
+	if (el) el.textContent = value;
+}
 // 🖱️ Click handler with reverse geocoding and weather fetch
 function handleMapClick(e, map, layers) {
 	const isSimulated = document.getElementById("summer-sim").checked;
@@ -304,9 +307,12 @@ function handleMapClick(e, map, layers) {
 	console.log(`📍 Clicked: ${lat}, ${lng}`);
 	
 	// 🌐 Update coordinates
-	document.getElementById("region-coords").textContent =
-		`${lat.toFixed(6)}, ${lng.toFixed(7)}`;
-	
+	//document.getElementById("region-coords").textContent =
+		//`${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+	const coordsText = `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+
+	setText("region-coords", coordsText);
+	setText("m-region-coords", coordsText);
 	// 📍 Get place name via reverse geocoding
 	const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=07a555ce6feb41af804f92291149e61d`;
 		fetch(url)
@@ -325,8 +331,9 @@ function handleMapClick(e, map, layers) {
 				c.suburb ||
 				c.county ||
 				"Unknown";
-			document.getElementById("region-name").textContent = place;
-			
+			//document.getElementById("region-name").textContent = place;
+			setText("region-name", place);
+			setText("m-region-name", place);
 			// Street line (no comma between number + road)
 			const streetLine =
 				(c.house_number && c.road)
@@ -355,14 +362,17 @@ function handleMapClick(e, map, layers) {
 			// Remove duplicates (if town == city)
 			const uniqueAddress = [...new Set(addressParts)];
 			
-			document.getElementById("region-address").textContent =
-				uniqueAddress.join(", ") || "—";
-			
+			//document.getElementById("region-address").textContent =
+				//uniqueAddress.join(", ") || "—";
+			const addressText = uniqueAddress.join(", ") || "—";
+
+		setText("region-address", addressText);
+		setText("m-region-address", addressText);
 			console.log(`📌 Location: ${place}`);
 		})
 	.catch(() => {
-		document.getElementById("region-name").textContent = "Unknown";
-		document.getElementById("region-address").textContent = "—";
+		setText("region-name", "Unknown");
+		setText("region-address", "—");
 	});
 	
 	// ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
@@ -378,10 +388,16 @@ function handleMapClick(e, map, layers) {
 		const displayTemp = isSimulated ? temp + 8 : temp;
 		
 		// ➡️ Update sidebar
-		document.getElementById("region-temp").textContent = displayTemp.toFixed(1);
-		document.getElementById("region-rain").textContent = rain.toFixed(1);
-		document.getElementById("region-soil").textContent = soil.toFixed(1);
-		
+		//document.getElementById("region-temp").textContent = displayTemp.toFixed(1);
+		//document.getElementById("region-rain").textContent = rain.toFixed(1);
+		//document.getElementById("region-soil").textContent = soil.toFixed(1);
+		setText("region-temp", displayTemp.toFixed(1));
+		setText("region-rain", rain.toFixed(1));
+		setText("region-soil", soil.toFixed(1));
+
+		setText("m-region-temp", displayTemp.toFixed(1));
+		setText("m-region-rain", rain.toFixed(1));
+		setText("m-region-soil", soil.toFixed(1));
 		console.log(
 			`🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
 		);
@@ -390,14 +406,34 @@ function handleMapClick(e, map, layers) {
 		const risks = getAllParasiteRisks(temp, rain * 10, soil, isSimulated);
 		console.log("📊 Risk Result:", risks);
 		
-		document.getElementById("risk-overall").textContent =  Math.round((Object.values(risks).reduce((total, current) => total + current,0,) / Object.values(risks).length)) ?? 0;
+		/*document.getElementById("risk-overall").textContent =  Math.round((Object.values(risks).reduce((total, current) => total + current,0,) / Object.values(risks).length)) ?? 0;
 		document.getElementById("risk-gutworm").textContent = risks.gutworm ?? 0;
 		document.getElementById("risk-lungworm").textContent = risks.lungworm ?? 0;
 		document.getElementById("risk-liverfluke").textContent = risks.liverfluke ?? 0;
 		document.getElementById("risk-hairworm").textContent = risks.hairworm ?? 0;
 		document.getElementById("risk-coccidia").textContent = risks.coccidia ?? 0;
-		document.getElementById("risk-tick").textContent = risks.tick ?? 0;
-		
+		document.getElementById("risk-tick").textContent = risks.tick ?? 0;*/
+		const overallRisk = Math.round(
+		Object.values(risks).reduce((total, current) => total + current, 0) /
+		Object.values(risks).length
+		) || 0;
+
+		setText("risk-overall", overallRisk);
+		setText("risk-gutworm", risks.gutworm ?? 0);
+		setText("risk-lungworm", risks.lungworm ?? 0);
+		setText("risk-liverfluke", risks.liverfluke ?? 0);
+		setText("risk-hairworm", risks.hairworm ?? 0);
+		setText("risk-coccidia", risks.coccidia ?? 0);
+		setText("risk-tick", risks.tick ?? 0);
+
+		//MOBILE
+		setText("m-risk-overall", overallRisk);
+		setText("m-risk-gutworm", risks.gutworm ?? 0);
+		setText("m-risk-lungworm", risks.lungworm ?? 0);
+		setText("m-risk-liverfluke", risks.liverfluke ?? 0);
+		setText("m-risk-hairworm", risks.hairworm ?? 0);
+		setText("m-risk-coccidia", risks.coccidia ?? 0);
+		setText("m-risk-tick", risks.tick ?? 0);
 		// 📍 Popup map marker logic
 		let activeLayerKey = Object.keys(layers).find(k => map.hasLayer(layers[k]));
 		let content = "";
