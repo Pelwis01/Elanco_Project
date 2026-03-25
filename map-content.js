@@ -291,7 +291,7 @@ async function getCachedWeather(points) {
 			
 			// 🗃️ Normalise to array format for consistency
 			allResults = allResults.concat(Array.isArray(data) ? data : [data]);
-			
+
 			const duration = ((performance.now() - start) / 1000).toFixed(2);
 			console.log(`✅ Batch ${batchIndex} complete (${duration}s)`);
 		} catch (err) {
@@ -313,6 +313,10 @@ async function getCachedWeather(points) {
 	return allResults;
 }
 
+function setText(id, value) {
+	const el = document.getElementById(id);
+	if (el) el.textContent = value;
+}
 
 function getActiveLayerName(layers, map) {
 	return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
