@@ -162,6 +162,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("✅ Map initialized and ready.");
   } catch (error) {
     console.error("❌ Critical Error loading map data:", error);
+		document.getElementById("error-box").style.display = "block";
+		document.getElementById("main").style.filter = "blur(4px)";
   }
 
   map.on("click", (e) => handleMapClick(e, map, layers));
@@ -328,6 +330,8 @@ async function getCachedWeather(points) {
       console.log(`✅ Batch ${batchIndex} complete (${duration}s)`);
     } catch (err) {
       console.warn(`⚠️ Batch failed: ${err.message}`);
+			document.getElementById("error-box").style.display = "block";
+			document.getElementById("main").style.filter = "blur(4px)";
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // ⏳ Throttle requests 1 second to be safe against rate limits
