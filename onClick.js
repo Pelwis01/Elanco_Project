@@ -4,6 +4,7 @@ function handleMapClick(e, map, layers) {
   document.getElementById("predictive-data").style.display = "block";
 
   const isSimulated = document.getElementById("summer-sim").checked;
+  const elevation = 0; 
   const { lat, lng } = e.latlng;
   console.log(`📍 Clicked: ${lat}, ${lng}`);
 
@@ -70,7 +71,9 @@ function handleMapClick(e, map, layers) {
     .then((data) => {
         const elevation = data.elevation;
         console.log(`🏔️ Elevation: ${elevation} m`);
-    })
+        return elevation;
+    });
+
   // ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
   fetch(
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=3`,
@@ -96,7 +99,7 @@ function handleMapClick(e, map, layers) {
         const rain = h.precipitation[value];
         const soil = ((h.soil_moisture_3_to_9cm[value] || 0) / 0.5) * 100;
 
-        const risks = getAllParasiteRisks(temp, rain * 10, soil, isSimulated);
+        const risks = getAllParasiteRisks(temp, rain * 10, soil,elevation, isSimulated);
         for (let i in risks) {
           if (risks[i] <= 30) {
             context[i] = "Low";

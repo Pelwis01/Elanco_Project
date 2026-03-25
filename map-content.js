@@ -155,7 +155,6 @@ map.addControl(search);
 		elevationData= await getElevation(gridPoints);
 		weatherData[0].elevation = elevationData;
 
-		console.log(weatherData)
 		// Initial map render
 		updateMapLayers();
 		
@@ -177,6 +176,7 @@ function updateMapLayers() {
 		temp: [],
 		rain: [],
 		soil: [],
+		elevation: [],
 		lungworm: [],
 		gutworm: [],
 		liverfluke: [],
@@ -190,24 +190,26 @@ function updateMapLayers() {
 	weatherData.forEach((batch) => {
 		if (!batch.hourly) return;
 		
+		let elevation = 0;
 		const lats = Array.isArray(batch.latitude)  ? batch.latitude  : [batch.latitude];
 		const lngs = Array.isArray(batch.longitude) ? batch.longitude : [batch.longitude];
-			
+		
 		lats.forEach((lat, i) => {
 			const lng = lngs[i];
 			const temp = (Array.isArray(batch.hourly.temperature_2m[0]) ? batch.hourly.temperature_2m[i][0] : batch.hourly.temperature_2m[0]) ?? 0;
 			const rain = (Array.isArray(batch.hourly.precipitation[0]) ? batch.hourly.precipitation[i][0] : batch.hourly.precipitation[0]) ?? 0;
 			const rawSoil = (Array.isArray(batch.hourly.soil_moisture_3_to_9cm[0]) ? batch.hourly.soil_moisture_3_to_9cm[i][0] : batch.hourly.soil_moisture_3_to_9cm[0]) ?? 0;
 			const soil = clamp100((rawSoil / 0.5) * 100); // Normalise to 0-100% (assuming UK saturation is ~0.5)
-			const elevation = batch.elevation ? (Array.isArray(batch.elevation) ? batch.elevation[i] : batch.elevation) : 0;
 			const simTemp = isSimulated ? temp + 8 : temp;
+			elevation = batch.elevation;
+			
 			points.temp.push({ lat, lng, value: simTemp + 20 }); // Offset to push negative temps into positive range for heatmap
 			points.rain.push({ lat, lng, value: rain });
 			points.soil.push({ lat, lng, value: soil });
 			points.elevation.push({ lat, lng, value: elevation });
-			
+						
 			// 🧮 Risk calculations with unified scaling (rain * 10)
-			let result = getAllParasiteRisks(temp, rain * 10, clamp100(soil), isSimulated);
+			let result = getAllParasiteRisks(temp, rain * 10, clamp100(soil), elevation, isSimulated);
 			
 			let combinedRisk = Object.values(result).reduce((a, b) => a + b, 0) / Object.values(result).length;
 			
@@ -325,7 +327,6 @@ function getElevation(points) {
 						evelation: data[i].elevation[0],
 					});
 				}
-				console.log(allResults);
 				console.log("✅ Elevation data retrieved");
 			})
 			.catch((err) => {
