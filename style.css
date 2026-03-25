@@ -163,7 +163,7 @@ main.sidebar-collapsed #map {
 }
 .sidebar-section p {
 	margin: 0;
-	font-size: 14px;
+	font-size: 16px;
 	line-height: 1.5;
 	color: #333;
 }
@@ -462,4 +462,55 @@ main.sidebar-collapsed .sidebar {
 }
 main.sidebar-collapsed .leaflet-top.leaflet-right {
     right: 16px;
+}
+.leaflet-geosearch-button.active .leaflet-bar-part {
+	height: 30px;
+	width: 30px;
+	border-bottom-right-radius: 0px !important;
+}
+
+.leaflet-control-geosearch a.leaflet-bar-part:before {
+    top: 17px;
+    left: 15px;
+}
+
+.leaflet-control-geosearch a.leaflet-bar-part:after {
+    top: 10px;
+    left: 10px;
+}
+
+.leaflet-control-geosearch.active form {
+	height: 30px;
+	max-width: 1080px;
+	width: 40dvw;
+	display: flex;
+	border-bottom-left-radius: 0px;
+	left: 30px;
+}
+
+.reset {
+	background-color: transparent;
+	color: black;
+	border: none;
+	padding: 0 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: background-color 0.3s ease;
+}
+
+.results.active {
+	display: block;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	border-top: none;
+	max-height: 200px;
+	overflow-y: auto;
+	z-index: 1000;
 }
