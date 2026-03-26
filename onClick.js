@@ -234,3 +234,9 @@ function changeDate(value) {
   document.getElementById("date-value").textContent = currentDate;
   document.getElementById("m-date-value").textContent = currentDate;
 }
+
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}

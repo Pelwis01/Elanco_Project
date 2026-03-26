@@ -369,11 +369,6 @@ async function getCachedWeather(points) {
   return allResults;
 }
 
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
 function getElevation(points) {
   let allResults = [];
   fetch(`data/elevation_data.json?lat=${points.lat}&lon=${points.lon}`)

@@ -550,6 +550,10 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
   z-index: 1000;
 }
 
+.leaflet-control-geosearch form input {
+	min-width: 0;
+}
+
 /* Utilities */
 
 .hidden {
