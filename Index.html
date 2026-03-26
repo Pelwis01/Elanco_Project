@@ -1,46 +1,34 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" href="/Elanco_Project/images/favicon.png">
+	
+	<!-- 🗺️ Leaflet -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+	
+	<!-- 🔥 Heatmap.js -->
+	<script src="https://unpkg.com/heatmap.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
+    
+  <!-- Scripts -->
+	<link rel="stylesheet" href="style.css"/>
+	<script src="onClick.js"></script>
+	<script src="parasiteCalculator.js"></script>
+	<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+	<script src="map-content.js" type="module"></script>
+	<script src="parasite_popup.js"></script>
+    
+	<!-- 🎨 Styles -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile-style.css" />
+    
+	<!-- 📛 Title -->
+	<title> Elanco - Parasite Risk Map </title>
 
-    <link rel="shortcut icon" href="/Elanco_Project/images/favicon.png" />
-
-    <!-- 🗺️ Leaflet -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- 🔥 Heatmap -->
-    <script src="https://unpkg.com/heatmap.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-
-    <!-- 🔍 GeoSearch -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"
-    />
-    <script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
-
-    <!-- 🎨 Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="mobile-style.css" />
-
-    <!-- Scripts -->
-    <script src="parasiteCalculator.js" defer></script>
-    <script src="map-content.js" defer></script>
-    <script src="parasite_popup.js" defer></script>
-    <script src="onClick.js" defer></script>
-
-    <title>Elanco - Parasite Risk Map</title>
   </head>
 
   <body>
