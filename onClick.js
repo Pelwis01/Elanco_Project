@@ -125,7 +125,7 @@ function handleMapClick(e, map, layers) {
             context[i] = "High";
             style = "color :  red; font-weight : bold";
           }
-          setText(id[i], context[i]);
+          setText(id[i], `${Math.round(risks[i])}% (${context[i]})`);
           document.getElementById(id[i]).style = style;
         }
 
