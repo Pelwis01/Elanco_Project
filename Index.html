@@ -16,30 +16,33 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
 
 <!-- 🔍 GeoSearch -->
-<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
+<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
 
 <!-- 🎨 Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- Styles -->
 <link rel="stylesheet" href="style.css">
 
+<!-- Scripts -->
 <script src="onClick.js" defer></script>
 <script src="parasiteCalculator.js" defer></script>
 <script src="map-content.js" defer></script>
 <script src="parasite_popup.js" defer></script>
+<script src="sidebar-toggle.js" defer></script>
 
 <title>Elanco - Parasite Risk Map</title>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
     <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo">
 </nav>
 
-<div class="notification-container"></div>
-
+<!-- ERROR BOX -->
 <div id="errorbox" style="display:none;">
     <div class="error-modal">
         <h3>⚠️</h3>
@@ -48,11 +51,9 @@
 </div>
 
 <main>
-
     <!-- MAP -->
     <div class="map-wrapper">
-        <div id="map"></div>
-
+        <div id="map" role="application" aria-label="Interactive parasite risk map"></div>
         <div id="loading-overlay">
             <div class="loading-box">
                 <div class="spinner"></div>
@@ -65,9 +66,8 @@
 	<div id="sidebar-toggle-wrapper">
 		<button id="sidebar-toggle-btn" title="Toggle sidebar">→</button>
 	</div>
-    <!-- SIDEBAR -->
+    <!-- DESKTOP SIDEBAR -->
     <aside class="sidebar">
-
         <div class="card location-card">
             <span id="region-coords">53.377°, -1.467°</span>
             <h2 id="region-name">Sheffield</h2>
@@ -110,24 +110,19 @@
 
         <div class="card">
             <div class="card-label">Parasite Risks</div>
-
             <div id="before-predictive" class="placeholder">
                 Click map to view risks
             </div>
-
             <div id="predictive-data" style="display: none;">
-
                 <div class="time-row">
                     <span id="date-value">—</span>
                     <span id="hour-value">—:00</span>
                 </div>
-
                 <input type="range" id="hour" name="hour" min="0" max="72" value="0" onchange="changeDate(this.value)"/>
-
                 <div class="risk-grid-compact">
-                    <div class="risk-item"><span>Gutworm</span><span id="risk-gutworm" >—</span></div>
-                    <div class="risk-item"><span>Lungworm</span><span id="risk-lungworm" >—</span></div>
-                    <div class="risk-item"><span>Fluke</span><span id="risk-liverfluke" >—</span></div>
+                    <div class="risk-item"><span>Gutworm</span><span id="risk-gutworm">—</span></div>
+                    <div class="risk-item"><span>Lungworm</span><span id="risk-lungworm">—</span></div>
+                    <div class="risk-item"><span>Fluke</span><span id="risk-liverfluke">—</span></div>
                     <div class="risk-item"><span>Hairworm</span><span id="risk-hairworm">—</span></div>
                     <div class="risk-item"><span>Coccidia</span><span id="risk-coccidia">—</span></div>
                     <div class="risk-item"><span>Tick</span><span id="risk-tick">—</span></div>
@@ -297,5 +292,3 @@
 	</main>
 </body>
 </html>
-</title>
-<script src="sidebar-toggle.js"></script>
