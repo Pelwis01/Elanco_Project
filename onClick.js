@@ -1,7 +1,7 @@
 // 🖱️ Click handler with reverse geocoding and weather fetch
 function handleMapClick(e, map, layers) {
-  document.getElementById("before-predictive").style.display = "none";
-  document.getElementById("predictive-data").style.display = "block";
+  document.getElementById("predictive-data").classList.remove("hidden");
+  document.getElementById("before-predictive").classList.add("hidden");
 
   const isSimulated = document.getElementById("summer-sim").checked;
   const elevation = 0;
