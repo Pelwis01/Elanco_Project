@@ -1,294 +1,503 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="shortcut icon" href="/Elanco_Project/images/favicon.png">
+	
+	<!-- 🗺️ Leaflet -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+	
+	<!-- 🔥 Heatmap.js -->
+	<script src="https://unpkg.com/heatmap.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
+    
+    <!-- Scripts -->
+	<script src="parasiteCalculator.js"></script>
+	<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+	<script src="map-content.js" type="module"></script>
+	<script src="parasite_popup.js"></script>
+    <script src="onClick.js"></script>
+    
+	<!-- 🎨 Styles -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile-style.css" />
+    
+	<!-- 📛 Title -->
+	<title> Elanco - Parasite Risk Map </title>
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
 
-<link rel="shortcut icon" href="/Elanco_Project/images/favicon.png">
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo" />
+        <!-- 
+        <div class="navbar-right">
+            <a href="ex_information.html" style="color: white; text-decoration: none;">Extra information</a>
+        </div>
+         -->
+    </nav>
 
-<!-- 🗺️ Leaflet -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- 🔥 Heatmap -->
-<script src="https://unpkg.com/heatmap.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-
-<!-- 🔍 GeoSearch -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
-<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
-
-<!-- 🎨 Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<!-- Styles -->
-<link rel="stylesheet" href="style.css">
-
-<!-- Scripts -->
-<script src="onClick.js" defer></script>
-<script src="parasiteCalculator.js" defer></script>
-<script src="map-content.js" defer></script>
-<script src="parasite_popup.js" defer></script>
-<script src="sidebar-toggle.js" defer></script>
-
-<title>Elanco - Parasite Risk Map</title>
-</head>
-
-<body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-    <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo">
-</nav>
-
-<!-- ERROR BOX -->
-<div id="errorbox" style="display:none;">
-    <div class="error-modal">
+    <!-- ERROR BOX -->
+    <div id="errorbox" style="display: none">
+      <div class="error-modal">
         <h3>⚠️</h3>
         <p id="error-message">API error – please try again shortly.</p>
+      </div>
     </div>
-</div>
 
-<main>
-    <!-- MAP -->
-    <div class="map-wrapper">
-        <div id="map" role="application" aria-label="Interactive parasite risk map"></div>
+    <main>
+      <!-- MAP -->
+      <div class="map-wrapper">
+        <div
+          id="map"
+          role="application"
+          aria-label="Interactive parasite risk map"
+        ></div>
         <div id="loading-overlay">
-            <div class="loading-box">
-                <div class="spinner"></div>
-                <p>Loading environmental data…</p>
-            </div>
+          <div
+            class="box"
+            style="
+              padding: 24px 32px;
+              box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            "
+          >
+            <div class="spinner"></div>
+            <p style="color: #000;">Loading environmental data…</p>
+          </div>
         </div>
-    </div>
+      </div>
 
-	<!-- Sidebar toggle floating button -->
-	<div id="sidebar-toggle-wrapper">
-		<button id="sidebar-toggle-btn" title="Toggle sidebar">→</button>
-	</div>
-    <!-- DESKTOP SIDEBAR -->
-    <aside class="sidebar">
+      <!-- Sidebar toggle floating button -->
+      <div id="sidebar-toggle-wrapper">
+        <button id="sidebar-toggle-btn" title="Toggle sidebar">→</button>
+      </div>
+      <!-- DESKTOP SIDEBAR -->
+      <aside class="sidebar">
         <div class="card location-card">
-            <span id="region-coords">53.377°, -1.467°</span>
-            <h2 id="region-name">Sheffield</h2>
-            <p id="region-address">Select a location on the map</p>
+          <span id="region-coords">53.377°, -1.467°</span>
+          <h2 id="region-name">Sheffield</h2>
+          <p id="region-address">Select a location on the map</p>
         </div>
 
         <div class="card">
-            <div class="card-label">Conditions</div>
-            <div class="env-strip">
-                <div class="env-cell">
-                    <span>🌡</span>
-                    <span id="region-temp">—</span>
-                    <small>°C</small>
-                </div>
-                <div class="env-cell">
-                    <span>🌧</span>
-                    <span id="region-rain">—</span>
-                    <small>mm</small>
-                </div>
-                <div class="env-cell">
-                    <span>🌱</span>
-                    <span id="region-soil">—</span>
-                    <small>%</small>
-                </div>
+          <div class="card-label">Conditions</div>
+          <div class="env-strip">
+            <div class="env-cell">
+              <span>🌡</span>
+              <span id="region-temp">—</span>
+              <small>°C</small>
             </div>
+            <div class="env-cell">
+              <span>🌧</span>
+              <span id="region-rain">—</span>
+              <small>mm</small>
+            </div>
+            <div class="env-cell">
+              <span>🌱</span>
+              <span id="region-soil">—</span>
+              <small>%</small>
+            </div>
+          </div>
         </div>
 
         <div class="card">
-            <div class="sim-row">
-                <div>
-                    <strong>🧪 Summer Simulation</strong>
-                    <small>+8°C, wetter</small>
+          <div class="sim-row">
+            <div>
+              <strong>🧪 Summer Simulation</strong>
+              <small>+8°C, wetter</small>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="summer-sim" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Parasite Risks</div>
+          <div id="before-predictive" class="placeholder">
+            Click map to view risks
+          </div>
+          <div id="predictive-data" class="hidden">
+            <div class="time-row">
+              Date : <span id="date-value">—</span> <br />
+              Time : <span id="hour-value">—</span>:00
+            </div>
+            <input
+              type="range"
+              id="hour"
+              name="hour"
+              min="0"
+              max="72"
+              value="0"
+              onchange="changeDate(this.value)"
+            />
+            <div class="risk-grid-compact">
+              <div class="risk-item">
+                <span>Gutworm</span><span id="risk-gutworm">—</span>
+              </div>
+              <div class="risk-item">
+                <span>Lungworm</span><span id="risk-lungworm">—</span>
+              </div>
+              <div class="risk-item">
+                <span>Fluke</span><span id="risk-liverfluke">—</span>
+              </div>
+              <div class="risk-item">
+                <span>Hairworm</span><span id="risk-hairworm">—</span>
+              </div>
+              <div class="risk-item">
+                <span>Coccidia</span><span id="risk-coccidia">—</span>
+              </div>
+              <div class="risk-item">
+                <span>Tick</span><span id="risk-tick">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Parasite Guide</div>
+          <details>
+            <summary>Gutworm</summary>
+            <div class="env-cell">
+              <p>
+                Warm + moist conditions drive high risk. Peaks in summer with
+                sustained rainfall.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Lungworm</summary>
+            <div class="env-cell">
+              <p>
+                Highly dependent on wet pasture. Risk rises sharply after heavy
+                rain periods.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Liver Fluke</summary>
+            <div class="env-cell">
+              <p>
+                Requires consistently wet soils and snail intermediate hosts to
+                complete lifecycle.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Hairworm</summary>
+            <div class="env-cell">
+              <p>
+                Thrives at moderate warmth (~22°C). Less moisture-dependent than
+                other worms.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Coccidia</summary>
+            <div class="env-cell">
+              <p>
+                Warm, damp conditions with dense grazing pressure accelerate
+                oocyst development.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Tick</summary>
+            <div class="env-cell">
+              <p>
+                Prefers cool-humid vegetation zones. Risk decreases in hot or
+                very dry weather.
+              </p>
+            </div>
+          </details>
+        </div>
+      </aside>
+      <!--MOBILE UI — bottom sheet + nav-->
+
+      <!-- Tap hint shown on first load -->
+      <div class="map-tap-hint" id="mobile-tap-hint">
+        Tap the map to see risk data
+      </div>
+
+      <!-- Bottom sheet -->
+      <div class="mobile-sheet" id="mobile-sheet">
+        <!-- Drag handle -->
+        <div class="sheet-handle" id="sheet-handle">
+          <div class="sheet-handle-bar"></div>
+          <span class="sheet-handle-label" id="sheet-handle-label"
+            >Tap map to explore</span
+          >
+        </div>
+        <!-- Tab switcher -->
+        <div class="sheet-tabs">
+          <button class="sheet-tab active" data-tab="info">
+            📍 Location Info
+          </button>
+          <button class="sheet-tab" data-tab="guide">🪱 Parasite Guide</button>
+        </div>
+        <!-- Scrollable content -->
+        <div class="sheet-content">
+          <!-- ── Info panel ── -->
+          <div class="sheet-panel active" id="sheet-panel-info">
+            <!-- Location header -->
+            <div class="mobile-location-header">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/1076/1076983.png"
+                alt="Location"
+              />
+              <div>
+                <div class="loc-name" id="m-region-name">
+                  Sheffield, South Yorkshire
                 </div>
-                <label class="switch">
-                    <input type="checkbox" id="summer-sim">
-                    <span class="slider"></span>
+                <div class="loc-sub" id="m-region-coords">
+                  53.377169, -1.4676838
+                </div>
+                <div class="loc-sub" id="m-region-address">
+                  Cantor Building, Arundel Lane, S1 4RB
+                </div>
+              </div>
+            </div>
+
+            <!-- Summer simulation toggle (mobile) -->
+            <div
+              class="box"
+              style="
+                border: 2px solid #ff8c00;
+                background: #fff5eb;
+                margin-bottom: 12px;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 10px">
+                <label class="switch" style="flex-shrink: 0">
+                  <input type="checkbox" id="summer-sim-mobile" />
+                  <span class="slider round"></span>
                 </label>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">Parasite Risks</div>
-            <div id="before-predictive" class="placeholder">
-                Click map to view risks
-            </div>
-            <div id="predictive-data" style="display: none;">
-                <div class="time-row">
-                    <span id="date-value">—</span>
-                    <span id="hour-value">—:00</span>
+                <div>
+                  <span
+                    style="font-weight: bold; font-size: 13px; color: #e67e22"
+                    >🧪 Summer Simulation</span
+                  >
+                  <p style="font-size: 11px; color: #888; margin: 2px 0 0">
+                    +8°C, optimal moisture to show peak season
+                  </p>
                 </div>
-                <input type="range" id="hour" name="hour" min="0" max="72" value="0" onchange="changeDate(this.value)"/>
-                <div class="risk-grid-compact">
-                    <div class="risk-item"><span>Gutworm</span><span id="risk-gutworm">—</span></div>
-                    <div class="risk-item"><span>Lungworm</span><span id="risk-lungworm">—</span></div>
-                    <div class="risk-item"><span>Fluke</span><span id="risk-liverfluke">—</span></div>
-                    <div class="risk-item"><span>Hairworm</span><span id="risk-hairworm">—</span></div>
-                    <div class="risk-item"><span>Coccidia</span><span id="risk-coccidia">—</span></div>
-                    <div class="risk-item"><span>Tick</span><span id="risk-tick">—</span></div>
-                </div>
+              </div>
             </div>
+
+            <!-- Risk scores grid -->
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 600;
+                color: #666;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 6px;
+              "
+            >
+              Parasite Risks
+            </div>
+            <div id="m-before-predictive" class="placeholder">
+              Click map to view risks
+            </div>
+            <div id="m-predictive-data" class="hidden">
+              <div class="time-row">
+                Date : <span id="m-date-value">—</span> <br />
+                Time : <span id="m-hour-value">—</span>:00
+              </div>
+              <input
+                type="range"
+                id="m-hour"
+                name="hour"
+                min="0"
+                max="72"
+                value="0"
+                onchange="changeDate(this.value)"
+              />
+              <div class="mobile-risk-grid">
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">Gutworm</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-gutworm">—</span>
+                  </div>
+                </div>
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">Lungworm</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-lungworm">—</span>
+                  </div>
+                </div>
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">Liver Fluke</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-liverfluke">—</span>
+                  </div>
+                </div>
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">Hair Worm</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-hairworm">—</span>
+                  </div>
+                </div>
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">Coccidia</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-coccidia">—</span>
+                  </div>
+                </div>
+                <div class="mobile-risk-item">
+                  <div class="m-risk-label">CB Tick</div>
+                  <div class="m-risk-value">
+                    <span id="m-risk-tick">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Environmental data row -->
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 600;
+                color: #666;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin: 14px 0 6px;
+              "
+            >
+              Conditions
+            </div>
+            <div class="mobile-env-row">
+              <div class="mobile-env-item">
+                <img src="./images/thermometer.png" alt="Temperature" />
+                <span class="env-value"
+                  ><span id="m-region-temp">—</span>°C</span
+                >
+                <span class="env-label">Temp</span>
+              </div>
+              <div class="mobile-env-item">
+                <img src="./images/rain-drops.png" alt="Rainfall" />
+                <span class="env-value"
+                  ><span id="m-region-rain">—</span>mm</span
+                >
+                <span class="env-label">Rain</span>
+              </div>
+              <div class="mobile-env-item">
+                <img src="./images/dirt.png" alt="Soil moisture" />
+                <span class="env-value"
+                  ><span id="m-region-soil">—</span>%</span
+                >
+                <span class="env-label">Soil</span>
+              </div>
+            </div>
+          </div>
+          <!-- ── Guide panel ── -->
+          <div class="sheet-panel" id="sheet-panel-guide">
+            <div class="box">
+              <h3>🪱 Gutworm</h3>
+              <p>
+                Prefer moderate temperatures and moist pasture. Eggs hatch in
+                dung, larvae migrate onto grass. Temperature weighted most
+                strongly; moisture is also critical.
+              </p>
+            </div>
+            <div class="box">
+              <h3>🐛 Lungworm</h3>
+              <p>
+                Rely heavily on wet pasture to spread from dung onto grass.
+                Rainfall and soil moisture are weighted higher than temperature.
+                Cool, damp outbreaks are common.
+              </p>
+            </div>
+            <div class="box">
+              <h3>🐌 Liver Fluke</h3>
+              <p>
+                Depend on the mud snail as an intermediate host. Snails need
+                very wet, marshy ground. Soil moisture and rainfall dominate the
+                risk weighting.
+              </p>
+            </div>
+            <div class="box">
+              <h3>🧵 Hair Worm</h3>
+              <p>
+                Eggs are hardy and survive in soil for long periods. Moderate
+                warmth and some moisture are needed for infectivity. Less
+                dependent on heavy rain than flukes.
+              </p>
+            </div>
+            <div class="box">
+              <h3>🦠 Coccidia</h3>
+              <p>
+                Multiply rapidly in warm, moist environments. Temperature and
+                moisture are weighted equally; rainfall contributes indirectly
+                by increasing dampness.
+              </p>
+            </div>
+            <div class="box">
+              <h3>🪳 Castor Bean Tick</h3>
+              <p>
+                <em>Ixodes ricinus</em> — most active in cool, humid conditions
+                in spring and autumn. Found in rough pasture and woodland edges.
+                Depends on humidity rather than direct rainfall.
+              </p>
+            </div>
+          </div>
         </div>
-		<div class="card">
-				<div class="card-label">Parasite Guide</div>
-				<details><summary>Gutworm</summary><p>Warm + moist conditions drive high risk. Peaks in summer with sustained rainfall.</p></details>
-				<details><summary>Lungworm</summary><p>Highly dependent on wet pasture. Risk rises sharply after heavy rain periods.</p></details>
-				<details><summary>Liver Fluke</summary><p>Requires consistently wet soils and snail intermediate hosts to complete lifecycle.</p></details>
-				<details><summary>Hairworm</summary><p>Thrives at moderate warmth (~22°C). Less moisture-dependent than other worms.</p></details>
-				<details><summary>Coccidia</summary><p>Warm, damp conditions with dense grazing pressure accelerate oocyst development.</p></details>
-				<details><summary>Tick</summary><p>Prefers cool-humid vegetation zones. Risk decreases in hot or very dry weather.</p></details>
-			</div>
-	</aside>
-		<!--MOBILE UI — bottom sheet + nav-->
+      </div>
 
-		<!-- Tap hint shown on first load -->
-		<div class="map-tap-hint" id="mobile-tap-hint"> Tap the map to see risk data</div>
-
-		<!-- Bottom sheet -->
-		<div class="mobile-sheet" id="mobile-sheet">
-			<!-- Drag handle -->
-			<div class="sheet-handle" id="sheet-handle">
-				<div class="sheet-handle-bar"></div>
-				<span class="sheet-handle-label" id="sheet-handle-label">Tap map to explore</span>
-			</div>
-			<!-- Tab switcher -->
-			<div class="sheet-tabs">
-				<button class="sheet-tab active" data-tab="info">📍 Location Info</button>
-				<button class="sheet-tab" data-tab="guide">🪱 Parasite Guide</button>
-			</div>
-			<!-- Scrollable content -->
-			<div class="sheet-content">
-				<!-- ── Info panel ── -->
-				<div class="sheet-panel active" id="sheet-panel-info">
-					<!-- Location header -->
-					<div class="mobile-location-header">
-						<img src="https://cdn-icons-png.flaticon.com/512/1076/1076983.png" alt="Location">
-						<div>
-							<div class="loc-name" id="m-region-name">Sheffield, South Yorkshire</div>
-							<div class="loc-sub" id="m-region-coords">53.377169, -1.4676838</div>
-							<div class="loc-sub" id="m-region-address">Cantor Building, Arundel Lane, S1 4RB</div>
-						</div>
-					</div>
-
-					<!-- Summer simulation toggle (mobile) -->
-					<div class="box" style="border: 2px solid #FF8C00; background: #FFF5EB; margin-bottom: 12px;">
-						<div style="display:flex; align-items:center; gap:10px;">
-							<label class="switch" style="flex-shrink:0;">
-								<input type="checkbox" id="summer-sim-mobile">
-								<span class="slider round"></span>
-							</label>
-							<div>
-								<span style="font-weight:bold; font-size:13px; color:#E67E22;">🧪 Summer Simulation</span>
-								<p style="font-size:11px; color:#888; margin:2px 0 0;">+8°C, optimal moisture to show peak season</p>
-							</div>
-						</div>
-					</div>
-
-					<!-- Risk scores grid -->
-					<div style="font-size:12px; font-weight:600; color:#666; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Parasite Risks</div>
-					<div class="mobile-risk-grid">
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">Gutworm</div>
-							<div class="m-risk-value"><span id="m-risk-gutworm">—</span><span>%</span></div>
-						</div>
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">Lungworm</div>
-							<div class="m-risk-value"><span id="m-risk-lungworm">—</span><span>%</span></div>
-						</div>
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">Liver Fluke</div>
-							<div class="m-risk-value"><span id="m-risk-liverfluke">—</span><span>%</span></div>
-						</div>
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">Hair Worm</div>
-							<div class="m-risk-value"><span id="m-risk-hairworm">—</span><span>%</span></div>
-						</div>
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">Coccidia</div>
-							<div class="m-risk-value"><span id="m-risk-coccidia">—</span><span>%</span></div>
-						</div>
-						<div class="mobile-risk-item">
-							<div class="m-risk-label">CB Tick</div>
-							<div class="m-risk-value"><span id="m-risk-tick">—</span><span>%</span></div>
-						</div>
-					</div>
-
-					<!-- Environmental data row -->
-					<div style="font-size:12px; font-weight:600; color:#666; text-transform:uppercase; letter-spacing:0.05em; margin: 14px 0 6px;">Conditions</div>
-					<div class="mobile-env-row">
-						<div class="mobile-env-item">
-							<img src="./images/thermometer.png" alt="Temperature">
-							<span class="env-value"><span id="m-region-temp">—</span>°C</span>
-							<span class="env-label">Temp</span>
-						</div>
-						<div class="mobile-env-item">
-							<img src="./images/rain-drops.png" alt="Rainfall">
-							<span class="env-value"><span id="m-region-rain">—</span>mm</span>
-							<span class="env-label">Rain</span>
-						</div>
-						<div class="mobile-env-item">
-							<img src="./images/dirt.png" alt="Soil moisture">
-							<span class="env-value"><span id="m-region-soil">—</span>%</span>
-							<span class="env-label">Soil</span>
-						</div>
-					</div>
-				</div>
-				<!-- ── Guide panel ── -->
-				<div class="sheet-panel" id="sheet-panel-guide">
-					<div class="box">
-						<h3>🪱 Gutworm</h3>
-						<p>Prefer moderate temperatures and moist pasture. Eggs hatch in dung, larvae migrate onto grass. Temperature weighted most strongly; moisture is also critical.</p>
-					</div>
-					<div class="box">
-						<h3>🐛 Lungworm</h3>
-						<p>Rely heavily on wet pasture to spread from dung onto grass. Rainfall and soil moisture are weighted higher than temperature. Cool, damp outbreaks are common.</p>
-					</div>
-					<div class="box">
-						<h3>🐌 Liver Fluke</h3>
-						<p>Depend on the mud snail as an intermediate host. Snails need very wet, marshy ground. Soil moisture and rainfall dominate the risk weighting.</p>
-					</div>
-					<div class="box">
-						<h3>🧵 Hair Worm</h3>
-						<p>Eggs are hardy and survive in soil for long periods. Moderate warmth and some moisture are needed for infectivity. Less dependent on heavy rain than flukes.</p>
-					</div>
-					<div class="box">
-						<h3>🦠 Coccidia</h3>
-						<p>Multiply rapidly in warm, moist environments. Temperature and moisture are weighted equally; rainfall contributes indirectly by increasing dampness.</p>
-					</div>
-					<div class="box">
-						<h3>🪳 Castor Bean Tick</h3>
-						<p><em>Ixodes ricinus</em> — most active in cool, humid conditions in spring and autumn. Found in rough pasture and woodland edges. Depends on humidity rather than direct rainfall.</p>
-					</div>
-				</div>
-				</div>
-		</div>
-
-		<!-- Bottom navigation bar (mobile only) -->
-		<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-			<button class="active" id="nav-map" aria-label="Map view">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-					<line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
-				</svg>
-				Map
-			</button>
-			<button id="nav-info" aria-label="Location info">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-					<circle cx="12" cy="10" r="3"/>
-				</svg>
-				Info
-			</button>
-			<button id="nav-guide" aria-label="Parasite guide">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<circle cx="12" cy="12" r="10"/>
-					<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-					<line x1="12" y1="17" x2="12.01" y2="17"/>
-				</svg>
-				Guide
-			</button>
-		</nav>
-
-	</main>
-</body>
+      <!-- Bottom navigation bar (mobile only) -->
+      <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <button class="active" id="nav-map" aria-label="Map view">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+            <line x1="9" y1="3" x2="9" y2="18" />
+            <line x1="15" y1="6" x2="15" y2="21" />
+          </svg>
+          Map
+        </button>
+        <button id="nav-info" aria-label="Location info">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          Info
+        </button>
+        <button id="nav-guide" aria-label="Parasite guide">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          Guide
+        </button>
+      </nav>
+    </main>
+  </body>
 </html>
+
+<script src="sidebar-toggle.js" defer></script>

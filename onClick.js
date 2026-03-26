@@ -1,7 +1,9 @@
 // 🖱️ Click handler with reverse geocoding and weather fetch
 function handleMapClick(e, map, layers) {
   document.getElementById("predictive-data").classList.remove("hidden");
+  document.getElementById("m-predictive-data").classList.remove("hidden");
   document.getElementById("before-predictive").classList.add("hidden");
+  document.getElementById("m-before-predictive").classList.add("hidden");
 
   const isSimulated = document.getElementById("summer-sim").checked;
   const elevation = 0;
@@ -97,11 +99,22 @@ function handleMapClick(e, map, layers) {
         coccidia: "risk-coccidia",
         tick: "risk-tick",
       };
+      const mobile_id = {
+        gutworm: "m-risk-gutworm",
+        lungworm: "m-risk-lungworm",
+        liverfluke: "m-risk-liverfluke",
+        hairworm: "m-risk-hairworm",
+        coccidia: "m-risk-coccidia",
+        tick: "m-risk-tick",
+      };
       console.log("📊 Weather & Soil Data:", data);
-      const riskEvaluation = () => {
-        let value = document.getElementById("hour").value ?? 0;
-        let style = "";
 
+      const riskEvaluation = () => {
+        let value =
+          parseInt(document.getElementById("hour").value) ||
+          parseInt(document.getElementById("m-hour").value);
+        let style = "";
+        console.log("value: ", value);
         const h = data.hourly;
         const temp = h.temperature_2m[value];
         const rain = h.precipitation[value];
@@ -125,8 +138,11 @@ function handleMapClick(e, map, layers) {
             context[i] = "High";
             style = "color :  red; font-weight : bold";
           }
-          setText(id[i], context[i]);
+          setText(id[i], `${Math.round(risks[i])}% (${context[i]})`);
+          setText(mobile_id[i], `${Math.round(risks[i])}% (${context[i]})`);
+
           document.getElementById(id[i]).style = style;
+          document.getElementById(mobile_id[i]).style = style;
         }
 
         setText("region-temp", temp.toFixed(1));
@@ -136,15 +152,6 @@ function handleMapClick(e, map, layers) {
         setText("m-region-temp", temp.toFixed(1));
         setText("m-region-rain", rain.toFixed(1));
         setText("m-region-soil", soil.toFixed(1));
-
-        // 📊 Parasite risk calculation with unified scaling (rain * 100 for percentage)
-
-        setText("m-risk-gutworm", risks.gutworm ?? 0);
-        setText("m-risk-lungworm", risks.lungworm ?? 0);
-        setText("m-risk-liverfluke", risks.liverfluke ?? 0);
-        setText("m-risk-hairworm", risks.hairworm ?? 0);
-        setText("m-risk-coccidia", risks.coccidia ?? 0);
-        setText("m-risk-tick", risks.tick ?? 0);
 
         console.log("📊 Risk Result:", risks);
 
@@ -165,13 +172,7 @@ function handleMapClick(e, map, layers) {
       );
       let content = "";
 
-      if (activeLayerKey === "temp") {
-        content = `<strong>${temp.toFixed(1)}°C</strong>`;
-      } else if (activeLayerKey === "rain") {
-        content = `<strong>${rain.toFixed(1)}mm</strong>`;
-      } else if (activeLayerKey === "soil") {
-        content = `<strong>${soil.toFixed(1)}%</strong>`;
-      } else if (activeLayerKey === "combined") {
+      if (activeLayerKey === "combined") {
         content =
           Math.round(
             Object.values(risks).reduce(
@@ -182,23 +183,23 @@ function handleMapClick(e, map, layers) {
       } else if (activeLayerKey && risks[activeLayerKey] !== undefined) {
         // Parasite-specific layers
         content = `<strong>${risks[activeLayerKey]}%</strong>`;
-      } else {
-        content = "Select a layer to see data";
       }
 
-      L.popup({
-        className: "custom-popup",
-        closeButton: false, // ❌ Hides big unecesary X button
-      })
-        .setLatLng(e.latlng)
-        .setContent(content)
-        .openOn(map);
+      if (content != "") {
+        L.popup({
+          className: "custom-popup",
+          closeButton: false, // ❌ Hides big unecesary X button
+        })
+          .setLatLng(e.latlng)
+          .setContent(content)
+          .openOn(map);
+      }
+
+      // setTimeout(() => {
+      //   map.closePopup();
+      // }, 5000);
     })
     .catch((err) => console.error("Fetch error:", err));
-}
-
-function getActiveLayerName(layers, map) {
-  return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
 }
 
 function setCurrentHour() {
@@ -210,7 +211,9 @@ function setCurrentHour() {
   const currentDate = `${currentDay}/0${currentMonth}/${currentYear}`;
 
   document.getElementById("hour-value").textContent = currentHour;
+  document.getElementById("m-hour-value").textContent = currentHour;
   document.getElementById("date-value").textContent = currentDate;
+  document.getElementById("m-date-value").textContent = currentDate;
 }
 
 function changeDate(value) {
@@ -227,5 +230,13 @@ function changeDate(value) {
   let currentDate = `${NewDate}/0${currentMonth}/${currentYear}`;
 
   document.getElementById("hour-value").textContent = Newtime % 24;
+  document.getElementById("m-hour-value").textContent = Newtime % 24;
   document.getElementById("date-value").textContent = currentDate;
+  document.getElementById("m-date-value").textContent = currentDate;
+}
+
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }

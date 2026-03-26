@@ -121,21 +121,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     "Combined Risk (Max)": layers.combined,
   };
 
-  /* 📋 Legend */
-  let legend = L.control({ position: "bottomleft" });
-
+  let legend = L.control({ position: "bottomleft", bottom: "56px" });
   legend.onAdd = function () {
     let div = L.DomUtil.create("div", "legend");
-    div.innerHTML += "<h4>Map Key</h4>";
-    div.innerHTML += '<i style="background: green"></i><span>Low</span><br>';
-    div.innerHTML +=
-      '<i style="background: yellow"></i><span>Medium</span><br>';
-    div.innerHTML += '<i style="background: red"></i><span>High</span><br>';
+
+    div.innerHTML = `
+        <h4>Map Key</h4>
+        <i style="background: green"></i><span>Low</span><br>
+        <i style="background: gold"></i><span>Medium</span><br>
+        <i style="background: red"></i><span>High</span><br>`;
     return div;
   };
 
   legend.addTo(map);
-
   L.control.layers(layerControl, {}).addTo(map);
   layers.combined.addTo(map); // 🗺️ Default view - combined risk map
 
@@ -143,7 +141,29 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const search = new GeoSearch.GeoSearchControl({
     provider: new GeoSearch.OpenStreetMapProvider(),
+    resultFormat: ({ result }) => result.label,
+    keepResult: true,
   });
+
+  function searchEventHandler(result) {
+    console.log(result.location);
+    const data = result.location.raw;
+    const address = data.name;
+    const region = data.display_name.substring(
+      data.display_name.indexOf(",") + 1,
+    );
+    const latlon = data.lat + ", " + data.lon;
+
+    document.getElementById("region-coords").textContent = latlon;
+    document.getElementById("region-address").textContent = address;
+    document.getElementById("region-name").textContent = region;
+
+    document.getElementById("m-region-coords").textContent = latlon;
+    document.getElementById("m-region-address").textContent = address;
+    document.getElementById("m-region-name").textContent = region;
+  }
+
+  map.on("geosearch/showlocation", searchEventHandler);
 
   map.addControl(search);
   /* =========================== *\
@@ -162,8 +182,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.log("✅ Map initialized and ready.");
   } catch (error) {
     console.error("❌ Critical Error loading map data:", error);
-		document.getElementById("error-box").style.display = "block";
-		document.getElementById("main").style.filter = "blur(4px)";
+    document.getElementById("error-box").style.display = "block";
+    document.getElementById("main").style.filter = "blur(4px)";
   }
 
   map.on("click", (e) => handleMapClick(e, map, layers));
@@ -330,8 +350,8 @@ async function getCachedWeather(points) {
       console.log(`✅ Batch ${batchIndex} complete (${duration}s)`);
     } catch (err) {
       console.warn(`⚠️ Batch failed: ${err.message}`);
-			document.getElementById("error-box").style.display = "block";
-			document.getElementById("main").style.filter = "blur(4px)";
+      document.getElementById("error-box").style.display = "block";
+      document.getElementById("main").style.filter = "blur(4px)";
     }
 
     await new Promise((r) => setTimeout(r, 1000)); // ⏳ Throttle requests 1 second to be safe against rate limits
@@ -347,15 +367,6 @@ async function getCachedWeather(points) {
 
   document.getElementById("loading-overlay").style.display = "none";
   return allResults;
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
-
-function getActiveLayerName(layers, map) {
-  return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
 }
 
 function getElevation(points) {
