@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- 🔥 Heatmap.js  -->
+<!-- 🔥 Heatmap -->
 <script src="https://unpkg.com/heatmap.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
 
@@ -20,14 +20,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
 
 <!-- 🎨 Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- 🎨 Styles -->
 <link rel="stylesheet" href="style.css">
 
-<!-- ⚙️ Scripts  -->
 <script src="onClick.js" defer></script>
 <script src="parasiteCalculator.js" defer></script>
 <script src="map-content.js" defer></script>
@@ -42,10 +38,8 @@
     <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo">
 </nav>
 
-<!-- NOTIFICATION TOASTS -->
 <div class="notification-container"></div>
 
-<!-- ERROR BOX -->
 <div id="errorbox" style="display:none;">
     <div class="error-modal">
         <h3>⚠️</h3>
@@ -59,7 +53,6 @@
     <div class="map-wrapper">
         <div id="map"></div>
 
-        <!-- Loading -->
         <div id="loading-overlay">
             <div class="loading-box">
                 <div class="spinner"></div>
@@ -71,116 +64,75 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
 
-        <!-- LOCATION -->
         <div class="card location-card">
-            <div class="location-header">
-            <div>
-                    <span id="region-coords">53.377°, -1.467°</span>
-                    <h2 id="region-name">Sheffield</h2>
-                    <p id="region-address">Select a location on the map</p>
-                </div>
-            </div>
+            <span id="region-coords">53.377°, -1.467°</span>
+            <h2 id="region-name">Sheffield</h2>
+            <p id="region-address">Select a location on the map</p>
         </div>
 
-        <!-- CONDITIONS -->
         <div class="card">
             <div class="card-label">Conditions</div>
             <div class="env-strip">
                 <div class="env-cell">
-                    <span class="env-icon">🌡</span>
-                    <span class="env-val" id="region-temp">—</span>
-                    <span class="env-unit">°C</span>
+                    <span>🌡</span>
+                    <span id="region-temp">—</span>
+                    <small>°C</small>
                 </div>
                 <div class="env-cell">
-                    <span class="env-icon">🌧</span>
-                    <span class="env-val" id="region-rain">—</span>
-                    <span class="env-unit">mm</span>
+                    <span>🌧</span>
+                    <span id="region-rain">—</span>
+                    <small>mm</small>
                 </div>
                 <div class="env-cell">
-                    <span class="env-icon">🌱</span>
-                    <span class="env-val" id="region-soil">—</span>
-                    <span class="env-unit">% soil</span>
+                    <span>🌱</span>
+                    <span id="region-soil">—</span>
+                    <small>%</small>
                 </div>
             </div>
         </div>
 
-        <!-- SIMULATION -->
         <div class="card">
             <div class="sim-row">
-                <div class="sim-row-text">
+                <div>
                     <strong>🧪 Summer Simulation</strong>
-                    <span>+8°C, higher moisture</span>
+                    <small>+8°C, wetter</small>
                 </div>
                 <label class="switch">
                     <input type="checkbox" id="summer-sim">
-                    <span class="slider round"></span>
+                    <span class="slider"></span>
                 </label>
             </div>
         </div>
 
-        <!-- RISKS -->
         <div class="card">
             <div class="card-label">Parasite Risks</div>
 
             <div id="before-predictive" class="placeholder">
-                Click a location to view risks
+                Click map to view risks
             </div>
 
             <div id="predictive-data" class="hidden">
 
                 <div class="time-row">
-                    <span class="time-label">Forecast</span>
-                    <span class="time-val">
-                        <span id="date-value">—</span>
-                        &nbsp;
-                        <span id="hour-value">—</span>:00
-                    </span>
+                    <span id="date-value">—</span>
+                    <span id="hour-value">—:00</span>
                 </div>
 
                 <input type="range" id="hour" min="0" max="72" value="0" onchange="changeDate(this.value)"/>
 
                 <div class="risk-grid-compact">
-                    <div class="risk-item">
-                        <span class="risk-name">Gutworm</span>
-                        <span id="risk-gutworm" class="risk-badge-pill empty">—</span>
-                    </div>
-                    <div class="risk-item">
-                        <span class="risk-name">Lungworm</span>
-                        <span id="risk-lungworm" class="risk-badge-pill empty">—</span>
-                    </div>
-                    <div class="risk-item">
-                        <span class="risk-name">Fluke</span>
-                        <span id="risk-liverfluke" class="risk-badge-pill empty">—</span>
-                    </div>
-                    <div class="risk-item">
-                        <span class="risk-name">Hairworm</span>
-                        <span id="risk-hairworm" class="risk-badge-pill empty">—</span>
-                    </div>
-                    <div class="risk-item">
-                        <span class="risk-name">Coccidia</span>
-                        <span id="risk-coccidia" class="risk-badge-pill empty">—</span>
-                    </div>
-                    <div class="risk-item">
-                        <span class="risk-name">Tick</span>
-                        <span id="risk-tick" class="risk-badge-pill empty">—</span>
-                    </div>
+                    <div class="risk-item"><span>Gutworm</span><span id="risk-gutworm" class="risk-badge-pill empty">—</span></div>
+                    <div class="risk-item"><span>Lungworm</span><span id="risk-lungworm" class="risk-badge-pill empty">—</span></div>
+                    <div class="risk-item"><span>Fluke</span><span id="risk-liverfluke" class="risk-badge-pill empty">—</span></div>
+                    <div class="risk-item"><span>Hairworm</span><span id="risk-hairworm" class="risk-badge-pill empty">—</span></div>
+                    <div class="risk-item"><span>Coccidia</span><span id="risk-coccidia" class="risk-badge-pill empty">—</span></div>
+                    <div class="risk-item"><span>Tick</span><span id="risk-tick" class="risk-badge-pill empty">—</span></div>
                 </div>
-
             </div>
         </div>
 
-        <!-- GUIDE -->
-        <div class="card">
-            <div class="card-label">Parasite Guide</div>
-            <details><summary>Gutworm</summary><p>Warm + moist conditions drive high risk. Peaks in summer with sustained rainfall.</p></details>
-            <details><summary>Lungworm</summary><p>Highly dependent on wet pasture. Risk rises sharply after heavy rain periods.</p></details>
-            <details><summary>Liver Fluke</summary><p>Requires consistently wet soils and snail intermediate hosts to complete lifecycle.</p></details>
-            <details><summary>Hairworm</summary><p>Thrives at moderate warmth (~22°C). Less moisture-dependent than other worms.</p></details>
-            <details><summary>Coccidia</summary><p>Warm, damp conditions with dense grazing pressure accelerate oocyst development.</p></details>
-            <details><summary>Tick</summary><p>Prefers cool-humid vegetation zones. Risk decreases in hot or very dry weather.</p></details>
-        </div>
-
     </aside>
+
 </main>
 
 </body>
