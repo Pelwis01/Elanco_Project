@@ -15,7 +15,7 @@
   --medium-bg: #fef3c7;
   --high-bg: #fee2e2;
 
-  --nav-h: 52px;
+  --nav-h: 56px;
   --navbar-height: 56px;
 }
 
@@ -69,7 +69,9 @@ body {
   background: var(--primary);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
+  color: #ffffff;
   z-index: 1000;
 }
 
@@ -305,39 +307,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   font-size: 10px;
   font-weight: 700;
 }
-.low { background: var(--low-bg); color: var(--low); }
-.medium { background: var(--medium-bg); color: var(--medium); }
-.high { background: var(--high-bg); color: var(--high); }
-.empty { background: #eee; color: #777; }
-
-/* LOADING */
-#loading-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.loading-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid #ddd;
-    border-top: 3px solid var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
 
 /* MOBILE */
 @media (max-width: 900px) {
@@ -368,18 +337,17 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .legend i.icon {
   background-size: 18px;
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 
 /* Leaflet popup */
 .leaflet-popup-content-wrapper {
   font-size: 16px;
-  line-height: 24px;
   border-radius: 30px;
-  width: 30px;
   height: 30px;
   padding: 10px;
   display: flex;
+  text-align: center;
   justify-content: center;
   align-items: center;
   background: rgba(252, 252, 252, 0.5);
@@ -389,7 +357,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .leaflet-popup-content {
   margin: 0;
-  padding: 0;
+  padding: 4px;
 }
 .leaflet-popup-tip-container {
   width: 35px;
@@ -460,6 +428,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .high { background-color: #d9534f; }
 .medium { background-color: #f0ad4e; }
 .low { background-color: #5cb85c; }
+
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
 /* SIDEBAR TOGGLE BUTTON */
@@ -490,17 +459,6 @@ main.sidebar-collapsed ~ #sidebar-toggle-wrapper,
 .leaflet-control,
 .leaflet-control-layers { z-index: 1001 !important; }
 
-/* MOBILE */
-@media (max-width: 900px) {
-  main { flex-direction: column; }
-  .map-wrapper { width: 100%; height: 60%; }
-  .sidebar { width: 100%; height: 40%; }
-  .legend span { position: relative; bottom: 3px; }
-  .legend i { width: 18px; height: 18px; float: left; margin: 0 8px 0 0; opacity: 0.7; }
-  .legend i.icon { background-size: 18px; background-color: rgba(255,255,255,1); }
-  .mobile-sheet, .mobile-bottom-nav, .mobile-layer-fab, .mobile-layer-picker, .map-tap-hint { display: block; }
-}
-
 /* DESKTOP */
 @media (min-width: 769px) {
   .sidebar {
@@ -522,189 +480,6 @@ main.sidebar-collapsed ~ #sidebar-toggle-wrapper,
   main.sidebar-collapsed .leaflet-top.leaflet-right { right: 16px; }
 }
 
-@media (max-width: 768px) {
-  :root {
-    --navbar-height: 48px;
-  }
-  .navbar-logo {
-    height: 32px;
-  }
-
-  /* Hide desktop-only elements */
-  .sidebar {
-    display: none;
-  }
-  #sidebar-toggle-wrapper {
-    display: none;
-  }
-
-  /* Show mobile-only elements */
-  .mobile-layer-fab {
-    display: flex;
-  }
-
-  /* Bottom nav bar */
-  .mobile-bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: #003366;
-    z-index: 600;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
-  }
-  .mobile-bottom-nav button {
-    flex: 1;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    cursor: pointer;
-    padding: 6px 0;
-  }
-  .mobile-bottom-nav button.active {
-    color: #fff;
-    border-top: 3px solid #4da3ff;
-  }
-  .mobile-bottom-nav button svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  /* Bottom sheet — sits above the nav bar, hidden off-screen by default */
-  .mobile-sheet {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 56px; /* above the nav bar */
-    height: 60vh;
-    background: #f5f5f5;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.18);
-    transform: translateY(100%); /* hidden */
-    transition: transform 0.3s ease;
-    z-index: 500;
-  }
-  .mobile-sheet.open {
-    transform: translateY(0); /* shown */
-  }
-}
-
-/* Bottom sheet — sits above the nav bar, hidden off-screen by default */
-.mobile-sheet {
-  flex-direction: column;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 56px; /* above the nav bar */
-  height: 60vh;
-  background: #f5f5f5;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.18);
-  transform: translateY(100%); /* hidden */
-  transition: transform 0.3s ease;
-  z-index: 500;
-}
-.mobile-sheet.open {
-  transform: translateY(0); /* shown */
-}
-
-/* Drag handle */
-.sheet-handle {
-  flex-shrink: 0;
-  padding: 10px 0 6px;
-  text-align: center;
-  cursor: pointer;
-  background: #fff;
-  border-radius: 16px 16px 0 0;
-}
-.sheet-handle-bar {
-  width: 40px;
-  height: 4px;
-  background: #ccc;
-  border-radius: 2px;
-  margin: 0 auto 6px;
-}
-.sheet-handle-label {
-  font-size: 12px;
-  color: #888;
-}
-
-/* Tabs */
-.sheet-tabs {
-  display: flex;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  flex-shrink: 0;
-}
-.sheet-tab {
-  flex: 1;
-  padding: 10px 0;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  font-size: 13px;
-  font-weight: 600;
-  color: #666;
-  cursor: pointer;
-}
-.sheet-tab.active {
-  color: #003366;
-  border-bottom-color: #003366;
-}
-
-/* Scrollable content area */
-.sheet-content {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 12px 14px 16px;
-}
-.sheet-panel {
-  display: none;
-}
-.sheet-panel.active {
-  display: block;
-}
-
-/* Layer FAB */
-.mobile-layer-fab {
-  position: fixed;
-  bottom: 72px;
-  right: 14px;
-  z-index: 450;
-  background: #003366;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 46px;
-  height: 46px;
-  font-size: 20px;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-}
-.mobile-location-header img {
-  width: 20px;
-  height: 20px;
-}
-
-.mobile-env-item img {
-  width: 18px;
-  height: 18px;
-  margin-bottom: 4px;
-}
 /* Move Leaflet layers control to always be visible at the top right, just left of the sidebar (or at the edge when sidebar is hidden) */
 .leaflet-top.leaflet-right {
   right: 33.333vw;
@@ -756,6 +531,7 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  bottom: 3px;
 }
 
 .results.active {
@@ -772,4 +548,17 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
+}
+
+/* Utilities */
+
+.hidden {
+	display: none;
+}
+
+
+/* Popup Styling */
+
+.custom-popup {
+
 }
