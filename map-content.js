@@ -1,19 +1,54 @@
+let weatherData = null;
+let layers = null;
+
 document.addEventListener("DOMContentLoaded", async function () {
+  setCurrentHour();
   const mapContainer = document.getElementById("map");
   if (!mapContainer) return;
 
+  // Listen for simulation toggle
+  document.getElementById("summer-sim").addEventListener("change", function () {
+    updateMapLayers();
+  });
+
   /* =========================== *\
-       🗺️ Base map
-    \* =========================== */
+	   🗺️ Base map
+	\* =========================== */
   // 🌍 Mapbox tile layer URL
   const mapBase = L.tileLayer(
-    "https://api.mapbox.com/styles/v1/bryzerse/cmlsnxjpl001c01s951lgbjdp/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
+    // Below are two style options - the first with and the second without farm highlights. One should be commented out depending on preference.
+    "https://api.mapbox.com/styles/v1/bryzerse/cmlyheaow001g01qyft8m8tos/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
     {
       attribution: "&copy; Mapbox",
     },
   );
 
-  // 🌊 Sea + Labels overlay
+  // 🗺️ Initialise land-only Leaflet map over British Isles
+  const map = L.map("map", { zoomControl: false }).setView([54.5, -4], 6);
+
+  mapBase.addTo(map);
+
+  map.options.minZoom = 6;
+  map.options.maxZoom = 10;
+
+  // 🌾 Agricultural land overlay with hover highlight (TBA)
+  const agriData = await fetch(
+    "data/FarmCensusDistrictElectoralArea2019_1860894812733494281.geojson",
+  ).then((r) => r.json());
+
+  const geojsonLayer = L.geoJSON(agriData, {
+    style: { color: "green", weight: 2 },
+    onEachFeature: function (_, layer) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: function (e) {
+          geojsonLayer.resetStyle(e.target);
+        },
+      });
+    },
+  }).addTo(map);
+
+  // 🌊 Sea + labels overlay
   const mapTop = L.tileLayer(
     "https://api.mapbox.com/styles/v1/bryzerse/cmlsoi77b001901sag1cug1yy/tiles/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoiYnJ5emVyc2UiLCJhIjoiY2traWNsZWhmMG13MzJvcGdiZ3hkbjlodyJ9.BV94uCu_hACQrqEbO74A8w",
     {
@@ -22,14 +57,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     },
   );
 
-  // 🗺️ Initialise land-only Leaflet map over the British Isles
-  let map = L.map("map", { zoomControl: false }).setView([54.5, -4], 6);
-
-  mapBase.addTo(map);
-
   /* =========================== *\
-       🎨 Layer config
-    \* =========================== */
+	   🎨 Layer config
+	\* =========================== */
   const baseCfg = {
     radius: 1,
     maxOpacity: 0.8,
@@ -44,20 +74,29 @@ document.addEventListener("DOMContentLoaded", async function () {
   const createLayer = (gradient) =>
     new HeatmapOverlay({ ...baseCfg, gradient });
 
-  // Define Gradients
+  // 🎨 Define gradients
+  // Max of 60 to allow for negative value offset (∴ 20 = 0°C, 0 = -20°C, 50 = 30°C)
   const tempGrad = {
-    ".1": "darkblue",
-    ".4": "blue",
-    ".6": "gold",
-    ".9": "#FF8C00",
+    ".25": "darkblue", // ❄️ Deep negatives (-10°C and below)
+    ".38": "blue", // ❄️ Around 0°C
+    ".50": "gold", // ❄️ Around 10°C to 15°C
+    ".75": "#FF8C00", // 🌤 Around 20°C to 25°C
+    ".95": "red", // 🔥 30°C+
   };
   const rainGrad = { ".1": "#A0C8FF", ".5": "#0055FF", ".9": "#000080" };
-  const riskGrad = { ".1": "green", ".4": "yellow", ".7": "orange", 1: "red" };
+  const riskGrad = {
+    ".1": "darkgreen",
+    ".2": "green",
+    ".5": "gold",
+    ".8": "orange",
+    1: "red",
+  };
 
-  // Instantiate Layers
-  const layers = {
+  // 🏗️ Instantiate layers
+  layers = {
     temp: createLayer(tempGrad),
     rain: createLayer(rainGrad),
+    soil: createLayer(rainGrad),
     lungworm: createLayer(riskGrad),
     gutworm: createLayer(riskGrad),
     liverfluke: createLayer(riskGrad),
@@ -72,208 +111,230 @@ document.addEventListener("DOMContentLoaded", async function () {
     None: L.layerGroup(),
     Temperature: layers.temp,
     Precipitation: layers.rain,
+    "Soil Moisture": layers.soil,
     "Lungworm Risk": layers.lungworm,
     "Gutworm Risk": layers.gutworm,
     "Liver Fluke Risk": layers.liverfluke,
     "Hairworm Risk": layers.hairworm,
     "Coccidia Risk": layers.coccidia,
-    "Castor Bean Tick Risk": layers.tick,
+    "Tick Risk": layers.tick,
     "Combined Risk (Max)": layers.combined,
   };
 
-  /*Legend specific*/
+  /* 📋 Legend */
   let legend = L.control({ position: "bottomleft" });
 
-  legend.onAdd = function (map) {
+  legend.onAdd = function () {
     let div = L.DomUtil.create("div", "legend");
-    div.innerHTML += "<h4>Legend</h4>";
-    div.innerHTML += '<i style="background: green"></i><span>0-30%</span><br>';
+    div.innerHTML += "<h4>Map Key</h4>";
+    div.innerHTML += '<i style="background: green"></i><span>Low</span><br>';
     div.innerHTML +=
-      '<i style="background: yellow"></i><span>30-70%</span><br>';
-    div.innerHTML += '<i style="background: red"></i><span>70-100%</span><br>';
+      '<i style="background: yellow"></i><span>Medium</span><br>';
+    div.innerHTML += '<i style="background: red"></i><span>High</span><br>';
     return div;
   };
 
   legend.addTo(map);
+
   L.control.layers(layerControl, {}).addTo(map);
-  map.on("baselayerchange", (e) => {
-    let elements = document.getElementsByClassName("about-box");
-
-    if (e.name === "Combined Risk (Max)") {
-      for (const about_box of elements) {
-        about_box.style.display = "block";
-      }
-    } else {
-      for (const about_box of elements) {
-        about_box.style.display = "none";
-      }
-      let parasite_info_box = document.getElementById(e.name);
-      if (parasite_info_box) {
-        parasite_info_box.style.display = "block";
-      }
-    }
-  });
-
   layers.combined.addTo(map); // 🗺️ Default view - combined risk map
+
   mapTop.addTo(map); // 🌊 Add sea and labels on top of heatmap layers
 
+  const search = new GeoSearch.GeoSearchControl({
+    provider: new GeoSearch.OpenStreetMapProvider(),
+  });
+
+  map.addControl(search);
   /* =========================== *\
-       🌩️ Data handling
-    \* =========================== */
+	   🌩️ Data handling
+	\* =========================== */
   try {
     // Retrieve data (cached or new)
     const gridPoints = await getLandPoints();
-    const weatherData = await getCachedWeather(gridPoints);
+    weatherData = await getCachedWeather(gridPoints);
+    const elevationData = getElevation(gridPoints);
+    weatherData[0].elevation = elevationData;
 
-    const points = {
-      temp: [],
-      rain: [],
-      soil_moisture: [],
-      lungworm: [],
-      gutworm: [],
-      liverfluke: [],
-      hairworm: [],
-      coccidia: [],
-      tick: [],
-      combined: [],
-    };
+    // Initial map render
+    updateMapLayers();
 
-    // Process each grid point
-    weatherData.forEach((batch) => {
-      if (!batch.hourly) return;
-
-      const lats = Array.isArray(batch.latitude)
-        ? batch.latitude
-        : [batch.latitude];
-      const lngs = Array.isArray(batch.longitude)
-        ? batch.longitude
-        : [batch.longitude];
-
-      lats.forEach((lat, i) => {
-        const lng = lngs[i];
-
-        const tempArray = Array.isArray(batch.hourly.temperature_2m[0])
-          ? batch.hourly.temperature_2m[i]
-          : batch.hourly.temperature_2m;
-
-        const rainArray = Array.isArray(batch.hourly.precipitation[0])
-          ? batch.hourly.precipitation[i]
-          : batch.hourly.precipitation;
-
-        const soilmoistureArray = Array.isArray(
-          batch.hourly.soil_moisture_3_to_9cm[0],
-        )
-          ? batch.hourly.soil_moisture_3_to_9cm[i]
-          : batch.hourly.soil_moisture_3_to_9cm;
-
-        const temp = tempArray[0] ?? 0;
-        const rain = rainArray[0] ?? 0;
-        const soil_moisture = soilmoistureArray[0] ?? 0;
-
-        points.temp.push({ lat, lng, value: temp });
-        if (rain > 0) points.rain.push({ lat, lng, value: rain });
-        points.soil_moisture.push({ lat, lng, value: soil_moisture });
-
-        // Risk calculations
-        let result = getAllParasiteRisks(
-          temp,
-          rain * 100,
-          (soil_moisture / 0.5) * 100,
-        );
-        let combinedRisk =
-          (result.lungworm +
-            result.gutworm +
-            result.liverfluke +
-            result.hairworm +
-            result.coccidia +
-            result.tick) /
-          6;
-
-        if (result.lungworm > 0)
-          points.lungworm.push({ lat, lng, value: result.lungworm });
-        if (result.gutworm > 0)
-          points.gutworm.push({ lat, lng, value: result.gutworm });
-        if (result.liverfluke > 0)
-          points.liverfluke.push({ lat, lng, value: result.liverfluke });
-        if (result.hairworm > 0)
-          points.hairworm.push({ lat, lng, value: result.hairworm });
-        if (result.coccidia > 0)
-          points.coccidia.push({ lat, lng, value: result.coccidia });
-        if (result.tick > 0) points.tick.push({ lat, lng, value: result.tick });
-        if (combinedRisk > 0)
-          points.combined.push({ lat, lng, value: combinedRisk });
-      });
-    });
-
-    // Update layers
-    layers.temp.setData({ max: 30, data: points.temp });
-    layers.rain.setData({ max: 5, data: points.rain });
-    layers.lungworm.setData({ max: 100, data: points.lungworm });
-    layers.gutworm.setData({ max: 100, data: points.gutworm });
-    layers.liverfluke.setData({ max: 100, data: points.liverfluke });
-    layers.hairworm.setData({ max: 100, data: points.hairworm });
-    layers.coccidia.setData({ max: 100, data: points.coccidia });
-    layers.tick.setData({ max: 100, data: points.tick });
-    layers.combined.setData({ max: 100, data: points.combined });
-
-    console.log(`✅ Map updated with ${points.temp.length} grid points.`);
+    console.log("✅ Map initialized and ready.");
   } catch (error) {
     console.error("❌ Critical Error loading map data:", error);
+		document.getElementById("error-box").style.display = "block";
+		document.getElementById("main").style.filter = "blur(4px)";
   }
 
-  /* =========================== *\
-       🖱️ Map click
-    \* =========================== */
-  map.on("click", (e) => {
-    handleMapClick(e, map, layers);
-  });
+  map.on("click", (e) => handleMapClick(e, map, layers));
 });
+
+function updateMapLayers() {
+  if (!weatherData) return;
+
+  const isSimulated = document.getElementById("summer-sim").checked;
+
+  // Accumulate heatmap points by metric
+  const points = {
+    temp: [],
+    rain: [],
+    soil: [],
+    elevation: [],
+    lungworm: [],
+    gutworm: [],
+    liverfluke: [],
+    hairworm: [],
+    coccidia: [],
+    tick: [],
+    combined: [],
+  };
+
+  // Process each grid point
+  weatherData.forEach((batch) => {
+    if (!batch.hourly) return;
+
+    let elevation = 0;
+    const lats = Array.isArray(batch.latitude)
+      ? batch.latitude
+      : [batch.latitude];
+    const lngs = Array.isArray(batch.longitude)
+      ? batch.longitude
+      : [batch.longitude];
+
+    lats.forEach((lat, i) => {
+      const lng = lngs[i];
+      const temp =
+        (Array.isArray(batch.hourly.temperature_2m[0])
+          ? batch.hourly.temperature_2m[i][0]
+          : batch.hourly.temperature_2m[0]) ?? 0;
+      const rain =
+        (Array.isArray(batch.hourly.precipitation[0])
+          ? batch.hourly.precipitation[i][0]
+          : batch.hourly.precipitation[0]) ?? 0;
+      const rawSoil =
+        (Array.isArray(batch.hourly.soil_moisture_3_to_9cm[0])
+          ? batch.hourly.soil_moisture_3_to_9cm[i][0]
+          : batch.hourly.soil_moisture_3_to_9cm[0]) ?? 0;
+      const soil = clamp100((rawSoil / 0.5) * 100); // Normalise to 0-100% (assuming UK saturation is ~0.5)
+      const simTemp = isSimulated ? temp + 8 : temp;
+      elevation = batch.elevation;
+
+      points.temp.push({ lat, lng, value: simTemp + 20 }); // Offset to push negative temps into positive range for heatmap
+      points.rain.push({ lat, lng, value: rain });
+      points.soil.push({ lat, lng, value: soil });
+      points.elevation.push({ lat, lng, value: elevation });
+
+      // 🧮 Risk calculations with unified scaling (rain * 10)
+      let result = getAllParasiteRisks(
+        temp,
+        rain * 10,
+        soil,
+        elevation,
+        isSimulated,
+      );
+
+      let combinedRisk =
+        Object.values(result).reduce((a, b) => a + b, 0) /
+        Object.values(result).length;
+
+      Object.keys(result).forEach((key) => {
+        if (result[key] > 0) points[key].push({ lat, lng, value: result[key] });
+      });
+      if (combinedRisk > 0)
+        points.combined.push({ lat, lng, value: combinedRisk });
+    });
+  });
+
+  // 🗺️ Update heatmap visuals
+  layers.temp.setData({ max: 160, data: points.temp }); // 🤔 Accounts for 40°C + 20 for negative offset, plus arbitrary headroom for heatmap clustering intensity
+  layers.rain.setData({ max: 10, data: points.rain });
+  [
+    "soil",
+    "lungworm",
+    "gutworm",
+    "liverfluke",
+    "hairworm",
+    "coccidia",
+    "tick",
+    "combined",
+  ].forEach((key) => {
+    layers[key].setData({ max: 100, data: points[key] });
+  });
+}
 
 /* =========================== *\
    🧩 Helper functions
 \* =========================== */
 
-// Create UK-based grid
+// 🇬🇧 Create UK-based grid
 async function getLandPoints() {
   const res = await fetch("data/uk_land_grid.json");
   return await res.json();
 }
 
-// Retrieve data (cached or new)
+// 📊 Retrieve data (cached or new)
 async function getCachedWeather(points) {
-  const CACHE_KEY = "uk_weather_cache_v4"; // NB: change each update to force refresh for outdated cache
-  const EXPIRY = 60 * 60 * 1000; // 1 hour
+  const CACHE_KEY = "uk_weather_cache_v5"; // ‼️ NB: change each map update to force early refresh for outdated cache - can be made more elegant with versioning for long-term maintenance
+  const EXPIRY = 60 * 60 * 1000; // 🕰️ 1 hour
 
-  // Check cache
+  // 🔄 Show loading overlay
+  document.getElementById("loading-overlay").style.display = "flex";
+
+  // 💾 Check cache
   const cached = localStorage.getItem(CACHE_KEY);
   const timestamp = localStorage.getItem(CACHE_KEY + "_ts");
   if (cached && timestamp && Date.now() - timestamp < EXPIRY) {
     console.log("💾 Loading from cache...");
+    document.getElementById("loading-overlay").style.display = "none";
     return JSON.parse(cached);
   }
 
   console.log("🌍 Fetching new data...");
 
-  // Batch request to avoid URL length limits
+  // 🧺 Batch request to avoid limits
   const BATCH_SIZE = 100;
   let allResults = [];
 
+  const totalBatches = Math.ceil(points.length / BATCH_SIZE);
+
   for (let i = 0; i < points.length; i += BATCH_SIZE) {
+    const batchIndex = Math.floor(i / BATCH_SIZE) + 1;
     const chunk = points.slice(i, i + BATCH_SIZE);
     const latStr = chunk.map((p) => p.lat).join(",");
     const lonStr = chunk.map((p) => p.lng).join(",");
 
+    console.log(
+      `📦 Batch ${batchIndex}/${totalBatches} | Points ${i + 1}-${i + chunk.length}`,
+    );
+
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latStr}&longitude=${lonStr}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`;
+    const start = performance.now();
 
     try {
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`Batch ${i} failed`);
+
+      if (res.status === 429) {
+        console.warn("⏳ Rate limited — waiting 6s...");
+        await new Promise((r) => setTimeout(r, 6000));
+        i -= BATCH_SIZE; // ↩️ Retry batch
+        continue;
+      }
+
+      if (!res.ok) throw new Error(`⚠️ Batch ${i} failed`);
       const data = await res.json();
-      // Normalise to array format for consistency
+
+      // 🗃️ Normalise to array format for consistency
       allResults = allResults.concat(Array.isArray(data) ? data : [data]);
+
+      const duration = ((performance.now() - start) / 1000).toFixed(2);
+      console.log(`✅ Batch ${batchIndex} complete (${duration}s)`);
     } catch (err) {
       console.warn(`⚠️ Batch failed: ${err.message}`);
+			document.getElementById("error-box").style.display = "block";
+			document.getElementById("main").style.filter = "blur(4px)";
     }
+
+    await new Promise((r) => setTimeout(r, 1000)); // ⏳ Throttle requests 1 second to be safe against rate limits
   }
 
   // 💾 Cache
@@ -284,149 +345,39 @@ async function getCachedWeather(points) {
     console.warn(`⚠️ Cache full: ${e.message}`);
   }
 
+  document.getElementById("loading-overlay").style.display = "none";
   return allResults;
 }
 
-// Click handler
-function handleMapClick(e, map, layers) {
-  const { lat, lng } = e.latlng;
-  console.log(`📍 Clicked: ${lat}, ${lng}`);
-
-  // Update coordinates
-  document.getElementById("region-coords").textContent =
-    `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
-
-  // 📍 Get place name via reverse geocoding
-  const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=07a555ce6feb41af804f92291149e61d`;
-  fetch(url)
-    .then((r) => r.json())
-    .then((data) => {
-      const result = data.results?.[0];
-      if (!result) return;
-      const c = result.components;
-
-      const place =
-        c.city ||
-        c.town ||
-        c.village ||
-        c.hamlet ||
-        c.locality ||
-        c.suburb ||
-        c.county ||
-        "Unknown";
-      document.getElementById("region-name").textContent = place;
-
-      // Build street line (no comma between number + road)
-      const streetLine =
-        c.house_number && c.road
-          ? `${c.house_number} ${c.road}`
-          : c.road || null;
-
-      // Business / building name if present
-      const nameLine =
-        c.shop || c.amenity || c.building || c.attraction || null;
-
-      // Assemble full address cleanly
-      const addressParts = [
-        nameLine,
-        streetLine,
-        c.suburb,
-        c.village,
-        c.town,
-        c.city,
-        c.postcode,
-      ].filter(Boolean);
-
-      // Remove duplicates (sometimes town == city)
-      const uniqueAddress = [...new Set(addressParts)];
-
-      document.getElementById("region-address").textContent =
-        uniqueAddress.join(", ") || "—";
-
-      console.log(`📌 Location: ${place}`);
-    })
-    .catch(() => {
-      document.getElementById("region-name").textContent = "Unknown";
-      document.getElementById("region-address").textContent = "—";
-    });
-
-  // Fetch local soil data (separate to save bandwidth)
-  fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=precipitation,temperature_2m,soil_moisture_3_to_9cm&forecast_days=1`,
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      const h = data.hourly;
-      const temp = h.temperature_2m[0];
-      const rain = h.precipitation[0];
-      const soil = ((h.soil_moisture_3_to_9cm[0] || 0) / 0.5) * 100;
-
-      // ➡️ Update sidebar
-      document.getElementById("region-temp").textContent = temp.toFixed(1);
-      document.getElementById("region-rain").textContent = rain.toFixed(1);
-      document.getElementById("region-soil").textContent = soil.toFixed(1);
-
-      console.log(
-        `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
-      );
-
-      // Call external risk function if it exists
-      if (typeof getAllParasiteRisks === "function") {
-        const risks = getAllParasiteRisks(temp, rain * 100, soil);
-        console.log("📊 Risk Result:", risks);
-
-        document.getElementById("risk-overall").textContent =
-          Math.round(
-            Object.values(risks).reduce(
-              (total, current) => total + current,
-              0,
-            ) / Object.values(risks).length,
-          ) ?? 0;
-        document.getElementById("risk-gutworm").textContent =
-          risks.gutworm ?? 0;
-        document.getElementById("risk-lungworm").textContent =
-          risks.lungworm ?? 0;
-        document.getElementById("risk-liverfluke").textContent =
-          risks.liverfluke ?? 0;
-        document.getElementById("risk-hairworm").textContent =
-          risks.hairworm ?? 0;
-        document.getElementById("risk-coccidia").textContent =
-          risks.coccidia ?? 0;
-        document.getElementById("risk-tick").textContent = risks.tick ?? 0;
-
-        let activelayer = getActiveLayerName(layers, map);
-        let content = null;
-        if (activelayer) {
-          if (activelayer === "temp") {
-            content = temp + "°C";
-          } else if (activelayer === "rain") {
-            content = rain + "mm";
-          } else if (activelayer === "combined") {
-            content =
-              Math.round(
-                Object.values(risks).reduce(
-                  (total, current) => total + current,
-                  0,
-                ) / Object.values(risks).length,
-              ) + "%";
-          } else {
-            content = risks[activelayer] + "%";
-            getPopupData(activelayer, risks[activelayer]);
-          }
-
-          L.popup({
-            className: "custom-popup",
-          })
-            .setLatLng(e.latlng)
-            .setContent(content)
-            .openOn(map);
-        }
-      }
-    })
-
-    .catch((err) => console.error("Local fetch failed", err));
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
 function getActiveLayerName(layers, map) {
   return Object.keys(layers).find((layer) => map.hasLayer(layers[layer]));
+}
+
+function getElevation(points) {
+  let allResults = [];
+  fetch(`data/elevation_data.json?lat=${points.lat}&lon=${points.lon}`)
+    .then((res) => res.json())
+    .then((data) => {
+      for (const record of data) {
+        allResults.push({
+          evelation: record.elevation[0],
+        });
+      }
+      console.log("✅ Elevation data retrieved");
+    })
+    .catch((err) => {
+      console.warn(`⚠️ Elevation batch failed: ${err.message}`);
+    });
+  return allResults;
+}
+
+function highlightFeature(e) {
+  const layer = e.target;
+  layer.setStyle({ weight: 5, color: "#666", fillOpacity: 0.7 });
+  layer.bringToFront(); // Ensures highlight is visible
 }

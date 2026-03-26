@@ -1,169 +1,164 @@
-// temp in °C, rainfall in mm, soilMoisture in % (0–100)for 3-9cm depth
-// Returns risk score 0–100 where higher is more risk
-// All functions use similar logic but with different thresholds and weightings based on parasite biology
-// The multiplier for rainfall is adjusted based on how much the parasite depends on moisture
-function getAllParasiteRisks(temp, rainfall, soilMoisture) {
+// Temp in °C, rainfall in mm, soilMoisture in % (0–100) for 3–9cm depth, Altitude in meters (m)
+// Returns risk scores (0–100) for various parasites, where higher scores indicate higher risk 
+// Each parasite has unique thresholds and weightings based on its biology 
+// Rainfall multiplier varies depending on the parasite's moisture dependency
 
-    return {
-        gutworm: gutwormRisk(temp, rainfall, soilMoisture),
-        lungworm: lungwormRisk(temp, rainfall, soilMoisture),
-        liverfluke: liverflukeRisk(temp, rainfall, soilMoisture),
-        hairworm: hairwormRisk(temp, rainfall, soilMoisture),
-        coccidia: coccidiaRisk(temp, rainfall, soilMoisture),
-        tick: tickRisk(temp, rainfall, soilMoisture) 
-    };
+function getAllParasiteRisks(temp, rainfall, soilMoisture, altitude, isSimulated = false) {
+
+	let finalTemp = Number(temp);
+	let finalRain = Number(rainfall);
+	let finalSoil = Number(soilMoisture);
+	let finalAlt = Number(altitude);
+
+	if (isSimulated) {
+		finalTemp += 8;              // simulate warmer summer
+		finalSoil = Math.max(finalSoil, 75); // Ensure soil isn't too dry for life
+		finalRain = Math.max(finalRain, 2); // Assume light rain for summer
+	}
+
+	return {
+		gutworm:    gutwormRisk(finalTemp, finalRain, finalSoil, finalAlt),
+		lungworm:   lungwormRisk(finalTemp, finalRain, finalSoil, finalAlt),
+		liverfluke: liverflukeRisk(finalTemp, finalRain, finalSoil, finalAlt),
+		hairworm:   hairwormRisk(finalTemp, finalRain, finalSoil, finalAlt),
+		coccidia:   coccidiaRisk(finalTemp, finalRain, finalSoil, finalAlt),
+		tick:       tickRisk(finalTemp, finalRain, finalSoil, finalAlt)
+	};
 }
 
-function tickRisk(temp, rainfall, soilMoisture) {
-    // Ixodes ricinus (castor bean tick) prefers cool-mild temperatures and humid conditions.
-    // Soil moisture is more important than rainfall.
-    // Risk drops in very hot or very dry weather.
 
-    let tempScore = 0;
-
-    if (temp < 2) tempScore = 5;        // too cold for activity
-    else if (temp < 8) tempScore = 60;  // becoming active
-    else if (temp < 18) tempScore = 95; // peak activity range
-    else if (temp < 25) tempScore = 70; 
-    else tempScore = 30;                // too hot
-
-    // Rainfall less important than humidity
-    let rainScore = Math.min(rainfall * 1.5, 100);
-
-    // Soil moisture very important for survival
-    let soilScore = soilMoisture;
-
-    // Temp and soil more important
-    let risk = (tempScore * 0.4) + (rainScore * 0.2) + (soilScore * 0.4);
-
-    if (risk > 100) risk = 100; // cap at 100
-
-    return Math.round(risk);
+// Helper functions for scoring to make sure that it as accurate as possible
+// Ensures the value is within the range 0–100
+function clamp100(val) {
+	if (!Number.isFinite(val)) return 0;
+	return Math.min(100, Math.max(0, val));
+}
+ // Gaussian distribution function for scoring based on mean and standard deviation
+function gaussian(x, mean, stdDev) {
+	if (!Number.isFinite(x)) return 0;
+	return Math.exp(-0.5 * ((x - mean) / stdDev) ** 2);
+}
+// Saturating function for scoring, where the score approaches 100 as x increases
+function saturating(x, halfPoint) {
+	if (!Number.isFinite(x) || x <= 0) return 0;
+	return x / (x + halfPoint);
 }
 
-function gutwormRisk(temp, rainfall, soilMoisture) {
-    // Gutworms can survive in a wider range of conditions, but thrive in moderate temperatures and moisture, so we give temperature a slightly higher weighting than rainfall
-    // Temperature effect (0–100)
-    let tempScore = 0;
-    if (temp < 5) tempScore = 5;
-    else if (temp < 10) tempScore = 40;
-    else if (temp < 18) tempScore = 85;
-    else if (temp < 22) tempScore = 70;
-    else tempScore = 50;
+// Altitude scoring (lower altitude = better parasite survival)
+function altitudeScore(altitude) {
+	if (!Number.isFinite(altitude)) return 0;
 
-    // Rainfall effect (0–100)
-    // Multiplied by 2 because gutworms need moisture but can survive in drier conditions too
-    // Capped at 100 to prevent unrealistic scores
-    let rainScore = Math.min(rainfall * 2, 100);
-
-    // Soil moisture modererate influence (top grazing layer relevance)
-    let soilScore = soilMoisture;
-
-    // Combine (temperature is slightly more important)
-    let risk = (tempScore * 0.5) + (rainScore * 0.3) + (soilScore * 0.2);
-
-    if (risk > 100) risk = 100; // cap at 100
-
-    return Math.round(risk);
+	if (altitude < 200) return 100;     // ideal
+	else if (altitude < 500) return 70; // moderate
+	else return 40;                     // harsh
 }
 
-function lungwormRisk(temp, rainfall, soilMoisture) {
-    // Lungworms are more sensitive to temperature and moisture, so we give both factors equal importance but with a stronger multiplier for rainfall
-    let tempScore = 0;
-    if (temp < 8) tempScore = 5;
-    else if (temp < 12) tempScore = 40;
-    else if (temp < 20) tempScore = 90;
-    else tempScore = 75;
 
-    // Multiplied by 2.5 because lungworms are very dependent on moisture for their lifecycle
-    // Rainfall has a stronger effect on lungworm risk than gutworms
-    let rainScore = Math.min(rainfall * 2.5, 100);
+// Parasites section
 
-    let soilScore = soilMoisture;
+function tickRisk(temp, rainfall, soilMoisture, altitude) {
+	// Ixodes ricinus (castor bean tick) prefers cool-mild temperatures and humid conditions 
+	// Soil moisture is more critical than rainfall; risk decreases in hot or dry weather
+	// Altitude has less weighting 
+	let tempScore = gaussian(temp, 14, 6) * 100;
+	let rainScore = saturating(rainfall, 25) * 100;
+	let soilScore = gaussian(soilMoisture, 85, 12) * 100;
+	let altScore = altitudeScore(altitude);
 
-    // Combine (temperature, rainfall and soil moisture are equally important)
-    let risk = (tempScore * 0.4) + (rainScore * 0.3) + (soilScore * 0.3);
+	let risk = (tempScore * 0.3) +
+			   (rainScore * 0.2) +
+			   (soilScore * 0.35) +
+			   (altScore * 0.15);
 
-    if (risk > 100) risk = 100; // cap at 100
-
-    return Math.round(risk);
-}
-function liverflukeRisk(temp, rainfall, soilMoisture) {
-    // liver fluke is highly dependent on wet conditions for its lifecycle, so we give rainfall a much stronger weighting than temperature
-    let tempScore = 0;
-    if (temp < 5) tempScore = 10;
-    else if (temp < 10) tempScore = 60;
-    else if (temp < 20) tempScore = 80;
-    else tempScore = 50;
-
-    // Multiplied by 3 because liver fluke is highly dependent on wet conditions for its lifecycle
-    // liverfluke risk can skyrocket with even moderate rainfall, hence the heavy weighting
-    let rainScore = Math.min(rainfall * 3, 100); // heavy weighting
-
-    let soilScore = soilMoisture;
-
-    // Soil and rainfall are more important due to snail intermediate host, but temperature still plays a role, so we give it a moderate weighting
-    let risk = (tempScore * 0.2) + (rainScore * 0.4) + (soilScore * 0.4);
-
-    if (risk > 100) risk = 100; // cap at 100
-
-    return Math.round(risk);
-}
-function hairwormRisk(temp, rainfall, soilMoisture) {
-    // hairworms can survive in a wider range of conditions but thrive in moderate temperatures and moisture, so we give temperature a higher weighting than rainfall
-    let tempScore = 0;
-    if (temp < 12) tempScore = 5;
-    else if (temp < 18) tempScore = 60;
-    else if (temp < 25) tempScore = 95;
-    else tempScore = 85;
-
-    // Multiplied by 2 because hairworms need moisture but can survive in drier conditions too
-    //But overall temperature is more critical for hairworms than rainfall, so we give it a moderate weighting
-    let rainScore = Math.min(rainfall * 2, 100);
-
-    let soilScore = soilMoisture;
-
-    // Temperature alot more important
-    let risk = (tempScore * 0.6) + (rainScore * 0.2) + (soilScore * 0.2);
-
-    if (risk > 100) risk = 100; // cap at 100
-
-    return Math.round(risk);
-}
-function coccidiaRisk(temp, rainfall, soilMoisture) {
-    // coccidia can survive in a wide range of conditions but thrive in moderate temperatures and moisture, so we give both factors equal importance but with a moderate multiplier for rainfall
-    let tempScore = 0;
-    if (temp < 5) tempScore = 10;
-    else if (temp < 15) tempScore = 70;
-    else if (temp < 22) tempScore = 85;
-    else tempScore = 60;
-
-    // Multiplied by 1.8 because coccidia can thrive in moist conditions but are not as dependent on rainfall as other parasites
-    // Moisture can help coccidia spread, but they can also survive in drier conditions, so we give it a moderate weighting
-    let rainScore = Math.min(rainfall * 1.8, 100);
-
-    let soilScore = soilMoisture;
-
-    // Temperature rainfall and soil moisture are equally important
-    let risk = (tempScore * 0.4) + (rainScore * 0.3) + (soilScore * 0.3);
-
-    if (risk > 100) risk = 100; // cap at 100
-    
-    return Math.round(risk);
+	return Math.round(clamp100(risk));
 }
 
-// Test while not got API working
 
-let testTemp = 16;          // °C
-let testRainfall = 35;      // mm
-let testSoilMoisture = 75;  // % at 3–9 cm depth
+function gutwormRisk(temp, rainfall, soilMoisture, altitude) {
+	// Gutworms thrive in moderate temperatures and moisture 
+	// Temperature has a slightly higher influence than rainfall
+	// They depend less on altitude
+	let tempScore = gaussian(temp, 16, 7) * 100;
+	let rainScore = saturating(rainfall, 30) * 100;
+	let soilScore = gaussian(soilMoisture, 70, 20) * 100;
+	let altScore = altitudeScore(altitude);
 
-console.log("Testing with:");
-console.log("Temperature:", testTemp + "°C");
-console.log("Rainfall:", testRainfall + "mm");
-console.log("Soil Moisture (3–9cm):", testSoilMoisture + "%\n");
+	let risk = (tempScore * 0.45) +
+			   (rainScore * 0.25) +
+			   (soilScore * 0.2) +
+			   (altScore * 0.1);
 
-let results = getAllParasiteRisks(testTemp, testRainfall, testSoilMoisture);
+	return Math.round(clamp100(risk));
+}
 
-console.log("Parasite Risk Results (%):");
-console.log(results);
+
+function lungwormRisk(temp, rainfall, soilMoisture, altitude) {
+	// Lungworms are highly sensitive to temperature and moisture 
+	// Rainfall has a stronger influence due to their dependency on moisture
+	// Altitude is less important then the others
+	let tempScore = gaussian(temp, 18, 6) * 100;
+	let rainScore = saturating(rainfall, 20) * 100;
+	let soilScore = gaussian(soilMoisture, 80, 15) * 100;
+	let altScore = altitudeScore(altitude);
+
+	let risk = (tempScore * 0.35) +
+			   (rainScore * 0.3) +
+			   (soilScore * 0.2) +
+			   (altScore * 0.15);
+
+	return Math.round(clamp100(risk));
+}
+
+
+function liverflukeRisk(temp, rainfall, soilMoisture, altitude) {
+	// Liver fluke depends heavily on wet lowland environments (snails)
+	// Liver flukes are highly dependent on wet conditions for their lifecycle 
+	// Rainfall and soil moisture have a stronger influence than temperature
+	let tempScore = gaussian(temp, 15, 6) * 100;
+	let rainScore = saturating(rainfall, 15) * 100;
+	let soilScore = gaussian(soilMoisture, 85, 10) * 100;
+	let altScore = altitudeScore(altitude);
+
+	let risk = (tempScore * 0.15) +
+			   (rainScore * 0.4) +
+			   (soilScore * 0.25) +
+			   (altScore * 0.2); // strong altitude effect
+
+	return Math.round(clamp100(risk));
+}
+
+
+function hairwormRisk(temp, rainfall, soilMoisture, altitude) {
+	// Hairworms thrive in moderate temperatures and moisture 
+	// Temperature has the highest influence on risk
+	// Hairworms are resilient so altitude has small effect
+	let tempScore = gaussian(temp, 22, 5) * 100;
+	let rainScore = saturating(rainfall, 30) * 100;
+	let soilScore = gaussian(soilMoisture, 65, 20) * 100;
+	let altScore = altitudeScore(altitude);
+
+	let risk = (tempScore * 0.55) +
+			   (rainScore * 0.2) +
+			   (soilScore * 0.15) +
+			   (altScore * 0.1);
+
+	return Math.round(clamp100(risk));
+}
+
+
+function coccidiaRisk(temp, rainfall, soilMoisture, altitude) {
+	// Coccidia thrive in moderate temperatures and moisture 
+	// Temperature, rainfall, and soil moisture have roughly equal influence
+	// Coccidia influenced by environment but less altitude-dependent
+	let tempScore = gaussian(temp, 18, 8) * 100;
+	let rainScore = saturating(rainfall, 35) * 100;
+	let soilScore = gaussian(soilMoisture, 75, 18) * 100;
+	let altScore = altitudeScore(altitude);
+
+	let risk = (tempScore * 0.35) +
+			   (rainScore * 0.25) +
+			   (soilScore * 0.25) +
+			   (altScore * 0.15);
+
+	return Math.round(clamp100(risk));
+}
