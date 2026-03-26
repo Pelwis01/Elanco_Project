@@ -4,12 +4,17 @@ function handleMapClick(e, map, layers) {
   document.getElementById("predictive-data").style.display = "block";
 
   const isSimulated = document.getElementById("summer-sim").checked;
+  const elevation = 0;
   const { lat, lng } = e.latlng;
   console.log(`📍 Clicked: ${lat}, ${lng}`);
 
   // 🌐 Update coordinates
-  document.getElementById("region-coords").textContent =
-    `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+  //document.getElementById("region-coords").textContent =
+  //`${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+  const coordsText = `${lat.toFixed(6)}, ${lng.toFixed(7)}`;
+
+  setText("region-coords", coordsText);
+  setText("m-region-coords", coordsText);
 
   // 📍 Get place name via reverse geocoding
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=07a555ce6feb41af804f92291149e61d`;
@@ -29,7 +34,8 @@ function handleMapClick(e, map, layers) {
         c.suburb ||
         c.county ||
         "Unknown";
-      document.getElementById("region-name").textContent = place;
+      setText("region-name", place);
+      setText("m-region-name", place);
 
       // Street line (no comma between number + road)
       const streetLine =
@@ -54,15 +60,26 @@ function handleMapClick(e, map, layers) {
 
       // Remove duplicates (if town == city)
       const uniqueAddress = [...new Set(addressParts)];
+      const addressText = uniqueAddress.join(", ") || "—";
 
-      document.getElementById("region-address").textContent =
-        uniqueAddress.join(", ") || "—";
+      setText("region-address", addressText);
+      setText("m-region-address", addressText);
 
       console.log(`📌 Location: ${place}`);
     })
     .catch(() => {
-      document.getElementById("region-name").textContent = "Unknown";
-      document.getElementById("region-address").textContent = "—";
+      setText("region-name", "Unknown");
+      setText("region-address", "—");
+    });
+
+  fetch(
+    `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`,
+  )
+    .then((r) => r.json())
+    .then((data) => {
+      const elevation = data.elevation;
+      console.log(`🏔️ Elevation: ${elevation} m`);
+      return elevation;
     });
 
   // ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
@@ -80,7 +97,7 @@ function handleMapClick(e, map, layers) {
         coccidia: "risk-coccidia",
         tick: "risk-tick",
       };
-
+      console.log("📊 Weather & Soil Data:", data);
       const riskEvaluation = () => {
         let value = document.getElementById("hour").value ?? 0;
         let style = "";
@@ -90,7 +107,13 @@ function handleMapClick(e, map, layers) {
         const rain = h.precipitation[value];
         const soil = ((h.soil_moisture_3_to_9cm[value] || 0) / 0.5) * 100;
 
-        const risks = getAllParasiteRisks(temp, rain * 10, soil, isSimulated);
+        const risks = getAllParasiteRisks(
+          temp,
+          rain * 10,
+          soil,
+          elevation,
+          isSimulated,
+        );
         for (let i in risks) {
           if (risks[i] <= 30) {
             context[i] = "Low";
@@ -102,17 +125,26 @@ function handleMapClick(e, map, layers) {
             context[i] = "High";
             style = "color :  red; font-weight : bold";
           }
-          document.getElementById(id[i]).textContent = context[i];
+          setText(id[i], context[i]);
           document.getElementById(id[i]).style = style;
         }
 
-        // ➡️ Update sidebar
-        document.getElementById("region-temp").textContent =
-          temp.toFixed(1);
-        document.getElementById("region-rain").textContent = rain.toFixed(1);
-        document.getElementById("region-soil").textContent = soil.toFixed(1);
+        setText("region-temp", temp.toFixed(1));
+        setText("region-rain", rain.toFixed(1));
+        setText("region-soil", soil.toFixed(1));
+
+        setText("m-region-temp", temp.toFixed(1));
+        setText("m-region-rain", rain.toFixed(1));
+        setText("m-region-soil", soil.toFixed(1));
 
         // 📊 Parasite risk calculation with unified scaling (rain * 100 for percentage)
+
+        setText("m-risk-gutworm", risks.gutworm ?? 0);
+        setText("m-risk-lungworm", risks.lungworm ?? 0);
+        setText("m-risk-liverfluke", risks.liverfluke ?? 0);
+        setText("m-risk-hairworm", risks.hairworm ?? 0);
+        setText("m-risk-coccidia", risks.coccidia ?? 0);
+        setText("m-risk-tick", risks.tick ?? 0);
 
         console.log("📊 Risk Result:", risks);
 
@@ -120,7 +152,7 @@ function handleMapClick(e, map, layers) {
           `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
         );
 
-		return risks;
+        return risks;
       };
 
       const risks = riskEvaluation();
@@ -173,7 +205,7 @@ function setCurrentHour() {
   const now = new Date();
   const currentHour = now.getHours();
   const currentDay = now.getDate();
-  const currentMonth = now.getMonth() + 1; 
+  const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
   const currentDate = `${currentDay}/0${currentMonth}/${currentYear}`;
 
@@ -182,18 +214,18 @@ function setCurrentHour() {
 }
 
 function changeDate(value) {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentDay = now.getDate();
-    
-    let Newtime = currentHour + parseInt(value) ;
-    let daysToAdd = Math.floor(Newtime / 24);
-    let NewDate = currentDay + daysToAdd;
- 
-    const currentMonth = now.getMonth() + 1; 
-    const currentYear = now.getFullYear();
-    let currentDate = `${NewDate}/0${currentMonth}/${currentYear}`;
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentDay = now.getDate();
 
-  document.getElementById("hour-value").textContent = Newtime % 24; 
+  let Newtime = currentHour + Number.parseInt(value);
+  let daysToAdd = Math.floor(Newtime / 24);
+  let NewDate = currentDay + daysToAdd;
+
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+  let currentDate = `${NewDate}/0${currentMonth}/${currentYear}`;
+
+  document.getElementById("hour-value").textContent = Newtime % 24;
   document.getElementById("date-value").textContent = currentDate;
 }
