@@ -29,7 +29,6 @@
 body {
     background: var(--bg);
     color: var(--text);
-  --navbar-height: 56px;
 }
 
 body {
@@ -91,7 +90,6 @@ main {
   align-items: center;
   justify-content: space-between;
   color: #ffffff;
-  padding: 0 16px;
   z-index: 1000;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
@@ -119,8 +117,6 @@ main {
 }
 /* --- FULLSCREEN MAP + OVERLAY SIDEBAR LAYOUT --- */
 
-#map {
-    height: 100%;
 .map-wrapper {
   position: absolute;
   top: 0;
@@ -404,6 +400,7 @@ input:checked + .slider:before {
         width: 100%;
         height: 40%;
     }
+  }
 .legend span {
   position: relative;
   bottom: 3px;
@@ -637,7 +634,7 @@ input:checked + .slider:before {
     top: var(--navbar-height);
     right: 0;
     width: 33.333vw;
-    height: calc(100vh - var(--navbar-height));
+    height: 100vh;
     border-left: 1px solid #ccc;
     box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s;
