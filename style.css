@@ -644,21 +644,6 @@ input[type="range"] {
   letter-spacing: 0.04em;
 }
 
-.risk-tag.low {
-  background: var(--low-bg);
-  color: var(--low);
-}
-
-.risk-tag.medium {
-  background: var(--medium-bg);
-  color: var(--medium);
-}
-
-.risk-tag.high {
-  background: var(--high-bg);
-  color: var(--high);
-}
-
 /* Card tinting */
 .guide-item.low {
   background: linear-gradient(135deg, var(--low-bg), #ffffff);
@@ -670,4 +655,80 @@ input[type="range"] {
 
 .guide-item.high {
   background: linear-gradient(135deg, var(--high-bg), #ffffff);
+}
+
+/* GUIDE CONTAINER */
+.parasite-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* EACH DROPDOWN CARD */
+.guide-item {
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+}
+
+.guide-item summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+}
+
+/* REMOVE DEFAULT ARROW */
+.guide-item summary::-webkit-details-marker {
+  display: none;
+}
+
+/* CUSTOM ARROW */
+.guide-item summary::after {
+  content: "▾";
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.guide-item[open] summary::after {
+  transform: rotate(180deg);
+}
+
+/* CONTENT */
+.guide-content {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+}
+
+/*  RISK COLOUR STYLES */
+
+/* LOW */
+.guide-item.low {
+  background: rgba(34,197,94,0.15);
+  border-left: 5px solid var(--low);
+}
+
+/* MEDIUM */
+.guide-item.medium {
+  background: rgba(245,158,11,0.18);
+  border-left: 5px solid var(--medium);
+}
+
+/* HIGH */
+.guide-item.high {
+  background: rgba(239,68,68,0.18);
+  border-left: 5px solid var(--high);
+}
+
+/* HOVER EFFECT */
+.guide-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
