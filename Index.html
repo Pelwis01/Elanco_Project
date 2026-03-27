@@ -61,8 +61,11 @@
           <div
             class="box"
             style="
+              display: flex;
               padding: 24px 32px;
               box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+              flex-direction: column;
+              align-items: center;
             "
           >
             <div class="spinner"></div>
@@ -221,12 +224,12 @@
           </details>
         </div>
       </aside>
-		
+
 <!-- END OF DESKTOP UI -->
 
 
-		
-<!--MOBILE UI — bottom sheet + nav-->
+
+      <!--MOBILE UI — bottom sheet + nav-->
 
       <!-- Tap hint shown on first load -->
       <div class="map-tap-hint" id="mobile-tap-hint">
@@ -321,6 +324,7 @@
               </div>
               <input
                 type="range"
+                class="m-hour"
                 id="m-hour"
                 name="hour"
                 min="0"
