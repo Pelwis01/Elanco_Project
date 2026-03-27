@@ -11,9 +11,9 @@ const data = [{
 }];
 
 const layout = {
-  xaxis: {range: [1, 72], title: "Hour"},
-  yaxis: {range: [0, 100], title: "Percentage Chance of parasite infection"},  
-  title: "Chance of parasite infection over time"
+  xaxis: {range: [1, 72], title: "Time (Hours)"},
+  yaxis: {range: [0, 100], title: "Overall Parasite Risk (%)"},  
+  title: ""
 };
 
 Plotly.newPlot(plotbox, data, layout);
@@ -74,10 +74,27 @@ var btn = document.getElementById("myBtn");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks the button, open the modal 
+// Function to resize the Plotly graph to fill the modal
+function resizePlot() {
+  const modalContent = document.querySelector(".modal-content");
+  const plotDiv = document.getElementById("myPlot");
+
+  // Set the plot's width and height to match the modal content
+  plotDiv.style.width = `${modalContent.clientWidth - 35}px`;
+  plotDiv.style.height = `${modalContent.clientHeight - 50}px`; // Adjust for header height
+
+  // Trigger Plotly to resize
+  Plotly.Plots.resize(plotDiv);
+}
+
+// When the user clicks the button, open the modal and resize the plot
 btn.onclick = function() {
   modal.style.display = "block";
-}
+  resizePlot();
+};
+
+// When the window is resized, ensure the plot resizes as well
+window.addEventListener("resize", resizePlot);
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {

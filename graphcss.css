@@ -25,6 +25,11 @@
   width: 80%;
   height: 70%;
   border-radius: 15px;
+  border-right: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+  border-left: 2px solid var(--primary);
+  border-top: 2px solid var(--primary);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   -webkit-animation-name: slideIn;
   -webkit-animation-duration: 0.4s;
   animation-name: slideIn;
@@ -33,7 +38,7 @@
 
 /* The Close Button */
 .close {
-  color: white;
+  color: var(--primary);
   float: right;
   font-size: 28px;
   font-weight: bold;
@@ -48,17 +53,13 @@
 
 .modal-header {
   padding: 2px 16px;
-  background-color: #5cb85c;
-  color: white;
+  background-color: white;
+  color: var(--primary);
+  border-radius: 15px;
 }
 
 .modal-body {padding: 2px 16px;}
 
-.modal-footer {
-  padding: 2px 16px;
-  background-color: #5cb85c;
-  color: white;
-}
 
 /* Add Animation */
 @-webkit-keyframes slideIn {
