@@ -6,7 +6,7 @@ function handleMapClick(e, map, layers) {
   document.getElementById("m-before-predictive").classList.add("hidden");
 
   const isSimulated = document.getElementById("summer-sim").checked;
-  const elevation = 0;
+  let elevation = 0;
   const { lat, lng } = e.latlng;
   console.log(`📍 Clicked: ${lat}, ${lng}`);
 
@@ -74,15 +74,10 @@ function handleMapClick(e, map, layers) {
       setText("region-address", "—");
     });
 
-  fetch(
-    `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`,
-  )
-    .then((r) => r.json())
-    .then((data) => {
-      const elevation = data.elevation;
-      console.log(`🏔️ Elevation: ${elevation} m`);
-      return elevation;
-    });
+  getElevation(lat, lng).then((elev) => {
+    elevation = elev;
+    console.log(`🏔️ Elevation: ${elevation} m`);
+  });
 
   // ⛈️ Fetch weather and soil data for precise clicked location (Open-Meteo)
   fetch(
@@ -143,15 +138,18 @@ function handleMapClick(e, map, layers) {
 
           document.getElementById(id[i]).style = style;
           document.getElementById(mobile_id[i]).style = style;
+          
         }
 
         setText("region-temp", temp.toFixed(1));
         setText("region-rain", rain.toFixed(1));
         setText("region-soil", soil.toFixed(1));
+        setText("region-altitude", elevation);
 
         setText("m-region-temp", temp.toFixed(1));
         setText("m-region-rain", rain.toFixed(1));
         setText("m-region-soil", soil.toFixed(1));
+        setText("m-region-altitude", elevation);
 
         console.log("📊 Risk Result:", risks);
 
@@ -235,8 +233,18 @@ function changeDate(value) {
   document.getElementById("m-date-value").textContent = currentDate;
 }
 
-
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
+}
+
+function getElevation(lat, lng) {
+  return fetch(
+    `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`,
+  )
+    .then((r) => r.json())
+    .then((data) => {
+      const elevation = data.elevation;
+      return elevation;
+    });
 }

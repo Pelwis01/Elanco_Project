@@ -548,6 +548,7 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
   max-height: 200px;
   overflow-y: auto;
   z-index: 1000;
+  color: black;
 }
 
 .leaflet-control-geosearch form input {
@@ -560,9 +561,10 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
 	display: none;
 }
 
+.m-hout input {
+  width: 100%;
+}
 
-/* Popup Styling */
-
-.custom-popup {
-
+input[type="range"] {
+  accent-color: var(--accent);
 }
