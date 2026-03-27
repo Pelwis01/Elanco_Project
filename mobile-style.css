@@ -198,3 +198,123 @@
 .leaflet-right {
     margin-right: 0;
 }
+
+/* ── Info panel: match the parasite guide panel's style*/
+/* Location header card */
+.mobile-location-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #cce0ff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: #f8fbff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    margin-bottom: 10px;
+}
+.mobile-location-header img {
+    width: 28px;
+    height: 28px;
+    filter: hue-rotate(240deg);
+    flex-shrink: 0;
+}
+.loc-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #003366;
+    line-height: 1.2;
+}
+.loc-sub {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Risk grid — 2 columns of cards matching .box style */
+.mobile-risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.mobile-risk-item {
+    border: 1px solid #cce0ff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #f8fbff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.m-risk-label {
+    font-size: 13px;
+    color: #003366;
+    font-weight: 600;
+}
+.m-risk-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Conditions row — 3 equal cards */
+.mobile-env-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.mobile-env-item {
+    border: 1px solid #cce0ff;
+    border-radius: 8px;
+    padding: 10px 8px;
+    background: #f8fbff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+}
+.mobile-env-item img {
+    width: 22px;
+    height: 22px;
+}
+.env-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #003366;
+}
+.env-label {
+    font-size: 11px;
+    color: #888;
+}
+
+/* Placeholder shown before map is tapped */
+.placeholder {
+    border: 1px solid #cce0ff;
+    border-radius: 8px;
+    padding: 16px;
+    background: #f8fbff;
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+}
+.hidden { display: none; }
+
+/* Time/date row above the slider */
+.time-row {
+    font-size: 13px;
+    color: #003366;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Range slider */
+input[type="range"] {
+    width: 100%;
+    margin-bottom: 12px;
+    accent-color: #003366;
+}
