@@ -56,20 +56,25 @@
   background-color: white;
   color: var(--primary);
   border-radius: 15px;
+  -webkit-animation-name: extend;
+  -webkit-animation-duration: 0.4s;
+  animation-name: extend;
+  animation-duration: 0.4s
 }
 
 .modal-body {padding: 2px 16px;}
 
 
+
 /* Add Animation */
 @-webkit-keyframes slideIn {
   from {bottom: -300px; opacity: 0} 
-  to {bottom: 0; opacity: 1}
+  to {bottom: 15%; opacity: 1}
 }
 
 @keyframes slideIn {
   from {bottom: -300px; opacity: 0}
-  to {bottom: 0; opacity: 1}
+  to {bottom: 15%; opacity: 1}
 }
 
 @-webkit-keyframes fadeIn {
