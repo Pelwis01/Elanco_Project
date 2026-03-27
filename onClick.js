@@ -114,7 +114,7 @@ function handleMapClick(e, map, layers) {
         const temp = h.temperature_2m[value];
         const rain = h.precipitation[value];
         const soil = ((h.soil_moisture_3_to_9cm[value] || 0) / 0.5) * 100;
-        
+
         const risks = getAllParasiteRisks(
           temp,
           rain * 10,
@@ -149,6 +149,7 @@ function handleMapClick(e, map, layers) {
         setText("m-region-temp", temp.toFixed(1));
         setText("m-region-rain", rain.toFixed(1));
         setText("m-region-soil", soil.toFixed(1));
+        setText("m-region-altitude", elevation);
 
         console.log("📊 Risk Result:", risks);
 
