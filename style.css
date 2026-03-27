@@ -242,7 +242,7 @@ main.sidebar-collapsed .sidebar {
 /* ENV GRID */
 .env-strip {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(2,1fr);
   gap: 8px;
 }
 .env-cell {
@@ -560,7 +560,6 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
 .hidden {
 	display: none;
 }
-
 
 .m-hout input {
   width: 100%;
