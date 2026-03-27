@@ -166,63 +166,93 @@
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-label">Parasite Guide</div>
-          <details>
-            <summary>Gutworm</summary>
-            <div class="env-cell">
-              <p>
-                Warm + moist conditions drive high risk. Peaks in summer with
-                sustained rainfall.
-              </p>
-            </div>
-          </details>
-          <details>
-            <summary>Lungworm</summary>
-            <div class="env-cell">
-              <p>
-                Highly dependent on wet pasture. Risk rises sharply after heavy
-                rain periods.
-              </p>
-            </div>
-          </details>
-          <details>
-            <summary>Liver Fluke</summary>
-            <div class="env-cell">
-              <p>
-                Requires consistently wet soils and snail intermediate hosts to
-                complete lifecycle.
-              </p>
-            </div>
-          </details>
-          <details>
-            <summary>Hairworm</summary>
-            <div class="env-cell">
-              <p>
-                Thrives at moderate warmth (~22°C). Less moisture-dependent than
-                other worms.
-              </p>
-            </div>
-          </details>
-          <details>
-            <summary>Coccidia</summary>
-            <div class="env-cell">
-              <p>
-                Warm, damp conditions with dense grazing pressure accelerate
-                oocyst development.
-              </p>
-            </div>
-          </details>
-          <details>
-            <summary>Tick</summary>
-            <div class="env-cell">
-              <p>
-                Prefers cool-humid vegetation zones. Risk decreases in hot or
-                very dry weather.
-              </p>
-            </div>
-          </details>
-        </div>
+<div class="card">
+  <div class="card-label">Parasite Guide</div>
+
+  <!-- Gutworm -->
+  <details class="guide-item" id="guide-gutworm">
+    <summary>
+      <div class="guide-header">
+        <span>🪱 Gutworm</span>
+        <span class="risk-tag" id="tag-gutworm">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Warm + moist conditions drive high risk. Peaks in summer with sustained rainfall.
+    </div>
+  </details>
+
+  <!-- Lungworm -->
+  <details class="guide-item" id="guide-lungworm">
+    <summary>
+      <div class="guide-header">
+        <span>🐛 Lungworm</span>
+        <span class="risk-tag" id="tag-lungworm">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Highly dependent on wet pasture. Risk rises sharply after heavy rain periods.
+    </div>
+  </details>
+
+  <!-- Liver Fluke -->
+  <details class="guide-item" id="guide-liverfluke">
+    <summary>
+      <div class="guide-header">
+        <span>🐌 Liver Fluke</span>
+        <span class="risk-tag" id="tag-liverfluke">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Requires consistently wet soils and snail intermediate hosts to complete lifecycle.
+    </div>
+  </details>
+
+  <!-- Hairworm -->
+  <details class="guide-item" id="guide-hairworm">
+    <summary>
+      <div class="guide-header">
+        <span>🧵 Hairworm</span>
+        <span class="risk-tag" id="tag-hairworm">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Thrives at moderate warmth (~22°C). Less moisture-dependent than other worms.
+    </div>
+  </details>
+
+  <!-- Coccidia -->
+  <details class="guide-item" id="guide-coccidia">
+    <summary>
+      <div class="guide-header">
+        <span>🦠 Coccidia</span>
+        <span class="risk-tag" id="tag-coccidia">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Warm, damp conditions with dense grazing pressure accelerate oocyst development.
+    </div>
+  </details>
+
+  <!-- Tick -->
+  <details class="guide-item" id="guide-tick">
+    <summary>
+      <div class="guide-header">
+        <span>🪳 Tick</span>
+        <span class="risk-tag" id="tag-tick">—</span>
+      </div>
+      <span class="chevron">⌄</span>
+    </summary>
+    <div class="guide-content">
+      Prefers cool-humid vegetation zones. Risk decreases in hot or very dry weather.
+    </div>
+  </details>
+</div>
       </aside>
 
 <!-- END OF DESKTOP UI -->
@@ -522,3 +552,47 @@
 </html>
 
 <script src="sidebar-toggle.js" defer></script>
+<script>
+function getRiskLevel(value) {
+  value = parseFloat(value);
+  if (isNaN(value)) return null;
+
+  if (value < 33) return "low";
+  if (value < 66) return "medium";
+  return "high";
+}
+
+function updateGuideStyles() {
+  const parasites = [
+    "gutworm",
+    "lungworm",
+    "liverfluke",
+    "hairworm",
+    "coccidia",
+    "tick"
+  ];
+
+  parasites.forEach(p => {
+    const riskEl = document.getElementById(`risk-${p}`);
+    const tagEl = document.getElementById(`tag-${p}`);
+    const cardEl = document.getElementById(`guide-${p}`);
+
+    if (!riskEl || !tagEl || !cardEl) return;
+
+    const value = riskEl.textContent;
+    const level = getRiskLevel(value);
+
+    if (!level) return;
+
+    tagEl.textContent = level.toUpperCase();
+
+    tagEl.classList.remove("low","medium","high");
+    cardEl.classList.remove("low","medium","high");
+
+    tagEl.classList.add(level);
+    cardEl.classList.add(level);
+  });
+}
+
+setInterval(updateGuideStyles, 500);
+</script>
