@@ -568,3 +568,106 @@ main.sidebar-collapsed .leaflet-top.leaflet-right {
 input[type="range"] {
   accent-color: var(--accent);
 }
+
+/* GUIDE DROPDOWN */
+.guide-item {
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.guide-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Remove default arrow */
+.guide-item summary {
+  list-style: none;
+}
+.guide-item summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Header layout */
+.guide-item summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Chevron */
+.chevron {
+  transition: transform 0.25s ease;
+}
+
+.guide-item[open] .chevron {
+  transform: rotate(180deg);
+}
+
+/* Content */
+.guide-content {
+  padding: 0 14px 12px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Risk tags */
+.risk-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.risk-tag.low {
+  background: var(--low-bg);
+  color: var(--low);
+}
+
+.risk-tag.medium {
+  background: var(--medium-bg);
+  color: var(--medium);
+}
+
+.risk-tag.high {
+  background: var(--high-bg);
+  color: var(--high);
+}
+
+/* Card tinting */
+.guide-item.low {
+  background: linear-gradient(135deg, var(--low-bg), #ffffff);
+}
+
+.guide-item.medium {
+  background: linear-gradient(135deg, var(--medium-bg), #ffffff);
+}
+
+.guide-item.high {
+  background: linear-gradient(135deg, var(--high-bg), #ffffff);
+}
