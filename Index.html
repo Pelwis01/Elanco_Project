@@ -1,40 +1,45 @@
 <!doctype html>
 <html lang="en">
   <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="shortcut icon" href="/Elanco_Project/images/favicon.png">
-	
-	<!-- 🗺️ Leaflet -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
-	<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-	
-	<!-- 🔥 Heatmap.js -->
-	<script src="https://unpkg.com/heatmap.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
-    
-    <!-- Scripts -->
-	<script src="parasiteCalculator.js"></script>
-	<script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
-	<script src="map-content.js" type="module"></script>
-	<script src="parasite_popup.js"></script>
-    <script src="onClick.js"></script>
-    
-	<!-- 🎨 Styles -->
-	<link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="mobile-style.css" />
-    
-	<!-- 📛 Title -->
-	<title> Elanco - Parasite Risk Map </title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/Elanco_Project/images/favicon.png" />
 
+    <!-- 🗺️ Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 🔥 Heatmap.js -->
+    <script src="https://unpkg.com/heatmap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-heatmap/leaflet-heatmap.js"></script>
+
+    <!-- Scripts -->
+    <script src="parasiteCalculator.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+    <script src="map-content.js" type="module"></script>
+    <script src="parasite_popup.js"></script>
+    <script src="onClick.js"></script>
+
+    <!-- 🎨 Styles -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mobile-style.css" />
+
+    <!-- 📛 Title -->
+    <title>Elanco - Parasite Risk Map</title>
   </head>
 
   <body>
     <!-- NAVBAR -->
     <nav class="navbar">
       <img class="navbar-logo" src="./images/logo.png" alt="Elanco Logo" />
-        <!-- 
+      <!-- 
         <div class="navbar-right">
             <a href="ex_information.html" style="color: white; text-decoration: none;">Extra information</a>
         </div>
@@ -69,7 +74,7 @@
             "
           >
             <div class="spinner"></div>
-            <p style="color: #000;">Loading environmental data…</p>
+            <p style="color: #000">Loading environmental data…</p>
           </div>
         </div>
       </div>
@@ -104,7 +109,7 @@
               <span id="region-soil">—</span>
               <small>%</small>
             </div>
-			<div class="env-cell">
+            <div class="env-cell">
               <span>🏔️</span>
               <span id="region-altitude">—</span>
               <small>m</small>
@@ -166,98 +171,96 @@
             </div>
           </div>
         </div>
-<div class="card">
-  <div class="card-label">Parasite Guide</div>
+        <div class="card">
+          <div class="card-label">Parasite Guide</div>
 
-  <!-- Gutworm -->
-  <details class="guide-item" id="guide-gutworm">
-    <summary>
-      <div class="guide-header">
-        <span>🪱 Gutworm</span>
-        <span class="risk-tag" id="tag-gutworm">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Warm + moist conditions drive high risk. Peaks in summer with sustained rainfall.
-    </div>
-  </details>
+          <!-- Gutworm -->
+          <details class="guide-item" id="guide-gutworm">
+            <summary>
+              <div class="guide-header">
+                <span>🪱 Gutworm</span>
+                <span class="risk-tag" id="tag-gutworm">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Warm + moist conditions drive high risk. Peaks in summer with
+              sustained rainfall.
+            </div>
+          </details>
 
-  <!-- Lungworm -->
-  <details class="guide-item" id="guide-lungworm">
-    <summary>
-      <div class="guide-header">
-        <span>🐛 Lungworm</span>
-        <span class="risk-tag" id="tag-lungworm">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Highly dependent on wet pasture. Risk rises sharply after heavy rain periods.
-    </div>
-  </details>
+          <!-- Lungworm -->
+          <details class="guide-item" id="guide-lungworm">
+            <summary>
+              <div class="guide-header">
+                <span>🐛 Lungworm</span>
+                <span class="risk-tag" id="tag-lungworm">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Highly dependent on wet pasture. Risk rises sharply after heavy
+              rain periods.
+            </div>
+          </details>
 
-  <!-- Liver Fluke -->
-  <details class="guide-item" id="guide-liverfluke">
-    <summary>
-      <div class="guide-header">
-        <span>🐌 Liver Fluke</span>
-        <span class="risk-tag" id="tag-liverfluke">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Requires consistently wet soils and snail intermediate hosts to complete lifecycle.
-    </div>
-  </details>
+          <!-- Liver Fluke -->
+          <details class="guide-item" id="guide-liverfluke">
+            <summary>
+              <div class="guide-header">
+                <span>🐌 Liver Fluke</span>
+                <span class="risk-tag" id="tag-liverfluke">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Requires consistently wet soils and snail intermediate hosts to
+              complete lifecycle.
+            </div>
+          </details>
 
-  <!-- Hairworm -->
-  <details class="guide-item" id="guide-hairworm">
-    <summary>
-      <div class="guide-header">
-        <span>🧵 Hairworm</span>
-        <span class="risk-tag" id="tag-hairworm">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Thrives at moderate warmth (~22°C). Less moisture-dependent than other worms.
-    </div>
-  </details>
+          <!-- Hairworm -->
+          <details class="guide-item" id="guide-hairworm">
+            <summary>
+              <div class="guide-header">
+                <span>🧵 Hairworm</span>
+                <span class="risk-tag" id="tag-hairworm">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Thrives at moderate warmth (~22°C). Less moisture-dependent than
+              other worms.
+            </div>
+          </details>
 
-  <!-- Coccidia -->
-  <details class="guide-item" id="guide-coccidia">
-    <summary>
-      <div class="guide-header">
-        <span>🦠 Coccidia</span>
-        <span class="risk-tag" id="tag-coccidia">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Warm, damp conditions with dense grazing pressure accelerate oocyst development.
-    </div>
-  </details>
+          <!-- Coccidia -->
+          <details class="guide-item" id="guide-coccidia">
+            <summary>
+              <div class="guide-header">
+                <span>🦠 Coccidia</span>
+                <span class="risk-tag" id="tag-coccidia">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Warm, damp conditions with dense grazing pressure accelerate
+              oocyst development.
+            </div>
+          </details>
 
-  <!-- Tick -->
-  <details class="guide-item" id="guide-tick">
-    <summary>
-      <div class="guide-header">
-        <span>🪳 Tick</span>
-        <span class="risk-tag" id="tag-tick">—</span>
-      </div>
-      <span class="chevron">⌄</span>
-    </summary>
-    <div class="guide-content">
-      Prefers cool-humid vegetation zones. Risk decreases in hot or very dry weather.
-    </div>
-  </details>
-</div>
+          <!-- Tick -->
+          <details class="guide-item" id="guide-tick">
+            <summary>
+              <div class="guide-header">
+                <span>🪳 Tick</span>
+                <span class="risk-tag" id="tag-tick">—</span>
+              </div>
+            </summary>
+            <div class="guide-content">
+              Prefers cool-humid vegetation zones. Risk decreases in hot or very
+              dry weather.
+            </div>
+          </details>
+        </div>
       </aside>
 
-<!-- END OF DESKTOP UI -->
-
-
+      <!-- END OF DESKTOP UI -->
 
       <!--MOBILE UI — bottom sheet + nav-->
 
@@ -552,47 +555,3 @@
 </html>
 
 <script src="sidebar-toggle.js" defer></script>
-<script>
-function getRiskLevel(value) {
-  value = parseFloat(value);
-  if (isNaN(value)) return null;
-
-  if (value < 33) return "low";
-  if (value < 66) return "medium";
-  return "high";
-}
-
-function updateGuideStyles() {
-  const parasites = [
-    "gutworm",
-    "lungworm",
-    "liverfluke",
-    "hairworm",
-    "coccidia",
-    "tick"
-  ];
-
-  parasites.forEach(p => {
-    const riskEl = document.getElementById(`risk-${p}`);
-    const tagEl = document.getElementById(`tag-${p}`);
-    const cardEl = document.getElementById(`guide-${p}`);
-
-    if (!riskEl || !tagEl || !cardEl) return;
-
-    const value = riskEl.textContent;
-    const level = getRiskLevel(value);
-
-    if (!level) return;
-
-    tagEl.textContent = level.toUpperCase();
-
-    tagEl.classList.remove("low","medium","high");
-    cardEl.classList.remove("low","medium","high");
-
-    tagEl.classList.add(level);
-    cardEl.classList.add(level);
-  });
-}
-
-setInterval(updateGuideStyles, 500);
-</script>

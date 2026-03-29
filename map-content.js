@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // 🕹️ Map controls
   const layerControl = {
-    None: L.layerGroup(),
+    Map: L.layerGroup(),
     Temperature: layers.temp,
     Precipitation: layers.rain,
     "Soil Moisture": layers.soil,
@@ -121,9 +121,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     "Combined Risk (Max)": layers.combined,
   };
 
-  let legend = L.control({ position: "bottomleft", bottom: "56px" });
+  let legend = L.control({ position: "bottomleft" });
+
   legend.onAdd = function () {
     let div = L.DomUtil.create("div", "legend");
+    
 
     div.innerHTML = `
         <h4>Map Key</h4>

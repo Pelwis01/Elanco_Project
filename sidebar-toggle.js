@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (toggleBtn) {
     toggleBtn.addEventListener("click", function () {
       if (isMobile()) return;
-
+      
       const collapsed = sidebar.classList.toggle("collapsed");
       mainEl.classList.toggle("sidebar-collapsed", collapsed);
       toggleWrapper.classList.toggle("sidebar-collapsed", collapsed);
