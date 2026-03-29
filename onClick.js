@@ -106,8 +106,8 @@ function handleMapClick(e, map, layers) {
 
       const riskEvaluation = () => {
         let value =
-          parseInt(document.getElementById("hour").value) ||
-          parseInt(document.getElementById("m-hour").value);
+          Number.parseInt(document.getElementById("hour").value) ||
+          Number.parseInt(document.getElementById("m-hour").value);
         let style = "";
         console.log("value: ", value);
         const h = data.hourly;
@@ -133,12 +133,11 @@ function handleMapClick(e, map, layers) {
             context[i] = "High";
             style = "color :  red; font-weight : bold";
           }
-          setText(id[i], `${Math.round(risks[i])}% (${context[i]})`);
-          setText(mobile_id[i], `${Math.round(risks[i])}% (${context[i]})`);
+          setText(id[i], `${context[i]} (${Math.round(risks[i])}%)`);
+          setText(mobile_id[i], `${context[i]}  (${Math.round(risks[i])}%)`);
 
           document.getElementById(id[i]).style = style;
           document.getElementById(mobile_id[i]).style = style;
-          
         }
 
         setText("region-temp", temp.toFixed(1));
@@ -157,6 +156,7 @@ function handleMapClick(e, map, layers) {
           `🌡️ Temp: ${temp}°C, 🌧️ Rain: ${rain}, 🌱 Soil: ${soil.toFixed(1)}`,
         );
 
+        updateGuideStyles();
         return risks;
       };
 
@@ -192,10 +192,6 @@ function handleMapClick(e, map, layers) {
           .setContent(content)
           .openOn(map);
       }
-
-      // setTimeout(() => {
-      //   map.closePopup();
-      // }, 5000);
     })
     .catch((err) => console.error("Fetch error:", err));
 }
@@ -247,4 +243,52 @@ function getElevation(lat, lng) {
       const elevation = data.elevation;
       return elevation;
     });
+}
+
+function getRiskLevel(value) {
+  const brackPos = value.indexOf("(");
+  const percPos = value.indexOf("%");
+  console.log(brackPos);
+  console.log(percPos);
+  value = value.substring(brackPos + 1, percPos);
+  console.log(value);
+  value = Number.parseFloat(value);
+
+  if (Number.isNaN(value)) return null;
+
+  if (value <= 30) return "low";
+  if (value <= 70) return "medium";
+  return "high";
+}
+
+function updateGuideStyles() {
+  const parasites = [
+    "gutworm",
+    "lungworm",
+    "liverfluke",
+    "hairworm",
+    "coccidia",
+    "tick",
+  ];
+
+  parasites.forEach((p) => {
+    const riskEl = document.getElementById(`risk-${p}`);
+    const tagEl = document.getElementById(`tag-${p}`);
+    const cardEl = document.getElementById(`guide-${p}`);
+
+    if (!riskEl || !tagEl || !cardEl) return;
+
+    const value = riskEl.textContent;
+    const level = getRiskLevel(value);
+
+    if (!level) return;
+
+    tagEl.textContent = level.toUpperCase();
+
+    tagEl.classList.remove("low", "medium", "high");
+    cardEl.classList.remove("low", "medium", "high");
+
+    tagEl.classList.add(level);
+    cardEl.classList.add(level);
+  });
 }
