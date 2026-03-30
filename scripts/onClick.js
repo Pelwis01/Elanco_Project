@@ -248,10 +248,8 @@ function getElevation(lat, lng) {
 function getRiskLevel(value) {
   const brackPos = value.indexOf("(");
   const percPos = value.indexOf("%");
-  console.log(brackPos);
-  console.log(percPos);
+
   value = value.substring(brackPos + 1, percPos);
-  console.log(value);
   value = Number.parseFloat(value);
 
   if (Number.isNaN(value)) return null;
