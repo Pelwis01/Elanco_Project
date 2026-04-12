@@ -1,10 +1,11 @@
 # Table of Contents
 
-1. [Elanco Parasite Risk Map](#EPRM)
-2. [Project Description](#PDElanco)
-3. [Tech Stack](#TechStack)
-   1. [API's And Required Extras](#API)
-4. [How Score is Determined](#HSID)
+1. [Elanco Parasite Risk Map](#elanco-parasite-risk-map)
+2. [Deployment](#deployment)
+3. [Project Description](#project-description)
+4. [Tech Stack](#tech-stack)
+   1. [API's And Required Extras](#apis-and-required-extras)
+5. [How Score is Determined](#how-score-is-determined)
 
 # Elanco Parasite Risk Map
 
@@ -12,15 +13,35 @@
 
 [Our Deployed Page](https://pelwis01.github.io/Elanco_Project/Index.html)
 
+## Deployment
+
+We personally used GitHub Pages.
+
+On every push/merge to the main branch the new version of the page is automatically deployed using GitHub pages.
+
+This hosts the files for the webpage at a publicly accessible URL.
+
+Manual Deployment can also be done through:
+
+    Going to the settings tab of your Repo, then clicking pages.
+
+![GitHub Settings](images/GithubSetting.png)
+    
+    You then select deploy from branch, choose your desired branch and then publish site.
+
+    !NOTE the repo needs to be public to host on GitHub pages unless you have a GitHub Enterprise subscription which allows for private hosting. Otherwise, if you would like to host it privately you would need to use your own hosting services.
+
+
+
 ## Project Description
 
 Our client challenged us to create a interactive map, which should be easy to interpret and understandable for farmers.
 
-![Heatmap](/Elanco_Project/images/image.png)
+![Heatmap](images/Heatmap.png)
 
 Doing this we implemented a Heatmap that shows a clear colour gradient and easy to read key value. The heatmap works by displaying the calculated risk score and overlaying it on top of the UK based on longitude/Latitude points.
 
-## Tech Stack <a name="TechStack"></a>
+## Tech Stack 
 
 Our chosen tech stack for this project is:
 
@@ -30,7 +51,7 @@ Our chosen tech stack for this project is:
 
 We focused on using a bareboned approach when it came to tech stack to allow for easier deployment on GitHub Pages.
 
-### API's And Required Extras
+### API's And Required Extras 
 
 ---
 
