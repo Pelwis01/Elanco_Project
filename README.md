@@ -29,7 +29,9 @@ Manual Deployment can also be done through:
     
     You then select deploy from branch, choose your desired branch and then publish site.
 
-    !NOTE the repo needs to be public to host on GitHub pages unless you have a GitHub Enterprise subscription which allows for private hosting. Otherwise, if you would like to host it privately you would need to use your own hosting services.
+    !NOTE the repo needs to be public to host on GitHub pages unless you have a GitHub Enterprise subscription which allows for private hosting.
+    
+    Otherwise, if you would like to host it privately you would need to use your own hosting services.
 
 
 
