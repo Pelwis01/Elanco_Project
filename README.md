@@ -80,37 +80,37 @@ We have also created a file with UK Lat Lon values to iterate through to allow f
    Each parasite has unique thresholds and weightings based on its biology 
    Rainfall multiplier varies depending on the parasite's moisture dependency
 
-   **Gutworm**
+**Gutworm**
     risk = (tempScore * 0.45) +
 			   (rainScore * 0.25) +
 			   (soilScore * 0.2) +
 			   (altScore * 0.1);
 
-   **Lungworm**
+**Lungworm**
    risk = (tempScore * 0.35) +
 			   (rainScore * 0.3) +
 			   (soilScore * 0.2) +
 			   (altScore * 0.15);
 
-   **Liver Fluke**
+**Liver Fluke**
    risk = (tempScore * 0.15) +
 			   (rainScore * 0.4) +
 			   (soilScore * 0.25) +
 			   (altScore * 0.2); // strong altitude effect
 
-   **Hairworm**
+**Hairworm**
    risk = (tempScore * 0.55) +
 			   (rainScore * 0.2) +
 			   (soilScore * 0.15) +
 			   (altScore * 0.1);
             
-   **Coccidia**
+**Coccidia**
    risk = (tempScore * 0.35) +
 			   (rainScore * 0.25) +
 			   (soilScore * 0.25) +
 			   (altScore * 0.15);
 
-   **Tick**
+**Tick**
    risk = (tempScore * 0.3) +
 			   (rainScore * 0.2) +
 			   (soilScore * 0.35) +
