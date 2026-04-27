@@ -75,43 +75,43 @@ We have also created a file with UK Lat Lon values to iterate through to allow f
 
 ## How Score is Determined
 
-   Temp in °C, rainfall in mm, soilMoisture in % (0–100) for 3–9cm depth, Altitude in meters (m)
-   Returns risk scores (0–100) for various parasites, where higher scores indicate higher risk 
-   Each parasite has unique thresholds and weightings based on its biology 
-   Rainfall multiplier varies depending on the parasite's moisture dependency
+    Temp in °C, rainfall in mm, soilMoisture in % (0–100) for 3–9cm depth, Altitude in meters (m)
+    Returns risk scores (0–100) for various parasites, where higher scores indicate higher risk 
+    Each parasite has unique thresholds and weightings based on its biology 
+    Rainfall multiplier varies depending on the parasite's moisture dependency
 
-**Gutworm**
-    risk = (tempScore * 0.45) +
-			   (rainScore * 0.25) +
-			   (soilScore * 0.2) +
-			   (altScore * 0.1);
+**Gutworm**  
+> risk = (tempScore * 0.45) +  
+    (rainScore * 0.25) +  
+    (soilScore * 0.2) +  
+    (altScore * 0.1);
 
 **Lungworm**
-   risk = (tempScore * 0.35) +
-			   (rainScore * 0.3) +
-			   (soilScore * 0.2) +
-			   (altScore * 0.15);
+   > risk = (tempScore * 0.35) +  
+	(rainScore * 0.3) +  
+	(soilScore * 0.2) +  
+	(altScore * 0.15);  
 
 **Liver Fluke**
-   risk = (tempScore * 0.15) +
-			   (rainScore * 0.4) +
-			   (soilScore * 0.25) +
-			   (altScore * 0.2); // strong altitude effect
+   >risk = (tempScore * 0.15) +  
+	(rainScore * 0.4) +  
+	(soilScore * 0.25) +  
+	(altScore * 0.2); 
 
 **Hairworm**
-   risk = (tempScore * 0.55) +
-			   (rainScore * 0.2) +
-			   (soilScore * 0.15) +
-			   (altScore * 0.1);
+   >risk = (tempScore * 0.55) +  
+	(rainScore * 0.2) +  
+	(soilScore * 0.15) +  
+	(altScore * 0.1);  
             
 **Coccidia**
-   risk = (tempScore * 0.35) +
-			   (rainScore * 0.25) +
-			   (soilScore * 0.25) +
-			   (altScore * 0.15);
+   >risk = (tempScore * 0.35) +  
+	(rainScore * 0.25) +  
+	(soilScore * 0.25) +  
+	(altScore * 0.15);
 
 **Tick**
-   risk = (tempScore * 0.3) +
-			   (rainScore * 0.2) +
-			   (soilScore * 0.35) +
-			   (altScore * 0.15);
+> risk = (tempScore * 0.3) +  
+	(rainScore * 0.2) +  
+	(soilScore * 0.35) +  
+	(altScore * 0.15);
